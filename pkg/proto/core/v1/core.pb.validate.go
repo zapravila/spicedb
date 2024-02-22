@@ -166,6 +166,14 @@ func (m *RelationTuple) validate(all bool) error {
 		}
 	}
 
+	if m.OptionalDescription != nil {
+		// no validation rules for OptionalDescription
+	}
+
+	if m.OptionalComment != nil {
+		// no validation rules for OptionalComment
+	}
+
 	if len(errors) > 0 {
 		return RelationTupleMultiError(errors)
 	}

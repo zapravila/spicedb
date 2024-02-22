@@ -7,10 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/crdb"
-	"github.com/authzed/spicedb/internal/datastore/mysql"
 	"github.com/authzed/spicedb/internal/datastore/postgres"
-	"github.com/authzed/spicedb/internal/datastore/spanner"
 	"github.com/authzed/spicedb/pkg/datastore"
 )
 
@@ -22,17 +19,17 @@ func createEngine(engineID string, uri string) error {
 		_, err := postgres.NewPostgresDatastore(ctx, uri)
 		return err
 
-	case "mysql":
-		_, err := mysql.NewMySQLDatastore(ctx, uri)
-		return err
+	// case "mysql":
+	// 	_, err := mysql.NewMySQLDatastore(ctx, uri)
+	// 	return err
 
-	case "spanner":
-		_, err := spanner.NewSpannerDatastore(ctx, uri)
-		return err
+	// case "spanner":
+	// 	_, err := spanner.NewSpannerDatastore(ctx, uri)
+	// 	return err
 
-	case "cockroachdb":
-		_, err := crdb.NewCRDBDatastore(ctx, uri)
-		return err
+	// case "cockroachdb":
+	// 	_, err := crdb.NewCRDBDatastore(ctx, uri)
+	// 	return err
 
 	default:
 		panic(fmt.Sprintf("missing create implementation for engine %s", engineID))

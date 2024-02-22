@@ -13,7 +13,6 @@ import (
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/spanner"
 	tf "github.com/authzed/spicedb/internal/testfixtures"
 	"github.com/authzed/spicedb/internal/testserver"
 	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
@@ -26,7 +25,7 @@ import (
 
 func TestBurst(t *testing.T) {
 	blacklist := []string{
-		spanner.Engine, // spanner emulator doesn't support parallel transactions
+		// spanner.Engine, // spanner emulator doesn't support parallel transactions
 	}
 
 	for _, engine := range datastore.Engines {

@@ -23,6 +23,7 @@ func (Gen) Go() error {
 	return sh.RunV("go", "generate", "./...")
 }
 
+// buf generate -o ../pkg/proto ../proto/internal --template ../buf.gen.yaml --exclude-path ../proto/internal/google --exclude-path ../proto/internal/protoc-gen-openapiv2 --exclude-path ../proto/internal/validate
 // Proto Run proto codegen
 func (Gen) Proto() error {
 	fmt.Println("generating buf")

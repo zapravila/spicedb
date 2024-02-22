@@ -12,7 +12,6 @@ import (
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/spanner"
 	"github.com/authzed/spicedb/internal/testserver"
 	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
 	"github.com/authzed/spicedb/internal/testserver/datastore/config"
@@ -29,7 +28,7 @@ type testCase struct {
 
 func TestDispatchIntegration(t *testing.T) {
 	blacklist := []string{
-		spanner.Engine, // spanner emulator doesn't support parallel transactions
+		// spanner.Engine, // spanner emulator doesn't support parallel transactions
 	}
 
 	testCases := []testCase{

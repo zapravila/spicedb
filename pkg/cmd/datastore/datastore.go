@@ -10,12 +10,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/authzed/spicedb/internal/datastore/crdb"
 	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/datastore/mysql"
 	"github.com/authzed/spicedb/internal/datastore/postgres"
 	"github.com/authzed/spicedb/internal/datastore/proxy"
-	"github.com/authzed/spicedb/internal/datastore/spanner"
 	log "github.com/authzed/spicedb/internal/logging"
 	"github.com/authzed/spicedb/pkg/datastore"
 	"github.com/authzed/spicedb/pkg/validationfile"
@@ -32,11 +29,11 @@ const (
 )
 
 var BuilderForEngine = map[string]engineBuilderFunc{
-	CockroachEngine: newCRDBDatastore,
-	PostgresEngine:  newPostgresDatastore,
-	MemoryEngine:    newMemoryDatstore,
-	SpannerEngine:   newSpannerDatastore,
-	MySQLEngine:     newMySQLDatastore,
+	// CockroachEngine: newCRDBDatastore,
+	PostgresEngine: newPostgresDatastore,
+	MemoryEngine:   newMemoryDatstore,
+	// SpannerEngine:   newSpannerDatastore,
+	// MySQLEngine:     newMySQLDatastore,
 }
 
 //go:generate go run github.com/ecordell/optgen -output zz_generated.connpool.options.go . ConnPoolConfig
@@ -358,37 +355,37 @@ func NewDatastore(ctx context.Context, options ...ConfigOption) (datastore.Datas
 	return ds, nil
 }
 
-func newCRDBDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	return crdb.NewCRDBDatastore(
-		ctx,
-		opts.URI,
-		crdb.GCWindow(opts.GCWindow),
-		crdb.RevisionQuantization(opts.RevisionQuantization),
-		crdb.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
-		crdb.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
-		crdb.ReadConnsMinOpen(opts.ReadConnPool.MinOpenConns),
-		crdb.ReadConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
-		crdb.ReadConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
-		crdb.ReadConnMaxLifetimeJitter(opts.ReadConnPool.MaxLifetimeJitter),
-		crdb.ReadConnHealthCheckInterval(opts.ReadConnPool.HealthCheckInterval),
-		crdb.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
-		crdb.WriteConnsMinOpen(opts.WriteConnPool.MinOpenConns),
-		crdb.WriteConnMaxIdleTime(opts.WriteConnPool.MaxIdleTime),
-		crdb.WriteConnMaxLifetime(opts.WriteConnPool.MaxLifetime),
-		crdb.WriteConnMaxLifetimeJitter(opts.WriteConnPool.MaxLifetimeJitter),
-		crdb.WriteConnHealthCheckInterval(opts.WriteConnPool.HealthCheckInterval),
-		crdb.FollowerReadDelay(opts.FollowerReadDelay),
-		crdb.MaxRetries(uint8(opts.MaxRetries)),
-		crdb.OverlapKey(opts.OverlapKey),
-		crdb.OverlapStrategy(opts.OverlapStrategy),
-		crdb.WatchBufferLength(opts.WatchBufferLength),
-		crdb.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		crdb.DisableStats(opts.DisableStats),
-		crdb.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
-		crdb.WithEnableConnectionBalancing(opts.EnableConnectionBalancing),
-		crdb.ConnectRate(opts.ConnectRate),
-	)
-}
+// func newCRDBDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	return crdb.NewCRDBDatastore(
+// 		ctx,
+// 		opts.URI,
+// 		crdb.GCWindow(opts.GCWindow),
+// 		crdb.RevisionQuantization(opts.RevisionQuantization),
+// 		crdb.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
+// 		crdb.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
+// 		crdb.ReadConnsMinOpen(opts.ReadConnPool.MinOpenConns),
+// 		crdb.ReadConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
+// 		crdb.ReadConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
+// 		crdb.ReadConnMaxLifetimeJitter(opts.ReadConnPool.MaxLifetimeJitter),
+// 		crdb.ReadConnHealthCheckInterval(opts.ReadConnPool.HealthCheckInterval),
+// 		crdb.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
+// 		crdb.WriteConnsMinOpen(opts.WriteConnPool.MinOpenConns),
+// 		crdb.WriteConnMaxIdleTime(opts.WriteConnPool.MaxIdleTime),
+// 		crdb.WriteConnMaxLifetime(opts.WriteConnPool.MaxLifetime),
+// 		crdb.WriteConnMaxLifetimeJitter(opts.WriteConnPool.MaxLifetimeJitter),
+// 		crdb.WriteConnHealthCheckInterval(opts.WriteConnPool.HealthCheckInterval),
+// 		crdb.FollowerReadDelay(opts.FollowerReadDelay),
+// 		crdb.MaxRetries(uint8(opts.MaxRetries)),
+// 		crdb.OverlapKey(opts.OverlapKey),
+// 		crdb.OverlapStrategy(opts.OverlapStrategy),
+// 		crdb.WatchBufferLength(opts.WatchBufferLength),
+// 		crdb.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		crdb.DisableStats(opts.DisableStats),
+// 		crdb.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
+// 		crdb.WithEnableConnectionBalancing(opts.EnableConnectionBalancing),
+// 		crdb.ConnectRate(opts.ConnectRate),
+// 	)
+// }
 
 func newPostgresDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
 	pgOpts := []postgres.Option{
@@ -420,47 +417,47 @@ func newPostgresDatastore(ctx context.Context, opts Config) (datastore.Datastore
 	return postgres.NewPostgresDatastore(ctx, opts.URI, pgOpts...)
 }
 
-func newSpannerDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	return spanner.NewSpannerDatastore(
-		ctx,
-		opts.URI,
-		spanner.FollowerReadDelay(opts.FollowerReadDelay),
-		spanner.RevisionQuantization(opts.RevisionQuantization),
-		spanner.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
-		spanner.CredentialsFile(opts.SpannerCredentialsFile),
-		spanner.WatchBufferLength(opts.WatchBufferLength),
-		spanner.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		spanner.EmulatorHost(opts.SpannerEmulatorHost),
-		spanner.DisableStats(opts.DisableStats),
-		spanner.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
-		spanner.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
-		spanner.MinSessionCount(opts.SpannerMinSessions),
-		spanner.MaxSessionCount(opts.SpannerMaxSessions),
-		spanner.MigrationPhase(opts.MigrationPhase),
-	)
-}
+// func newSpannerDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	return spanner.NewSpannerDatastore(
+// 		ctx,
+// 		opts.URI,
+// 		spanner.FollowerReadDelay(opts.FollowerReadDelay),
+// 		spanner.RevisionQuantization(opts.RevisionQuantization),
+// 		spanner.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
+// 		spanner.CredentialsFile(opts.SpannerCredentialsFile),
+// 		spanner.WatchBufferLength(opts.WatchBufferLength),
+// 		spanner.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		spanner.EmulatorHost(opts.SpannerEmulatorHost),
+// 		spanner.DisableStats(opts.DisableStats),
+// 		spanner.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
+// 		spanner.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
+// 		spanner.MinSessionCount(opts.SpannerMinSessions),
+// 		spanner.MaxSessionCount(opts.SpannerMaxSessions),
+// 		spanner.MigrationPhase(opts.MigrationPhase),
+// 	)
+// }
 
-func newMySQLDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	mysqlOpts := []mysql.Option{
-		mysql.GCInterval(opts.GCInterval),
-		mysql.GCWindow(opts.GCWindow),
-		mysql.GCInterval(opts.GCInterval),
-		mysql.GCEnabled(!opts.ReadOnly),
-		mysql.GCMaxOperationTime(opts.GCMaxOperationTime),
-		mysql.MaxOpenConns(opts.ReadConnPool.MaxOpenConns),
-		mysql.ConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
-		mysql.ConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
-		mysql.RevisionQuantization(opts.RevisionQuantization),
-		mysql.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
-		mysql.TablePrefix(opts.TablePrefix),
-		mysql.WatchBufferLength(opts.WatchBufferLength),
-		mysql.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		mysql.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
-		mysql.MaxRetries(uint8(opts.MaxRetries)),
-		mysql.OverrideLockWaitTimeout(1),
-	}
-	return mysql.NewMySQLDatastore(ctx, opts.URI, mysqlOpts...)
-}
+// func newMySQLDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	mysqlOpts := []mysql.Option{
+// 		mysql.GCInterval(opts.GCInterval),
+// 		mysql.GCWindow(opts.GCWindow),
+// 		mysql.GCInterval(opts.GCInterval),
+// 		mysql.GCEnabled(!opts.ReadOnly),
+// 		mysql.GCMaxOperationTime(opts.GCMaxOperationTime),
+// 		mysql.MaxOpenConns(opts.ReadConnPool.MaxOpenConns),
+// 		mysql.ConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
+// 		mysql.ConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
+// 		mysql.RevisionQuantization(opts.RevisionQuantization),
+// 		mysql.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
+// 		mysql.TablePrefix(opts.TablePrefix),
+// 		mysql.WatchBufferLength(opts.WatchBufferLength),
+// 		mysql.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		mysql.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
+// 		mysql.MaxRetries(uint8(opts.MaxRetries)),
+// 		mysql.OverrideLockWaitTimeout(1),
+// 	}
+// 	return mysql.NewMySQLDatastore(ctx, opts.URI, mysqlOpts...)
+// }
 
 func newMemoryDatstore(_ context.Context, opts Config) (datastore.Datastore, error) {
 	log.Warn().Msg("in-memory datastore is not persistent and not feasible to run in a high availability fashion")

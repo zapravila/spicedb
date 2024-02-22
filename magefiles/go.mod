@@ -90,3 +90,5 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/authzed/authzed-go v0.10.1 => github.com/zapravila/zapravila-go v0.0.1

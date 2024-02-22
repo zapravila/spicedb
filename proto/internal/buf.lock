@@ -5,15 +5,19 @@ deps:
     owner: authzed
     repository: api
     commit: 53f3e981ed3346bab8c050c597f74602
+    digest: shake256:775a08856285f366e3e2c8621c3b23e5aecd5ef700652ff0e7b43fb33456002a08344b54f36eda178342dfcf1a5568ff18a60adeb983478df75fff2942c89748
   - remote: buf.build
     owner: envoyproxy
     repository: protoc-gen-validate
     commit: bb405eae115246f0b5ccf8997136e3d8
+    digest: shake256:f7c30673e9f74f8c33945c538c808ed0185c447eb77eb2c58bbd8450f8a1e1b39f7665948ee722f8372b9157b351eae57705918908ce666e04286b8ccc1f3a3a
   - remote: buf.build
     owner: googleapis
     repository: googleapis
-    commit: 62f35d8aed1149c291d606d958a7ce32
+    commit: 711e289f6a384c4caeebaff7c6931ade
+    digest: shake256:e08fb55dad7469f69df00304eed31427d2d1576e9aab31e6bf86642688e04caaf0372f15fe6974cf79432779a635b3ea401ca69c943976dc42749524e4c25d94
   - remote: buf.build
     owner: grpc-ecosystem
     repository: grpc-gateway
     commit: bc28b723cd774c32b6fbc77621518765
+    digest: shake256:a31c1d7e8e73abd2b8af3210461b190f98c4c4aa0715c29632bf2ac035c4c83d6b961a66f62e5b50e5736ded85a6467023ca5ae1e3482ea80c317e2f29844786

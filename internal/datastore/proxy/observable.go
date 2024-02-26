@@ -72,6 +72,11 @@ func (p *observableProxy) SnapshotReader(rev datastore.Revision) datastore.Reade
 	return &observableReader{delegateReader}
 }
 
+func (p *observableProxy) SnapshotReaderExt(rev datastore.Revision) datastore.Reader {
+	delegateReader := p.delegate.SnapshotReaderExt(rev)
+	return &observableReader{delegateReader}
+}
+
 func (p *observableProxy) ReadWriteTx(
 	ctx context.Context,
 	f datastore.TxUserFunc,
@@ -200,6 +205,20 @@ func (r *observableReader) QueryRelationships(ctx context.Context, filter datast
 	))
 
 	iterator, err := r.delegate.QueryRelationships(ctx, filter, options...)
+	if err != nil {
+		return iterator, err
+	}
+	return &observableRelationshipIterator{closer, iterator, 0}, nil
+}
+
+func (r *observableReader) QueryRelationshipsExt(ctx context.Context, filter datastore.RelationshipsFilter, options ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
+	ctx, closer := observe(ctx, "QueryRelationships", trace.WithAttributes(
+		attribute.String("resourceType", filter.ResourceType),
+		attribute.String("resourceRelation", filter.OptionalResourceRelation),
+		attribute.String("caveatName", filter.OptionalCaveatName),
+	))
+
+	iterator, err := r.delegate.QueryRelationshipsExt(ctx, filter, options...)
 	if err != nil {
 		return iterator, err
 	}

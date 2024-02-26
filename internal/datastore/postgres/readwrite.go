@@ -83,7 +83,7 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 	touchMutationsByNonCaveat := make(map[string]*core.RelationTupleUpdate, len(mutations))
 	hasCreateInserts := false
 
-	createInserts := writeTuple
+	createInserts := writeTuple.Suffix("RETURNING \"r_id\"")
 	touchInserts := writeTuple
 	deleteClauses := sq.Or{}
 
@@ -119,18 +119,20 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 		if err != nil {
 			return fmt.Errorf(errUnableToWriteRelationships, err)
 		}
+		// TODO: add write description and comments
 	}
 
 	// For each of the TOUCH operations, invoke the INSERTs, but with `ON CONFLICT DO NOTHING` to ensure
 	// that the operations over existing relationships no-op.
 	if len(touchMutationsByNonCaveat) > 0 {
-		touchInserts = touchInserts.Suffix(fmt.Sprintf("ON CONFLICT DO NOTHING RETURNING %s, %s, %s, %s, %s, %s",
+		touchInserts = touchInserts.Suffix(fmt.Sprintf("ON CONFLICT DO NOTHING RETURNING %s, %s, %s, %s, %s, %s %s",
 			colNamespace,
 			colObjectID,
 			colRelation,
 			colUsersetNamespace,
 			colUsersetObjectID,
 			colUsersetRelation,
+			colRelationAddId,
 		))
 
 		sql, args, err := touchInserts.ToSql()
@@ -138,6 +140,7 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 			return fmt.Errorf(errUnableToWriteRelationships, err)
 		}
 
+		// TODO: add update description and comments
 		rows, err := rwt.tx.Query(ctx, sql, args...)
 		if err != nil {
 			return fmt.Errorf(errUnableToWriteRelationships, err)
@@ -160,6 +163,7 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 				&tpl.Subject.Namespace,
 				&tpl.Subject.ObjectId,
 				&tpl.Subject.Relation,
+				tpl.OptionalRId,
 			)
 			if err != nil {
 				return fmt.Errorf(errUnableToWriteRelationships, err)
@@ -191,16 +195,17 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 		// Nothing more to do.
 		return nil
 	}
-
+	//TODO: add delete description and comments
 	builder := deleteTuple.
 		Where(deleteClauses).
-		Suffix(fmt.Sprintf("RETURNING %s, %s, %s, %s, %s, %s",
+		Suffix(fmt.Sprintf("RETURNING %s, %s, %s, %s, %s, %s %s",
 			colNamespace,
 			colObjectID,
 			colRelation,
 			colUsersetNamespace,
 			colUsersetObjectID,
 			colUsersetRelation,
+			colRelationAddId,
 		))
 
 	sql, args, err := builder.
@@ -233,6 +238,7 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 			&deletedTpl.Subject.Namespace,
 			&deletedTpl.Subject.ObjectId,
 			&deletedTpl.Subject.Relation,
+			deletedTpl.OptionalRId,
 		)
 		if err != nil {
 			return fmt.Errorf(errUnableToWriteRelationships, err)
@@ -269,6 +275,7 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 	return nil
 }
 
+// TODO: delete comments and description
 func (rwt *pgReadWriteTXN) DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter) error {
 	// Add clauses for the ResourceFilter
 	query := deleteTuple.Where(sq.Eq{colNamespace: filter.ResourceType})

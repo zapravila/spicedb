@@ -143,6 +143,10 @@ func (f fakeDatastore) SnapshotReader(_ Revision) Reader {
 	return nil
 }
 
+func (f fakeDatastore) SnapshotReaderExt(_ Revision) Reader {
+	return nil
+}
+
 func (f fakeDatastore) ReadWriteTx(_ context.Context, _ TxUserFunc, _ ...options.RWTOptionsOption) (Revision, error) {
 	return nil, nil
 }

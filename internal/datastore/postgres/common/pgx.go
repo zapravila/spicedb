@@ -32,9 +32,17 @@ func NewPGXExecutor(querier DBFuncQuerier) common.ExecuteQueryFunc {
 	}
 }
 
+func NewPGXExecutorExt(querier DBFuncQuerier) common.ExecuteQueryFunc {
+	return func(ctx context.Context, sql string, args []any) ([]*corev1.RelationTuple, error) {
+		span := trace.SpanFromContext(ctx)
+		return queryTuplesExt(ctx, sql, args, span, querier)
+	}
+}
+
 // queryTuples queries tuples for the given query and transaction.
 func queryTuples(ctx context.Context, sqlStatement string, args []any, span trace.Span, tx DBFuncQuerier) ([]*corev1.RelationTuple, error) {
 	var tuples []*corev1.RelationTuple
+	log.Debug().Msgf("queryTuples. sqlStatement: %s", sqlStatement)
 	err := tx.QueryFunc(ctx, func(ctx context.Context, rows pgx.Rows) error {
 		span.AddEvent("Query issued to database")
 
@@ -54,6 +62,58 @@ func queryTuples(ctx context.Context, sqlStatement string, args []any, span trac
 				&nextTuple.Subject.Relation,
 				&caveatName,
 				&caveatCtx,
+				&nextTuple.OptionalRId,
+			)
+			if err != nil {
+				return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("scan err: %w", err))
+			}
+
+			nextTuple.Caveat, err = common.ContextualizedCaveatFrom(caveatName.String, caveatCtx)
+			if err != nil {
+				return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("unable to fetch caveat context: %w", err))
+			}
+			tuples = append(tuples, nextTuple)
+		}
+		if err := rows.Err(); err != nil {
+			return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("rows err: %w", err))
+		}
+
+		span.AddEvent("Tuples loaded", trace.WithAttributes(attribute.Int("tupleCount", len(tuples))))
+		return nil
+	}, sqlStatement, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return tuples, nil
+}
+
+// custom zapravila code
+func queryTuplesExt(ctx context.Context, sqlStatement string, args []any, span trace.Span, tx DBFuncQuerier) ([]*corev1.RelationTuple, error) {
+	var tuples []*corev1.RelationTuple
+
+	log.Debug().Msgf("queryTuplesExt. sqlStatement: %s", sqlStatement)
+	err := tx.QueryFunc(ctx, func(ctx context.Context, rows pgx.Rows) error {
+		span.AddEvent("Query issued to database")
+
+		for rows.Next() {
+			nextTuple := &corev1.RelationTuple{
+				ResourceAndRelation: &corev1.ObjectAndRelation{},
+				Subject:             &corev1.ObjectAndRelation{},
+			}
+			var caveatName sql.NullString
+			var caveatCtx map[string]any
+			err := rows.Scan(
+				&nextTuple.ResourceAndRelation.Namespace,
+				&nextTuple.ResourceAndRelation.ObjectId,
+				&nextTuple.ResourceAndRelation.Relation,
+				&nextTuple.Subject.Namespace,
+				&nextTuple.Subject.ObjectId,
+				&nextTuple.Subject.Relation,
+				&caveatName,
+				&caveatCtx,
+				&nextTuple.OptionalDescription,
+				&nextTuple.OptionalComment,
 			)
 			if err != nil {
 				return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("scan err: %w", err))

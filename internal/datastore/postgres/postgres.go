@@ -59,6 +59,9 @@ const (
 	colCaveatDefinition  = "definition"
 	colCaveatContextName = "caveat_name"
 	colCaveatContext     = "caveat_context"
+	colRelationAddId     = "r_id"
+	colDescription       = "description"
+	colComment           = "comment"
 
 	errUnableToInstantiate = "unable to instantiate datastore"
 
@@ -307,11 +310,28 @@ type pgDatastore struct {
 }
 
 func (pgd *pgDatastore) SnapshotReader(revRaw datastore.Revision) datastore.Reader {
+	log.Debug().Msgf("SnapshotReader")
 	rev := revRaw.(postgresRevision)
 
 	queryFuncs := pgxcommon.QuerierFuncsFor(pgd.readPool)
 	executor := common.QueryExecutor{
 		Executor: pgxcommon.NewPGXExecutor(queryFuncs),
+	}
+
+	return &pgReader{
+		queryFuncs,
+		executor,
+		buildLivingObjectFilterForRevision(rev),
+	}
+}
+
+func (pgd *pgDatastore) SnapshotReaderExt(revRaw datastore.Revision) datastore.Reader {
+	log.Debug().Msgf("SnapshotReaderExt postgres")
+	rev := revRaw.(postgresRevision)
+
+	queryFuncs := pgxcommon.QuerierFuncsFor(pgd.readPool)
+	executor := common.QueryExecutor{
+		Executor: pgxcommon.NewPGXExecutorExt(queryFuncs),
 	}
 
 	return &pgReader{

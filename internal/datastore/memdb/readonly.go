@@ -86,6 +86,14 @@ func mustHaveBeenClosed(iter *memdbTupleIterator) {
 	}
 }
 
+func (r *memdbReader) QueryRelationshipsExt(
+	ctx context.Context,
+	filter datastore.RelationshipsFilter,
+	opts ...options.QueryOptionsOption,
+) (datastore.RelationshipIterator, error) {
+	return r.QueryRelationships(ctx, filter, opts...)
+}
+
 // ReverseQueryRelationships reads relationships starting from the subject.
 func (r *memdbReader) ReverseQueryRelationships(
 	_ context.Context,

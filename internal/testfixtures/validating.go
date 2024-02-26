@@ -95,6 +95,13 @@ func (vsr validatingSnapshotReader) QueryRelationships(ctx context.Context,
 	return vsr.delegate.QueryRelationships(ctx, filter, opts...)
 }
 
+func (vsr validatingSnapshotReader) QueryRelationshipsExt(ctx context.Context,
+	filter datastore.RelationshipsFilter,
+	opts ...options.QueryOptionsOption,
+) (datastore.RelationshipIterator, error) {
+	return vsr.delegate.QueryRelationshipsExt(ctx, filter, opts...)
+}
+
 func (vsr validatingSnapshotReader) ReadNamespaceByName(
 	ctx context.Context,
 	nsName string,

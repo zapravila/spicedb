@@ -133,6 +133,40 @@ func (mdb *memdbDatastore) SnapshotReader(dr datastore.Revision) datastore.Reade
 	return &memdbReader{noopTryLocker{}, txSrc, nil}
 }
 
+func (mdb *memdbDatastore) SnapshotReaderExt(dr datastore.Revision) datastore.Reader {
+	mdb.RLock()
+	defer mdb.RUnlock()
+
+	if len(mdb.revisions) == 0 {
+		return &memdbReader{nil, nil, fmt.Errorf("memdb datastore is not ready")}
+	}
+
+	if err := mdb.checkRevisionLocalCallerMustLock(dr); err != nil {
+		return &memdbReader{nil, nil, err}
+	}
+
+	revIndex := sort.Search(len(mdb.revisions), func(i int) bool {
+		return mdb.revisions[i].revision.GreaterThan(dr) || mdb.revisions[i].revision.Equal(dr)
+	})
+
+	// handle the case when there is no revision snapshot newer than the requested revision
+	if revIndex == len(mdb.revisions) {
+		revIndex = len(mdb.revisions) - 1
+	}
+
+	rev := mdb.revisions[revIndex]
+	if rev.db == nil {
+		return &memdbReader{nil, nil, fmt.Errorf("memdb datastore is already closed")}
+	}
+
+	roTxn := rev.db.Txn(false)
+	txSrc := func() (*memdb.Txn, error) {
+		return roTxn, nil
+	}
+
+	return &memdbReader{noopTryLocker{}, txSrc, nil}
+}
+
 func (mdb *memdbDatastore) ReadWriteTx(
 	ctx context.Context,
 	f datastore.TxUserFunc,

@@ -5,11 +5,16 @@ package postgres
 
 import (
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
 	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
 )
+
+func TestPostgresSimple(t *testing.T) {
+	log.Println("test passed")
+}
 
 func TestPostgresDatastore(t *testing.T) {
 	t.Parallel()

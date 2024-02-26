@@ -260,6 +260,12 @@ type Reader interface {
 		options ...options.QueryOptionsOption,
 	) (RelationshipIterator, error)
 
+	QueryRelationshipsExt(
+		ctx context.Context,
+		filter RelationshipsFilter,
+		options ...options.QueryOptionsOption,
+	) (RelationshipIterator, error)
+
 	// ReverseQueryRelationships reads relationships, starting from the subject.
 	ReverseQueryRelationships(
 		ctx context.Context,
@@ -380,6 +386,8 @@ type Datastore interface {
 	// SnapshotReader creates a read-only handle that reads the datastore at the specified revision.
 	// Any errors establishing the reader will be returned by subsequent calls.
 	SnapshotReader(Revision) Reader
+
+	SnapshotReaderExt(Revision) Reader
 
 	// ReadWriteTx starts a read/write transaction, which will be committed if no error is
 	// returned and rolled back if an error is returned.

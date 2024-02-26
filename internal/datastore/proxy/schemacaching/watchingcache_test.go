@@ -487,6 +487,10 @@ func (fds *fakeDatastore) SnapshotReader(rev datastore.Revision) datastore.Reade
 	return &fakeSnapshotReader{fds, rev}
 }
 
+func (fds *fakeDatastore) SnapshotReaderExt(rev datastore.Revision) datastore.Reader {
+	return &fakeSnapshotReader{fds, rev}
+}
+
 func (fds *fakeDatastore) HeadRevision(context.Context) (datastore.Revision, error) {
 	fds.lock.RLock()
 	defer fds.lock.RUnlock()
@@ -584,6 +588,10 @@ func (fsr *fakeSnapshotReader) ListAllNamespaces(context.Context) ([]datastore.R
 }
 
 func (*fakeSnapshotReader) QueryRelationships(context.Context, datastore.RelationshipsFilter, ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+func (*fakeSnapshotReader) QueryRelationshipsExt(context.Context, datastore.RelationshipsFilter, ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
 	return nil, fmt.Errorf("not implemented")
 }
 

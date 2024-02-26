@@ -86,6 +86,11 @@ func (p *ctxProxy) SnapshotReader(rev datastore.Revision) datastore.Reader {
 	return &ctxReader{delegateReader}
 }
 
+func (p *ctxProxy) SnapshotReaderExt(rev datastore.Revision) datastore.Reader {
+	delegateReader := p.delegate.SnapshotReaderExt(rev)
+	return &ctxReader{delegateReader}
+}
+
 func (p *ctxProxy) Unwrap() datastore.Datastore {
 	return p.delegate
 }
@@ -123,6 +128,10 @@ func (r *ctxReader) ReadNamespaceByName(ctx context.Context, nsName string) (*co
 
 func (r *ctxReader) QueryRelationships(ctx context.Context, filter datastore.RelationshipsFilter, options ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
 	return r.delegate.QueryRelationships(SeparateContextWithTracing(ctx), filter, options...)
+}
+
+func (r *ctxReader) QueryRelationshipsExt(ctx context.Context, filter datastore.RelationshipsFilter, options ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
+	return r.delegate.QueryRelationshipsExt(SeparateContextWithTracing(ctx), filter, options...)
 }
 
 func (r *ctxReader) ReverseQueryRelationships(ctx context.Context, subjectsFilter datastore.SubjectsFilter, options ...options.ReverseQueryOptionsOption) (datastore.RelationshipIterator, error) {

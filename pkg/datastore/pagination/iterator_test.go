@@ -239,6 +239,20 @@ func (m *mockedReader) QueryRelationships(
 	return potentialRelIter.(datastore.RelationshipIterator), args.Error(1)
 }
 
+func (m *mockedReader) QueryRelationshipsExt(
+	_ context.Context,
+	_ datastore.RelationshipsFilter,
+	opts ...options.QueryOptionsOption,
+) (datastore.RelationshipIterator, error) {
+	queryOpts := options.NewQueryOptionsWithOptions(opts...)
+	args := m.Called(queryOpts.After, queryOpts.Sort, *queryOpts.Limit)
+	potentialRelIter := args.Get(0)
+	if potentialRelIter == nil {
+		return nil, args.Error(1)
+	}
+	return potentialRelIter.(datastore.RelationshipIterator), args.Error(1)
+}
+
 func (m *mockedReader) ReverseQueryRelationships(
 	_ context.Context,
 	_ datastore.SubjectsFilter,

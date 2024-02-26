@@ -34,6 +34,28 @@ func NewPaginatedIterator(
 	return pi, pi.err
 }
 
+func NewPaginatedIteratorExt(
+	ctx context.Context,
+	reader datastore.Reader,
+	filter datastore.RelationshipsFilter,
+	pageSize uint64,
+	order options.SortOrder,
+	startCursor options.Cursor,
+) (datastore.RelationshipIterator, error) {
+	pi := &paginatedIterator{
+		ctx:      ctx,
+		reader:   reader,
+		filter:   filter,
+		pageSize: pageSize,
+		order:    order,
+		delegate: common.NewSliceRelationshipIterator(nil, options.ByResource),
+	}
+
+	pi.startNewBatchExt(startCursor)
+
+	return pi, pi.err
+}
+
 type paginatedIterator struct {
 	ctx      context.Context
 	reader   datastore.Reader
@@ -89,6 +111,18 @@ func (pi *paginatedIterator) startNewBatch(cursor options.Cursor) {
 	pi.delegate.Close()
 	pi.returnedFromBatch = 0
 	pi.delegate, pi.err = pi.reader.QueryRelationships(
+		pi.ctx,
+		pi.filter,
+		options.WithSort(pi.order),
+		options.WithLimit(&pi.pageSize),
+		options.WithAfter(cursor),
+	)
+}
+
+func (pi *paginatedIterator) startNewBatchExt(cursor options.Cursor) {
+	pi.delegate.Close()
+	pi.returnedFromBatch = 0
+	pi.delegate, pi.err = pi.reader.QueryRelationshipsExt(
 		pi.ctx,
 		pi.filter,
 		options.WithSort(pi.order),

@@ -33,7 +33,21 @@ var (
 		colUsersetRelation,
 		colCaveatContextName,
 		colCaveatContext,
+		colRelationAddId,
 	).From(tableTuple)
+
+	queryTuplesExt = psql.Select(
+		colNamespace,
+		colObjectID,
+		colRelation,
+		colUsersetNamespace,
+		colUsersetObjectID,
+		colUsersetRelation,
+		colCaveatContextName,
+		colCaveatContext,
+		colComment,
+		colDescription,
+	).From(tableTuple).Join("relation_tuple_add_info on relation_tuple.r_id=relation_tuple_add_info.relation_tuple_id")
 
 	schema = common.NewSchemaInformation(
 		colNamespace,
@@ -62,6 +76,19 @@ func (r *pgReader) QueryRelationships(
 	opts ...options.QueryOptionsOption,
 ) (iter datastore.RelationshipIterator, err error) {
 	qBuilder, err := common.NewSchemaQueryFilterer(schema, r.filterer(queryTuples)).FilterWithRelationshipsFilter(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.executor.ExecuteQuery(ctx, qBuilder, opts...)
+}
+
+func (r *pgReader) QueryRelationshipsExt(
+	ctx context.Context,
+	filter datastore.RelationshipsFilter,
+	opts ...options.QueryOptionsOption,
+) (iter datastore.RelationshipIterator, err error) {
+	qBuilder, err := common.NewSchemaQueryFilterer(schema, r.filterer(queryTuplesExt)).FilterWithRelationshipsFilter(filter)
 	if err != nil {
 		return nil, err
 	}

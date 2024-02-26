@@ -29,6 +29,10 @@ func (p *singleflightProxy) SnapshotReader(rev datastore.Revision) datastore.Rea
 	return p.delegate.SnapshotReader(rev)
 }
 
+func (p *singleflightProxy) SnapshotReaderExt(rev datastore.Revision) datastore.Reader {
+	return p.delegate.SnapshotReaderExt(rev)
+}
+
 func (p *singleflightProxy) ReadWriteTx(ctx context.Context, f datastore.TxUserFunc, opts ...options.RWTOptionsOption) (datastore.Revision, error) {
 	return p.delegate.ReadWriteTx(ctx, f, opts...)
 }

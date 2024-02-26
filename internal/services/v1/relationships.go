@@ -10,6 +10,7 @@ import (
 	"github.com/jzelinskie/stringz"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
 
@@ -143,8 +144,8 @@ func (ps *permissionServer) ReadRelationships(req *v1.ReadRelationshipsRequest, 
 	if err != nil {
 		return ps.rewriteError(ctx, err)
 	}
-
-	ds := datastoremw.MustFromContext(ctx).SnapshotReader(atRevision)
+	log.Debug().Msg("ReadRelationships")
+	ds := datastoremw.MustFromContext(ctx).SnapshotReaderExt(atRevision)
 
 	if err := ps.checkFilterNamespaces(ctx, req.RelationshipFilter, ds); err != nil {
 		return ps.rewriteError(ctx, err)
@@ -188,7 +189,7 @@ func (ps *permissionServer) ReadRelationships(req *v1.ReadRelationshipsRequest, 
 		}
 	}
 
-	tupleIterator, err := pagination.NewPaginatedIterator(
+	tupleIterator, err := pagination.NewPaginatedIteratorExt(
 		ctx,
 		ds,
 		datastore.RelationshipsFilterFromPublicFilter(req.RelationshipFilter),

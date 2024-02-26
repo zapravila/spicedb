@@ -340,6 +340,8 @@ func MustToRelationshipMutating(source *core.RelationTuple, targetRel *v1.Relati
 		targetCaveat.Context = source.Caveat.Context
 		targetRel.OptionalCaveat = targetCaveat
 	}
+	targetRel.OptionalDescription = source.OptionalDescription
+	targetRel.OptionalComment = source.OptionalComment
 }
 
 // MustToFilter converts a RelationTuple into a RelationshipFilter. Will panic if

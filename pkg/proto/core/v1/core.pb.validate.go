@@ -166,6 +166,29 @@ func (m *RelationTuple) validate(all bool) error {
 		}
 	}
 
+	if m.OptionalRId != nil {
+
+		if m.GetOptionalRId() <= 0 {
+			err := RelationTupleValidationError{
+				field:  "OptionalRId",
+				reason: "value must be greater than 0",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.OptionalDescription != nil {
+		// no validation rules for OptionalDescription
+	}
+
+	if m.OptionalComment != nil {
+		// no validation rules for OptionalComment
+	}
+
 	if len(errors) > 0 {
 		return RelationTupleMultiError(errors)
 	}

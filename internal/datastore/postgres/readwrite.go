@@ -46,6 +46,8 @@ var (
 		colUsersetRelation,
 		colCaveatContextName,
 		colCaveatContext,
+		colDescription,
+		colComment,
 	)
 
 	deleteTuple = psql.Update(tableTuple).Where(sq.Eq{colDeletedXid: liveDeletedTxnID})
@@ -64,6 +66,8 @@ func appendForInsertion(builder sq.InsertBuilder, tpl *core.RelationTuple) sq.In
 		caveatName = tpl.Caveat.CaveatName
 		caveatContext = tpl.Caveat.Context.AsMap()
 	}
+	optionalDescription := *tpl.OptionalDescription
+	optionalComment := *tpl.OptionalComment
 
 	valuesToWrite := []interface{}{
 		tpl.ResourceAndRelation.Namespace,
@@ -74,6 +78,8 @@ func appendForInsertion(builder sq.InsertBuilder, tpl *core.RelationTuple) sq.In
 		tpl.Subject.Relation,
 		caveatName,
 		caveatContext, // PGX driver serializes map[string]any to JSONB type columns
+		optionalDescription,
+		optionalComment,
 	}
 
 	return builder.Values(valuesToWrite...)
@@ -124,13 +130,15 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 	// For each of the TOUCH operations, invoke the INSERTs, but with `ON CONFLICT DO NOTHING` to ensure
 	// that the operations over existing relationships no-op.
 	if len(touchMutationsByNonCaveat) > 0 {
-		touchInserts = touchInserts.Suffix(fmt.Sprintf("ON CONFLICT DO NOTHING RETURNING %s, %s, %s, %s, %s, %s",
+		touchInserts = touchInserts.Suffix(fmt.Sprintf("ON CONFLICT DO NOTHING RETURNING %s, %s, %s, %s, %s, %s, %s, %s",
 			colNamespace,
 			colObjectID,
 			colRelation,
 			colUsersetNamespace,
 			colUsersetObjectID,
 			colUsersetRelation,
+			colDescription,
+			colComment,
 		))
 
 		sql, args, err := touchInserts.ToSql()
@@ -160,6 +168,8 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 				&tpl.Subject.Namespace,
 				&tpl.Subject.ObjectId,
 				&tpl.Subject.Relation,
+				&tpl.OptionalDescription,
+				&tpl.OptionalComment,
 			)
 			if err != nil {
 				return fmt.Errorf(errUnableToWriteRelationships, err)
@@ -194,13 +204,15 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 
 	builder := deleteTuple.
 		Where(deleteClauses).
-		Suffix(fmt.Sprintf("RETURNING %s, %s, %s, %s, %s, %s",
+		Suffix(fmt.Sprintf("RETURNING %s, %s, %s, %s, %s, %s, %s, %s",
 			colNamespace,
 			colObjectID,
 			colRelation,
 			colUsersetNamespace,
 			colUsersetObjectID,
 			colUsersetRelation,
+			colDescription,
+			colComment,
 		))
 
 	sql, args, err := builder.
@@ -233,6 +245,8 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 			&deletedTpl.Subject.Namespace,
 			&deletedTpl.Subject.ObjectId,
 			&deletedTpl.Subject.Relation,
+			&deletedTpl.OptionalDescription,
+			&deletedTpl.OptionalComment,
 		)
 		if err != nil {
 			return fmt.Errorf(errUnableToWriteRelationships, err)
@@ -429,6 +443,14 @@ func exactRelationshipDifferentCaveatClause(r *core.RelationTuple) sq.And {
 		caveatName = r.Caveat.CaveatName
 		caveatContext = r.Caveat.Context.AsMap()
 	}
+	var optionalDescription string
+	if r.OptionalDescription != nil {
+		optionalDescription = *r.OptionalDescription
+	}
+	var optionalComment string
+	if r.OptionalComment != nil {
+		optionalComment = *r.OptionalComment
+	}
 
 	return sq.And{
 		sq.Eq{
@@ -445,6 +467,12 @@ func exactRelationshipDifferentCaveatClause(r *core.RelationTuple) sq.And {
 			},
 			sq.NotEq{
 				colCaveatContext: caveatContext,
+			},
+			sq.NotEq{
+				colDescription: optionalDescription,
+			},
+			sq.NotEq{
+				colComment: optionalComment,
 			},
 		},
 	}

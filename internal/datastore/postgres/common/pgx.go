@@ -54,6 +54,8 @@ func queryTuples(ctx context.Context, sqlStatement string, args []any, span trac
 				&nextTuple.Subject.Relation,
 				&caveatName,
 				&caveatCtx,
+				&nextTuple.OptionalDescription,
+				&nextTuple.OptionalComment,
 			)
 			if err != nil {
 				return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("scan err: %w", err))

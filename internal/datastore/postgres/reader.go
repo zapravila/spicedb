@@ -33,6 +33,8 @@ var (
 		colUsersetRelation,
 		colCaveatContextName,
 		colCaveatContext,
+		colDescription,
+		colComment,
 	).From(tableTuple)
 
 	schema = common.NewSchemaInformation(

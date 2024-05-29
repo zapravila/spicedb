@@ -12,7 +12,6 @@ import (
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/spanner"
 	"github.com/authzed/spicedb/internal/testserver"
 	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
 	"github.com/authzed/spicedb/internal/testserver/datastore/config"
@@ -28,9 +27,6 @@ type testCase struct {
 }
 
 func TestDispatchIntegration(t *testing.T) {
-	blacklist := []string{
-		spanner.Engine, // spanner emulator doesn't support parallel transactions
-	}
 
 	testCases := []testCase{
 		{
@@ -315,9 +311,6 @@ func TestDispatchIntegration(t *testing.T) {
 	}
 
 	for _, engine := range datastore.Engines {
-		if slices.Contains(blacklist, engine) {
-			continue
-		}
 		b := testdatastore.RunDatastoreEngine(t, engine)
 		t.Run(engine, func(t *testing.T) {
 			for _, tc := range testCases {

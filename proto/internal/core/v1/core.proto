@@ -16,6 +16,11 @@ message RelationTuple {
 
   /** caveat is a reference to a the caveat that must be enforced over the tuple **/
   ContextualizedCaveat caveat = 3 [(validate.rules).message.required = false];
+
+  /** r_id for reference comments  **/
+  optional uint64 optional_r_id = 4 [(validate.rules).uint64.gt = 0];
+  optional string optional_description = 5; // [ (validate.rules).string.ignore_empty = true ];
+  optional string optional_comment = 6; // [ (validate.rules).string.ignore_empty = true ];
 }
 
 /**

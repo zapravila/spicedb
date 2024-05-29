@@ -9,10 +9,7 @@ import (
 	"github.com/jzelinskie/cobrautil/v2"
 	"github.com/spf13/cobra"
 
-	crdbmigrations "github.com/authzed/spicedb/internal/datastore/crdb/migrations"
-	mysqlmigrations "github.com/authzed/spicedb/internal/datastore/mysql/migrations"
 	"github.com/authzed/spicedb/internal/datastore/postgres/migrations"
-	spannermigrations "github.com/authzed/spicedb/internal/datastore/spanner/migrations"
 	log "github.com/authzed/spicedb/internal/logging"
 	"github.com/authzed/spicedb/pkg/cmd/server"
 	"github.com/authzed/spicedb/pkg/cmd/termination"
@@ -47,16 +44,7 @@ func migrateRun(cmd *cobra.Command, args []string) error {
 	timeout := cobrautil.MustGetDuration(cmd, "migration-timeout")
 	migrationBatachSize := cobrautil.MustGetUint64(cmd, "migration-backfill-batch-size")
 
-	if datastoreEngine == "cockroachdb" {
-		log.Ctx(cmd.Context()).Info().Msg("migrating cockroachdb datastore")
-
-		var err error
-		migrationDriver, err := crdbmigrations.NewCRDBDriver(dbURL)
-		if err != nil {
-			return fmt.Errorf("unable to create migration driver for %s: %w", datastoreEngine, err)
-		}
-		return runMigration(cmd.Context(), migrationDriver, crdbmigrations.CRDBMigrations, args[0], timeout, migrationBatachSize)
-	} else if datastoreEngine == "postgres" {
+	if datastoreEngine == "postgres" {
 		log.Ctx(cmd.Context()).Info().Msg("migrating postgres datastore")
 
 		var err error
@@ -65,34 +53,6 @@ func migrateRun(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("unable to create migration driver for %s: %w", datastoreEngine, err)
 		}
 		return runMigration(cmd.Context(), migrationDriver, migrations.DatabaseMigrations, args[0], timeout, migrationBatachSize)
-	} else if datastoreEngine == "spanner" {
-		log.Ctx(cmd.Context()).Info().Msg("migrating spanner datastore")
-
-		credFile := cobrautil.MustGetStringExpanded(cmd, "datastore-spanner-credentials")
-		var err error
-		emulatorHost, err := cmd.Flags().GetString("datastore-spanner-emulator-host")
-		if err != nil {
-			log.Ctx(cmd.Context()).Fatal().Err(err).Msg("unable to get spanner emulator host")
-		}
-		migrationDriver, err := spannermigrations.NewSpannerDriver(cmd.Context(), dbURL, credFile, emulatorHost)
-		if err != nil {
-			return fmt.Errorf("unable to create migration driver for %s: %w", datastoreEngine, err)
-		}
-		return runMigration(cmd.Context(), migrationDriver, spannermigrations.SpannerMigrations, args[0], timeout, migrationBatachSize)
-	} else if datastoreEngine == "mysql" {
-		log.Ctx(cmd.Context()).Info().Msg("migrating mysql datastore")
-
-		var err error
-		tablePrefix, err := cmd.Flags().GetString("datastore-mysql-table-prefix")
-		if err != nil {
-			log.Ctx(cmd.Context()).Fatal().Msg(fmt.Sprintf("unable to get table prefix: %s", err))
-		}
-
-		migrationDriver, err := mysqlmigrations.NewMySQLDriverFromDSN(dbURL, tablePrefix)
-		if err != nil {
-			return fmt.Errorf("unable to create migration driver for %s: %w", datastoreEngine, err)
-		}
-		return runMigration(cmd.Context(), migrationDriver, mysqlmigrations.Manager, args[0], timeout, migrationBatachSize)
 	}
 
 	return fmt.Errorf("cannot migrate datastore engine type: %s", datastoreEngine)
@@ -144,14 +104,8 @@ func NewHeadCommand(programName string) *cobra.Command {
 // HeadRevision returns the latest migration revision for a given engine
 func HeadRevision(engine string) (string, error) {
 	switch engine {
-	case "cockroachdb":
-		return crdbmigrations.CRDBMigrations.HeadRevision()
 	case "postgres":
 		return migrations.DatabaseMigrations.HeadRevision()
-	case "mysql":
-		return mysqlmigrations.Manager.HeadRevision()
-	case "spanner":
-		return spannermigrations.SpannerMigrations.HeadRevision()
 	default:
 		return "", fmt.Errorf("cannot migrate datastore engine type: %s", engine)
 	}

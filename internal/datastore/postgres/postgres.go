@@ -59,6 +59,8 @@ const (
 	colCaveatDefinition  = "definition"
 	colCaveatContextName = "caveat_name"
 	colCaveatContext     = "caveat_context"
+	colDescription       = "description"
+	colComment           = "comment"
 
 	errUnableToInstantiate = "unable to instantiate datastore"
 

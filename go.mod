@@ -1,4 +1,4 @@
-module github.com/authzed/spicedb-zprvl
+module github.com/zapravila/spicedb-zprvl
 
 go 1.21
 

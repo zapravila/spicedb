@@ -15,16 +15,16 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	expand "github.com/authzed/spicedb/internal/graph"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/pkg/graph"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/testutil"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	expand "github.com/zapravila/spicedb/internal/graph"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/pkg/graph"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 func DS(objectType string, objectID string, objectRelation string) *core.DirectSubject {

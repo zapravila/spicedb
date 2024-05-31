@@ -5,10 +5,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/caveats"
-	caveattypes "github.com/authzed/spicedb/pkg/caveats/types"
-	ns "github.com/authzed/spicedb/pkg/namespace"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/caveats"
+	caveattypes "github.com/zapravila/spicedb/pkg/caveats/types"
+	ns "github.com/zapravila/spicedb/pkg/namespace"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 func TestValidateCaveatDefinition(t *testing.T) {

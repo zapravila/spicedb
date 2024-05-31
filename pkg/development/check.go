@@ -3,10 +3,10 @@ package development
 import (
 	v1api "github.com/authzed/authzed-go/proto/authzed/api/v1"
 
-	"github.com/authzed/spicedb/internal/graph/computed"
-	v1 "github.com/authzed/spicedb/internal/services/v1"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v1dispatch "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/graph/computed"
+	v1 "github.com/zapravila/spicedb/internal/services/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v1dispatch "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 // CheckResult is the result of a RunCheck operation.

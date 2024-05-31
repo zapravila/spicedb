@@ -13,12 +13,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/services/shared"
-	"github.com/authzed/spicedb/pkg/cursor"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	log "github.com/zapravila/spicedb/internal/logging"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/services/shared"
+	"github.com/zapravila/spicedb/pkg/cursor"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 )
 
 var ConsistentyCounter = promauto.NewCounterVec(prometheus.CounterOpts{

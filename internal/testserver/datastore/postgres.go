@@ -15,10 +15,10 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/stretchr/testify/require"
 
-	pgmigrations "github.com/authzed/spicedb/internal/datastore/postgres/migrations"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/migrate"
-	"github.com/authzed/spicedb/pkg/secrets"
+	pgmigrations "github.com/zapravila/spicedb/internal/datastore/postgres/migrations"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/migrate"
+	"github.com/zapravila/spicedb/pkg/secrets"
 )
 
 const (
@@ -189,7 +189,7 @@ func (b *postgresTester) runPgbouncerForTesting(t testing.TB, pool *dockertest.P
 			"AUTH_TYPE=md5", // use the same auth type as postgres
 			"MAX_CLIENT_CONN=" + POSTGRES_TEST_MAX_CONNECTIONS,
 			// params needed for spicedb
-			"POOL_MODE=session",                         // https://github.com/authzed/spicedb/issues/1217
+			"POOL_MODE=session",                         // https://github.com/zapravila/spicedb/issues/1217
 			"IGNORE_STARTUP_PARAMETERS=plan_cache_mode", // Tell pgbouncer to pass this param thru to postgres.
 		},
 		ExposedPorts: []string{PGBOUNCER_TEST_PORT + "/tcp"},

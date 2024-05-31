@@ -12,7 +12,7 @@ import (
 	"github.com/pbnjay/memory"
 	"github.com/spf13/pflag"
 
-	"github.com/authzed/spicedb/pkg/cache"
+	"github.com/zapravila/spicedb/pkg/cache"
 )
 
 // Factor by which we will extend the maximum amount of expected needed TTL

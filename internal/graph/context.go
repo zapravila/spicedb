@@ -5,8 +5,8 @@ import (
 
 	"go.opentelemetry.io/otel/trace"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
+	log "github.com/zapravila/spicedb/internal/logging"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
 )
 
 // branchContext returns a context disconnected from the parent context, but populated with the datastore.

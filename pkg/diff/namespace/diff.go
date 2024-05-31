@@ -5,12 +5,12 @@ import (
 	"golang.org/x/exp/slices"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	nsinternal "github.com/authzed/spicedb/internal/namespace"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	nspkg "github.com/authzed/spicedb/pkg/namespace"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	iv1 "github.com/authzed/spicedb/pkg/proto/impl/v1"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	nsinternal "github.com/zapravila/spicedb/internal/namespace"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	nspkg "github.com/zapravila/spicedb/pkg/namespace"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	iv1 "github.com/zapravila/spicedb/pkg/proto/impl/v1"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // DeltaType defines the type of namespace deltas.

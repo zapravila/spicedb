@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 var ParseRevisionString = revisions.RevisionParser(revisions.Timestamp)

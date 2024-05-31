@@ -12,10 +12,10 @@ import (
 
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/tuple"
+	log "github.com/zapravila/spicedb/internal/logging"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 // SerializationError is returned when there's been a serialization

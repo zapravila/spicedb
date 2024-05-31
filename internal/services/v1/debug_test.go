@@ -16,14 +16,14 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	tf "github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/internal/testserver"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	tf "github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/internal/testserver"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 )
 
 type debugCheckRequest struct {

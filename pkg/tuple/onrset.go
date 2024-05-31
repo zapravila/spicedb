@@ -5,7 +5,7 @@ import (
 
 	expmaps "golang.org/x/exp/maps"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // ONRSet is a set of ObjectAndRelation's.

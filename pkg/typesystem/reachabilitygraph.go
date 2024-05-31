@@ -10,8 +10,8 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"golang.org/x/exp/maps"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 // ReachabilityGraph is a helper struct that provides an easy way to determine all entrypoints

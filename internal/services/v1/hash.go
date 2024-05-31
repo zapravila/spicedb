@@ -6,9 +6,9 @@ import (
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/authzed/spicedb/pkg/caveats"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/caveats"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 func computeBulkCheckPermissionItemHashWithoutResourceID(req *v1.BulkCheckPermissionRequestItem) (string, error) {

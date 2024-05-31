@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // ObjectAndRelation creates an ONR from string pieces.

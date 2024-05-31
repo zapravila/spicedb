@@ -3,9 +3,9 @@ package caching
 import (
 	"context"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 const errMessage = "fake delegate should never be called, call SetDelegate on the parent dispatcher"

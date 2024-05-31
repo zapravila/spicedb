@@ -22,13 +22,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 
-	"github.com/authzed/spicedb/e2e"
-	"github.com/authzed/spicedb/e2e/cockroach"
-	"github.com/authzed/spicedb/e2e/generator"
-	"github.com/authzed/spicedb/e2e/spice"
+	"github.com/zapravila/spicedb/e2e"
+	"github.com/zapravila/spicedb/e2e/cockroach"
+	"github.com/zapravila/spicedb/e2e/generator"
+	"github.com/zapravila/spicedb/e2e/spice"
 )
 
 type NamespaceNames struct {

@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // Public facing errors

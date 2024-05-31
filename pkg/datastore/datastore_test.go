@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/authzed/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
 
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"

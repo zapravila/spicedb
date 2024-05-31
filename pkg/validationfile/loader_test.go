@@ -5,11 +5,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/datastore/proxy/proxy_test"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	"github.com/zapravila/spicedb/internal/datastore/proxy/proxy_test"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/tuple"
 
 	"github.com/stretchr/testify/require"
 )

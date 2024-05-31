@@ -6,17 +6,17 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	"github.com/authzed/spicedb/internal/namespace"
-	"github.com/authzed/spicedb/pkg/caveats"
-	caveattypes "github.com/authzed/spicedb/pkg/caveats/types"
-	"github.com/authzed/spicedb/pkg/datastore"
-	ns "github.com/authzed/spicedb/pkg/namespace"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	"github.com/zapravila/spicedb/internal/namespace"
+	"github.com/zapravila/spicedb/pkg/caveats"
+	caveattypes "github.com/zapravila/spicedb/pkg/caveats/types"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	ns "github.com/zapravila/spicedb/pkg/namespace"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 var UserNS = ns.Namespace("user")

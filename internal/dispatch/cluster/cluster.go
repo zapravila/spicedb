@@ -3,11 +3,11 @@ package cluster
 import (
 	"time"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/dispatch/caching"
-	"github.com/authzed/spicedb/internal/dispatch/graph"
-	"github.com/authzed/spicedb/internal/dispatch/keys"
-	"github.com/authzed/spicedb/pkg/cache"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/dispatch/caching"
+	"github.com/zapravila/spicedb/internal/dispatch/graph"
+	"github.com/zapravila/spicedb/internal/dispatch/keys"
+	"github.com/zapravila/spicedb/pkg/cache"
 )
 
 // Option is a function-style option for configuring a combined Dispatcher.

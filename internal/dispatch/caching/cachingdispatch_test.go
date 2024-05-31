@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 type checkRequest struct {

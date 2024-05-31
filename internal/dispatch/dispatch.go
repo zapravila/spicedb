@@ -6,8 +6,8 @@ import (
 
 	"github.com/rs/zerolog"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	log "github.com/zapravila/spicedb/internal/logging"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 // ReadyState represents the ready state of the dispatcher.

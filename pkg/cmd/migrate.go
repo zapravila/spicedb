@@ -9,12 +9,12 @@ import (
 	"github.com/jzelinskie/cobrautil/v2"
 	"github.com/spf13/cobra"
 
-	"github.com/authzed/spicedb/internal/datastore/postgres/migrations"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/termination"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/migrate"
+	"github.com/zapravila/spicedb/internal/datastore/postgres/migrations"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/termination"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/migrate"
 )
 
 func RegisterMigrateFlags(cmd *cobra.Command) {

@@ -8,10 +8,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/caveats"
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/testfixtures"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/internal/caveats"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	"github.com/zapravila/spicedb/internal/testfixtures"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 var (

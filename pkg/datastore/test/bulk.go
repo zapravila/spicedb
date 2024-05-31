@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/pkg/datastore"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 func BulkUploadTest(t *testing.T, tester DatastoreTester) {

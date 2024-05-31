@@ -11,12 +11,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/dispatch/graph"
-	"github.com/authzed/spicedb/internal/services/integrationtesting/consistencytestutil"
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
-	"github.com/authzed/spicedb/internal/testserver/datastore/config"
-	dsconfig "github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/dispatch/graph"
+	"github.com/zapravila/spicedb/internal/services/integrationtesting/consistencytestutil"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
+	"github.com/zapravila/spicedb/internal/testserver/datastore/config"
+	dsconfig "github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 func TestConsistencyPerDatastore(t *testing.T) {

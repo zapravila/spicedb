@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/caveats"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/validationfile/blocks"
+	"github.com/zapravila/spicedb/internal/caveats"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/validationfile/blocks"
 )
 
 func cfs(subjectType string, subjectID string, subjectRel string, excludedSubjectIDs []string, caveatName string) FoundSubject {

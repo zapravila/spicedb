@@ -11,7 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/authzed/spicedb/e2e"
+	"github.com/zapravila/spicedb/e2e"
 )
 
 //go:generate go run github.com/ecordell/optgen -output cockroach_options.go . Cockroach

@@ -10,10 +10,10 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 var (

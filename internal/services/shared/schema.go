@@ -3,17 +3,17 @@ package shared
 import (
 	"context"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/internal/namespace"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	caveatdiff "github.com/authzed/spicedb/pkg/diff/caveats"
-	nsdiff "github.com/authzed/spicedb/pkg/diff/namespace"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/internal/namespace"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	caveatdiff "github.com/zapravila/spicedb/pkg/diff/caveats"
+	nsdiff "github.com/zapravila/spicedb/pkg/diff/namespace"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // ValidatedSchemaChanges is a set of validated schema changes that can be applied to the datastore.

@@ -9,14 +9,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/pkg/datastore"
-	ns "github.com/authzed/spicedb/pkg/namespace"
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/generator"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
-	"github.com/authzed/spicedb/pkg/testutil"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	ns "github.com/zapravila/spicedb/pkg/namespace"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/generator"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 var (

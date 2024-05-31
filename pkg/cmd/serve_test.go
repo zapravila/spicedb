@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
 )
 
 // Run a serve command with specified command line args

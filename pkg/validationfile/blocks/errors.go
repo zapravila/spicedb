@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 var (

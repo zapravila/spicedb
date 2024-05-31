@@ -1,10 +1,10 @@
 package revisionparsing
 
 import (
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/datastore/postgres"
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	"github.com/zapravila/spicedb/internal/datastore/postgres"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 // ParsingFunc is a function that can parse a string into a revision.
@@ -13,7 +13,7 @@ type ParsingFunc func(revisionStr string) (rev datastore.Revision, err error)
 // ParseRevisionStringByDatastoreEngineID defines a map from datastore engine ID to its associated
 // revision parsing function.
 var ParseRevisionStringByDatastoreEngineID = map[string]ParsingFunc{
-	memdb.Engine: ParsingFunc(memdb.ParseRevisionString),
+	memdb.Engine:    ParsingFunc(memdb.ParseRevisionString),
 	postgres.Engine: ParsingFunc(postgres.ParseRevisionString),
 }
 

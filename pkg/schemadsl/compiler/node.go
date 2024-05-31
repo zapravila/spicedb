@@ -4,9 +4,9 @@ import (
 	"container/list"
 	"fmt"
 
-	"github.com/authzed/spicedb/pkg/schemadsl/dslshape"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
-	"github.com/authzed/spicedb/pkg/schemadsl/parser"
+	"github.com/zapravila/spicedb/pkg/schemadsl/dslshape"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/schemadsl/parser"
 )
 
 type dslNode struct {

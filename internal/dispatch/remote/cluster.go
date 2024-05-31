@@ -15,11 +15,11 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/dispatch/keys"
-	log "github.com/authzed/spicedb/internal/logging"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/dispatch/keys"
+	log "github.com/zapravila/spicedb/internal/logging"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 var dispatchCounter = prometheus.NewCounterVec(prometheus.CounterOpts{

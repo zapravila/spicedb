@@ -9,9 +9,9 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/services/health"
-	v1svc "github.com/authzed/spicedb/internal/services/v1"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/services/health"
+	v1svc "github.com/zapravila/spicedb/internal/services/v1"
 )
 
 // SchemaServiceOption defines the options for enabling or disabling the V1 Schema service.

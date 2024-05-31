@@ -5,10 +5,10 @@ import (
 
 	v1t "github.com/authzed/authzed-go/proto/authzed/api/v1"
 
-	devinterface "github.com/authzed/spicedb/pkg/proto/developer/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/validationfile/blocks"
+	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/validationfile/blocks"
 )
 
 const maxDispatchDepth = 25

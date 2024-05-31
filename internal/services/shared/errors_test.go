@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	dispatchv1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 func TestRewriteCanceledError(t *testing.T) {

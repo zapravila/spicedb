@@ -14,22 +14,22 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/authzed/spicedb/internal/datastore/common"
-	pgcommon "github.com/authzed/spicedb/internal/datastore/postgres/common"
-	pgversion "github.com/authzed/spicedb/internal/datastore/postgres/version"
-	"github.com/authzed/spicedb/internal/testfixtures"
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/test"
-	"github.com/authzed/spicedb/pkg/migrate"
-	"github.com/authzed/spicedb/pkg/namespace"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/samber/lo"
 	"github.com/scylladb/go-set/strset"
 	"github.com/stretchr/testify/require"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	pgcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
+	pgversion "github.com/zapravila/spicedb/internal/datastore/postgres/version"
+	"github.com/zapravila/spicedb/internal/testfixtures"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/test"
+	"github.com/zapravila/spicedb/pkg/migrate"
+	"github.com/zapravila/spicedb/pkg/namespace"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -940,7 +940,7 @@ func OverlappingRevisionWatchTest(t *testing.T, ds datastore.Datastore) {
 	nexttx := prev.snapshot.xmax + 1
 
 	// Manually construct an equivalent of overlapping transactions in the database, from the repro
-	// information (See: https://github.com/authzed/spicedb/issues/1272)
+	// information (See: https://github.com/zapravila/spicedb/issues/1272)
 	err = pgx.BeginTxFunc(ctx, pds.writePool, pgx.TxOptions{IsoLevel: pgx.Serializable}, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, fmt.Sprintf(
 			`INSERT INTO %s ("%s", "%s") VALUES ('%d', '%d:%d:')`,

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 // TransactionIDRevision is a revision that is a transaction ID.

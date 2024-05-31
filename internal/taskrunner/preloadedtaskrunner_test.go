@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/authzed/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/testutil"
 
 	"github.com/stretchr/testify/require"
 

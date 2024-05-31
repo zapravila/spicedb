@@ -4,13 +4,13 @@ import (
 	"encoding/hex"
 	"hash/fnv"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 
 	"github.com/dalzilio/rudd"
 
-	"github.com/authzed/spicedb/pkg/graph"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/graph"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 const computedKeyPrefix = "%"

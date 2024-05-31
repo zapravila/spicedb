@@ -7,8 +7,8 @@ package developerv1
 import (
 	fmt "fmt"
 	v12 "github.com/authzed/authzed-go/proto/authzed/api/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v11 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v11 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	structpb1 "github.com/planetscale/vtprotobuf/types/known/structpb"
 	proto "google.golang.org/protobuf/proto"

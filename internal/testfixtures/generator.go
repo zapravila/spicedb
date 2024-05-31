@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/authzed/spicedb/pkg/datastore"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 const (

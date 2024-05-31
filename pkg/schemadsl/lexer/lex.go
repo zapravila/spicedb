@@ -9,7 +9,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
 )
 
 const EOFRUNE = -1

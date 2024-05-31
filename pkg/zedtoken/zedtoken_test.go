@@ -8,8 +8,8 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 var encodeRevisionTests = []datastore.Revision{

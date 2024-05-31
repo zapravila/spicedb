@@ -7,9 +7,9 @@ import (
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	"github.com/authzed/spicedb/pkg/datastore"
-	dispatch "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	dispatch "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 var (

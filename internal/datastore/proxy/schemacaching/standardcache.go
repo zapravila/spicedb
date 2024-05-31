@@ -6,15 +6,15 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 
 	"golang.org/x/sync/singleflight"
 
-	internaldatastore "github.com/authzed/spicedb/internal/datastore"
-	"github.com/authzed/spicedb/pkg/cache"
-	"github.com/authzed/spicedb/pkg/datastore"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	internaldatastore "github.com/zapravila/spicedb/internal/datastore"
+	"github.com/zapravila/spicedb/pkg/cache"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // definitionCachingProxy is a datastore proxy that caches schema (namespaces and caveat definitions)

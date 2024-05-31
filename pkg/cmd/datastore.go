@@ -7,12 +7,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/termination"
-	dspkg "github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/termination"
+	dspkg "github.com/zapravila/spicedb/pkg/datastore"
 )
 
 func RegisterDatastoreRootFlags(_ *cobra.Command) {

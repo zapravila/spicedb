@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/cmd/util"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	"github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/cmd/util"
 
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"

@@ -3,7 +3,7 @@ package tuple
 import (
 	"github.com/samber/lo"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // ONRByTypeSet is a set of ObjectAndRelation's, grouped by namespace+relation.

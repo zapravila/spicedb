@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 func TestDecodeValidationFile(t *testing.T) {

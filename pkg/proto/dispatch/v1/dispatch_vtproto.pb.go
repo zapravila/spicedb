@@ -6,7 +6,7 @@ package dispatchv1
 
 import (
 	fmt "fmt"
-	v1 "github.com/authzed/spicedb/pkg/proto/core/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	durationpb1 "github.com/planetscale/vtprotobuf/types/known/durationpb"
 	structpb1 "github.com/planetscale/vtprotobuf/types/known/structpb"

@@ -18,13 +18,13 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	tf "github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/internal/testserver"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	tf "github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/internal/testserver"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 )
 
 func TestReadRelationships(t *testing.T) {

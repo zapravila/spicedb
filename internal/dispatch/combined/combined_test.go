@@ -6,12 +6,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/testfixtures"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	dispatchv1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/testfixtures"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 func TestCombinedRecursiveCall(t *testing.T) {

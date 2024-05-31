@@ -2,7 +2,7 @@
 // prioritize development of SpiceDB.
 //
 // For more information, see:
-// https://github.com/authzed/spicedb/blob/main/TELEMETRY.md
+// https://github.com/zapravila/spicedb/blob/main/TELEMETRY.md
 package telemetry
 
 import (
@@ -24,8 +24,8 @@ import (
 	"github.com/prometheus/common/expfmt"
 	"github.com/prometheus/common/model"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/x509util"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/x509util"
 )
 
 const (

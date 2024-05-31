@@ -8,8 +8,8 @@ import (
 	"github.com/benbjohnson/clock"
 	"github.com/stretchr/testify/require"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/datastore"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 func TestRemoteClockOptimizedRevisions(t *testing.T) {

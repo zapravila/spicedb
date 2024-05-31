@@ -9,14 +9,14 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/middleware/usagemetrics"
-	"github.com/authzed/spicedb/internal/services/shared"
-	"github.com/authzed/spicedb/pkg/datastore"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	dispatchv1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/middleware/usagemetrics"
+	"github.com/zapravila/spicedb/internal/services/shared"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 )
 
 type watchServer struct {

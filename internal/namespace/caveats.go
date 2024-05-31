@@ -5,10 +5,10 @@ import (
 
 	"golang.org/x/exp/maps"
 
-	"github.com/authzed/spicedb/pkg/caveats"
-	caveattypes "github.com/authzed/spicedb/pkg/caveats/types"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	"github.com/zapravila/spicedb/pkg/caveats"
+	caveattypes "github.com/zapravila/spicedb/pkg/caveats/types"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // ValidateCaveatDefinition validates the parameters and types within the given caveat

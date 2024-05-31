@@ -9,12 +9,12 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/tuple"
 
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 var Engines []string

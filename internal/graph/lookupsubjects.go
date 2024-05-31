@@ -7,17 +7,17 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/authzed/spicedb/internal/datasets"
-	"github.com/authzed/spicedb/internal/dispatch"
-	log "github.com/authzed/spicedb/internal/logging"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/namespace"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	"github.com/authzed/spicedb/pkg/genutil/slicez"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/datasets"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	log "github.com/zapravila/spicedb/internal/logging"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/namespace"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	"github.com/zapravila/spicedb/pkg/genutil/slicez"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 // ValidatedLookupSubjectsRequest represents a request after it has been validated and parsed for internal

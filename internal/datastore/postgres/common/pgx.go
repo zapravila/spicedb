@@ -17,9 +17,9 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	log "github.com/authzed/spicedb/internal/logging"
-	corev1 "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	log "github.com/zapravila/spicedb/internal/logging"
+	corev1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 const errUnableToQueryTuples = "unable to query tuples: %w"

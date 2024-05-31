@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/datastore/postgres"
-	"github.com/authzed/spicedb/internal/datastore/proxy"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/validationfile"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	"github.com/zapravila/spicedb/internal/datastore/postgres"
+	"github.com/zapravila/spicedb/internal/datastore/proxy"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/validationfile"
 )
 
 type engineBuilderFunc func(ctx context.Context, options Config) (datastore.Datastore, error)
@@ -352,7 +352,6 @@ func NewDatastore(ctx context.Context, options ...ConfigOption) (datastore.Datas
 	return ds, nil
 }
 
-
 func newPostgresDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
 	pgOpts := []postgres.Option{
 		postgres.GCWindow(opts.GCWindow),
@@ -382,7 +381,6 @@ func newPostgresDatastore(ctx context.Context, opts Config) (datastore.Datastore
 	}
 	return postgres.NewPostgresDatastore(ctx, opts.URI, pgOpts...)
 }
-
 
 func newMemoryDatstore(_ context.Context, opts Config) (datastore.Datastore, error) {
 	log.Warn().Msg("in-memory datastore is not persistent and not feasible to run in a high availability fashion")

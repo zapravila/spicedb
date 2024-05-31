@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
 )
 
 func TestPostgresSimple(t *testing.T) {

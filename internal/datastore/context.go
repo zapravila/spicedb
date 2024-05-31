@@ -5,11 +5,11 @@ import (
 
 	"go.opentelemetry.io/otel/trace"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	"github.com/authzed/spicedb/pkg/datastore/test"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/datastore/test"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // SeparateContextWithTracing is a utility method which allows for severing the

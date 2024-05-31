@@ -12,8 +12,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"google.golang.org/grpc"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	dispatch "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	log "github.com/zapravila/spicedb/internal/logging"
+	dispatch "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 var (

@@ -14,10 +14,10 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/dispatch/keys"
-	"github.com/authzed/spicedb/pkg/cache"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/dispatch/keys"
+	"github.com/zapravila/spicedb/pkg/cache"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 const (

@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/taskrunner"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/taskrunner"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 // cursorInformation is a struct which holds information about the current incoming cursor (if any)

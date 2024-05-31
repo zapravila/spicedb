@@ -4,9 +4,9 @@ import (
 	"sort"
 	"strings"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 // NewFoundSubject creates a new FoundSubject for a subject and a set of its resources.

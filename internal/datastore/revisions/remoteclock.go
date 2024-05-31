@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // RemoteNowFunction queries the datastore to get a current revision.

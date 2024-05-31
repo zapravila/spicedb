@@ -7,11 +7,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/authzed/spicedb/internal/telemetry"
-	"github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/termination"
-	"github.com/authzed/spicedb/pkg/cmd/util"
+	"github.com/zapravila/spicedb/internal/telemetry"
+	"github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/termination"
+	"github.com/zapravila/spicedb/pkg/cmd/util"
 )
 
 const PresharedKeyFlag = "grpc-preshared-key"

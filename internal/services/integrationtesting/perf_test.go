@@ -5,7 +5,6 @@ package integrationtesting_test
 
 import (
 	"context"
-	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -13,14 +12,14 @@ import (
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
 
-	tf "github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/internal/testserver"
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
-	"github.com/authzed/spicedb/internal/testserver/datastore/config"
-	dsconfig "github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	tf "github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/internal/testserver"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
+	"github.com/zapravila/spicedb/internal/testserver/datastore/config"
+	dsconfig "github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 )
 
 func TestBurst(t *testing.T) {

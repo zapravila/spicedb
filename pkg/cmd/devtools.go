@@ -25,10 +25,10 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	v0svc "github.com/authzed/spicedb/internal/services/v0"
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/termination"
+	log "github.com/zapravila/spicedb/internal/logging"
+	v0svc "github.com/zapravila/spicedb/internal/services/v0"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/termination"
 )
 
 func RegisterDevtoolsFlags(cmd *cobra.Command) {

@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/caveats"
-	"github.com/authzed/spicedb/internal/testutil"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/caveats"
+	"github.com/zapravila/spicedb/internal/testutil"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 var (

@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/postgres"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/datastore/postgres"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 func createEngine(engineID string, uri string) error {

@@ -12,16 +12,16 @@ import (
 	"github.com/stretchr/testify/require"
 
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/services/integrationtesting/consistencytestutil"
-	"github.com/authzed/spicedb/internal/testserver"
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
-	"github.com/authzed/spicedb/internal/testserver/datastore/config"
-	dsconfig "github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/datastore"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/validationfile"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/services/integrationtesting/consistencytestutil"
+	"github.com/zapravila/spicedb/internal/testserver"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
+	"github.com/zapravila/spicedb/internal/testserver/datastore/config"
+	dsconfig "github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/validationfile"
 )
 
 //go:embed benchconfigs/*.yaml testconfigs/*.yaml

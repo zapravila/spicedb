@@ -22,14 +22,14 @@ import (
 	"go.opentelemetry.io/otel"
 	"golang.org/x/sync/errgroup"
 
-	datastoreinternal "github.com/authzed/spicedb/internal/datastore"
-	"github.com/authzed/spicedb/internal/datastore/common"
-	pgxcommon "github.com/authzed/spicedb/internal/datastore/postgres/common"
-	"github.com/authzed/spicedb/internal/datastore/postgres/migrations"
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
+	datastoreinternal "github.com/zapravila/spicedb/internal/datastore"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
+	"github.com/zapravila/spicedb/internal/datastore/postgres/migrations"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
 )
 
 func init() {

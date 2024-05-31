@@ -14,9 +14,9 @@ import (
 	dto "github.com/prometheus/client_model/go"
 	"golang.org/x/sync/errgroup"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/internal/middleware/usagemetrics"
-	"github.com/authzed/spicedb/pkg/datastore"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/internal/middleware/usagemetrics"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 // RegisterTelemetryCollector registers a collector for the various pieces of

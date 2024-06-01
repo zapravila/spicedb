@@ -3,6 +3,7 @@ package authzed.api.v1;
 
 option go_package = "github.com/authzed/authzed-go/proto/authzed/api/v1";
 option java_package = "com.authzed.api.v1";
+option java_multiple_files = true;
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
@@ -46,6 +47,8 @@ message WatchRequest {
 
   // optional_relationship_filters, if specified, indicates the
   // filter(s) to apply to each relationship to be returned by watch.
+  // The relationship will be returned as long as at least one filter matches,
+  // this allows clients to match relationships on multiple filters on a single watch call.
   // If specified, optional_object_types cannot be used.
   repeated RelationshipFilter optional_relationship_filters = 3;
 }

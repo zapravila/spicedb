@@ -1,7 +1,7 @@
 package development
 
 import (
-	v1api "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1api "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/internal/graph/computed"
 	v1 "github.com/zapravila/spicedb/internal/services/v1"

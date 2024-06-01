@@ -8,18 +8,17 @@ import (
 	"os/signal"
 	"time"
 
-	v0 "github.com/authzed/authzed-go/proto/authzed/api/v0"
 	"github.com/authzed/grpcutil"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/go-logr/zerologr"
 	grpclog "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	grpcprom "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/jzelinskie/cobrautil/v2"
 	"github.com/jzelinskie/cobrautil/v2/cobragrpc"
 	"github.com/jzelinskie/cobrautil/v2/cobrahttp"
 	"github.com/jzelinskie/stringz"
 	"github.com/spf13/cobra"
+	v0 "github.com/zapravila/authzed-go/proto/authzed/api/v0"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -57,12 +56,13 @@ func NewDevtoolsCommand(programName string) *cobra.Command {
 }
 
 func runfunc(cmd *cobra.Command, _ []string) error {
+	grpcUnaryInterceptor, _ := server.GRPCMetrics(false)
 	grpcBuilder := grpcServiceBuilder()
 	grpcServer, err := grpcBuilder.ServerFromFlags(cmd,
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.ChainUnaryInterceptor(
 			grpclog.UnaryServerInterceptor(server.InterceptorLogger(log.Logger)),
-			otelgrpc.UnaryServerInterceptor(), // nolint: staticcheck
-			grpcprom.UnaryServerInterceptor,
+			grpcUnaryInterceptor,
 		))
 	if err != nil {
 		log.Ctx(cmd.Context()).Fatal().Err(err).Msg("failed to create gRPC server")

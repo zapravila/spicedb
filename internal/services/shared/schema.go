@@ -12,16 +12,18 @@ import (
 	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 	"github.com/zapravila/spicedb/pkg/tuple"
 	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // ValidatedSchemaChanges is a set of validated schema changes that can be applied to the datastore.
 type ValidatedSchemaChanges struct {
-	compiled          *compiler.CompiledSchema
-	newCaveatDefNames *mapz.Set[string]
-	newObjectDefNames *mapz.Set[string]
-	additiveOnly      bool
+	compiled             *compiler.CompiledSchema
+	validatedTypeSystems map[string]*typesystem.ValidatedNamespaceTypeSystem
+	newCaveatDefNames    *mapz.Set[string]
+	newObjectDefNames    *mapz.Set[string]
+	additiveOnly         bool
 }
 
 // ValidateSchemaChanges validates the schema found in the compiled schema and returns a
@@ -39,6 +41,8 @@ func ValidateSchemaChanges(ctx context.Context, compiled *compiler.CompiledSchem
 
 	// 2) Validate the namespaces defined.
 	newObjectDefNames := mapz.NewSet[string]()
+	validatedTypeSystems := make(map[string]*typesystem.ValidatedNamespaceTypeSystem, len(compiled.ObjectDefinitions))
+
 	for _, nsdef := range compiled.ObjectDefinitions {
 		ts, err := typesystem.NewNamespaceTypeSystem(nsdef,
 			typesystem.ResolverForPredefinedDefinitions(typesystem.PredefinedElements{
@@ -54,18 +58,16 @@ func ValidateSchemaChanges(ctx context.Context, compiled *compiler.CompiledSchem
 			return nil, err
 		}
 
-		if err := namespace.AnnotateNamespace(vts); err != nil {
-			return nil, err
-		}
-
+		validatedTypeSystems[nsdef.Name] = vts
 		newObjectDefNames.Insert(nsdef.Name)
 	}
 
 	return &ValidatedSchemaChanges{
-		compiled:          compiled,
-		newCaveatDefNames: newCaveatDefNames,
-		newObjectDefNames: newObjectDefNames,
-		additiveOnly:      additiveOnly,
+		compiled:             compiled,
+		validatedTypeSystems: validatedTypeSystems,
+		newCaveatDefNames:    newCaveatDefNames,
+		newObjectDefNames:    newObjectDefNames,
+		additiveOnly:         additiveOnly,
 	}, nil
 }
 
@@ -73,7 +75,7 @@ func ValidateSchemaChanges(ctx context.Context, compiled *compiler.CompiledSchem
 type AppliedSchemaChanges struct {
 	// TotalOperationCount holds the total number of "dispatch" operations performed by the schema
 	// being applied.
-	TotalOperationCount uint32
+	TotalOperationCount int
 
 	// NewObjectDefNames contains the names of the newly added object definitions.
 	NewObjectDefNames []string
@@ -156,6 +158,15 @@ func ApplySchemaChangesOverExisting(
 
 		if len(diff.Deltas()) > 0 {
 			objectDefsWithChanges = append(objectDefsWithChanges, nsdef)
+
+			vts, ok := validated.validatedTypeSystems[nsdef.Name]
+			if !ok {
+				return nil, spiceerrors.MustBugf("validated type system not found for namespace `%s`", nsdef.Name)
+			}
+
+			if err := namespace.AnnotateNamespace(vts); err != nil {
+				return nil, err
+			}
 		}
 	}
 
@@ -218,7 +229,7 @@ func ApplySchemaChangesOverExisting(
 		Msg("completed schema update")
 
 	return &AppliedSchemaChanges{
-		TotalOperationCount:   uint32(len(validated.compiled.ObjectDefinitions) + len(validated.compiled.CaveatDefinitions) + removedObjectDefNames.Len() + removedCaveatDefNames.Len()),
+		TotalOperationCount:   len(validated.compiled.ObjectDefinitions) + len(validated.compiled.CaveatDefinitions) + removedObjectDefNames.Len() + removedCaveatDefNames.Len(),
 		NewObjectDefNames:     validated.newObjectDefNames.Subtract(existingObjectDefNames).AsSlice(),
 		RemovedObjectDefNames: removedObjectDefNames.AsSlice(),
 		NewCaveatDefNames:     validated.newCaveatDefNames.Subtract(existingCaveatDefNames).AsSlice(),
@@ -258,7 +269,7 @@ func sanityCheckCaveatChanges(
 func ensureNoRelationshipsExist(ctx context.Context, rwt datastore.ReadWriteTransaction, namespaceName string) error {
 	qy, qyErr := rwt.QueryRelationships(
 		ctx,
-		datastore.RelationshipsFilter{ResourceType: namespaceName},
+		datastore.RelationshipsFilter{OptionalResourceType: namespaceName},
 		options.WithLimit(options.LimitOne),
 	)
 	if err := errorIfTupleIteratorReturnsTuples(
@@ -309,7 +320,7 @@ func sanityCheckNamespaceChanges(
 		switch delta.Type {
 		case nsdiff.RemovedRelation:
 			qy, qyErr := rwt.QueryRelationships(ctx, datastore.RelationshipsFilter{
-				ResourceType:             nsdef.Name,
+				OptionalResourceType:     nsdef.Name,
 				OptionalResourceRelation: delta.RelationName,
 			})
 
@@ -359,7 +370,7 @@ func sanityCheckNamespaceChanges(
 			qyr, qyrErr := rwt.QueryRelationships(
 				ctx,
 				datastore.RelationshipsFilter{
-					ResourceType:             nsdef.Name,
+					OptionalResourceType:     nsdef.Name,
 					OptionalResourceRelation: delta.RelationName,
 					OptionalSubjectsSelectors: []datastore.SubjectsSelector{
 						{

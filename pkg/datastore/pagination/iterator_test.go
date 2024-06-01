@@ -165,7 +165,7 @@ func TestPaginatedIterator(t *testing.T) {
 
 			ctx := context.Background()
 			iter, err := NewPaginatedIterator(ctx, ds, datastore.RelationshipsFilter{
-				ResourceType: "unused",
+				OptionalResourceType: "unused",
 			}, tc.pageSize, options.ByResource, nil)
 			require.NoError(err)
 			defer iter.Close()
@@ -244,6 +244,14 @@ func (m *mockedReader) ReverseQueryRelationships(
 	_ datastore.SubjectsFilter,
 	_ ...options.ReverseQueryOptionsOption,
 ) (datastore.RelationshipIterator, error) {
+	panic("not implemented")
+}
+
+func (m *mockedReader) CountRelationships(ctx context.Context, name string) (int, error) {
+	panic("not implemented")
+}
+
+func (m *mockedReader) LookupCounters(ctx context.Context) ([]datastore.RelationshipCounter, error) {
 	panic("not implemented")
 }
 

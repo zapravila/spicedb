@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/runtime/protoiface"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 )
 
 // Domain is the domain used for all errors.

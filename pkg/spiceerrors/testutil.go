@@ -7,7 +7,7 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 )
 
 // RequireReason asserts that an error is a gRPC error and returns the expected

@@ -9,22 +9,94 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
 	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
+// ErrExceedsMaximumLimit occurs when a limit that is too large is given to a call.
+type ErrExceedsMaximumLimit struct {
+	error
+	providedLimit   uint64
+	maxLimitAllowed uint64
+}
+
+// MarshalZerologObject implements zerolog object marshalling.
+func (err ErrExceedsMaximumLimit) MarshalZerologObject(e *zerolog.Event) {
+	e.Err(err.error).Uint64("providedLimit", err.providedLimit).Uint64("maxLimitAllowed", err.maxLimitAllowed)
+}
+
+// GRPCStatus implements retrieving the gRPC status for the error.
+func (err ErrExceedsMaximumLimit) GRPCStatus() *status.Status {
+	return spiceerrors.WithCodeAndDetails(
+		err,
+		codes.InvalidArgument,
+		spiceerrors.ForReason(
+			v1.ErrorReason_ERROR_REASON_EXCEEDS_MAXIMUM_ALLOWABLE_LIMIT,
+			map[string]string{
+				"limit_provided":        strconv.FormatUint(err.providedLimit, 10),
+				"maximum_limit_allowed": strconv.FormatUint(err.maxLimitAllowed, 10),
+			},
+		),
+	)
+}
+
+// NewExceedsMaximumLimitErr creates a new error representing that the limit specified was too large.
+func NewExceedsMaximumLimitErr(providedLimit uint64, maxLimitAllowed uint64) ErrExceedsMaximumLimit {
+	return ErrExceedsMaximumLimit{
+		error:           fmt.Errorf("provided limit %d is greater than maximum allowed of %d", providedLimit, maxLimitAllowed),
+		providedLimit:   providedLimit,
+		maxLimitAllowed: maxLimitAllowed,
+	}
+}
+
+// ErrExceedsMaximumChecks occurs when too many checks are given to a call.
+type ErrExceedsMaximumChecks struct {
+	error
+	checkCount      uint64
+	maxCountAllowed uint64
+}
+
+// MarshalZerologObject implements zerolog object marshalling.
+func (err ErrExceedsMaximumChecks) MarshalZerologObject(e *zerolog.Event) {
+	e.Err(err.error).Uint64("checkCount", err.checkCount).Uint64("maxCountAllowed", err.maxCountAllowed)
+}
+
+// GRPCStatus implements retrieving the gRPC status for the error.
+func (err ErrExceedsMaximumChecks) GRPCStatus() *status.Status {
+	return spiceerrors.WithCodeAndDetails(
+		err,
+		codes.InvalidArgument,
+		spiceerrors.ForReason(
+			v1.ErrorReason_ERROR_REASON_UNSPECIFIED,
+			map[string]string{
+				"check_count":            strconv.FormatUint(err.checkCount, 10),
+				"maximum_checks_allowed": strconv.FormatUint(err.maxCountAllowed, 10),
+			},
+		),
+	)
+}
+
+// NewExceedsMaximumChecksErr creates a new error representing that too many updates were given to a BulkCheckPermissions call.
+func NewExceedsMaximumChecksErr(checkCount uint64, maxCountAllowed uint64) ErrExceedsMaximumChecks {
+	return ErrExceedsMaximumChecks{
+		error:           fmt.Errorf("check count of %d is greater than maximum allowed of %d", checkCount, maxCountAllowed),
+		checkCount:      checkCount,
+		maxCountAllowed: maxCountAllowed,
+	}
+}
+
 // ErrExceedsMaximumUpdates occurs when too many updates are given to a call.
 type ErrExceedsMaximumUpdates struct {
 	error
-	updateCount     uint16
-	maxCountAllowed uint16
+	updateCount     uint64
+	maxCountAllowed uint64
 }
 
 // MarshalZerologObject implements zerolog object marshalling.
 func (err ErrExceedsMaximumUpdates) MarshalZerologObject(e *zerolog.Event) {
-	e.Err(err.error).Uint16("updateCount", err.updateCount).Uint16("maxCountAllowed", err.maxCountAllowed)
+	e.Err(err.error).Uint64("updateCount", err.updateCount).Uint64("maxCountAllowed", err.maxCountAllowed)
 }
 
 // GRPCStatus implements retrieving the gRPC status for the error.
@@ -35,15 +107,15 @@ func (err ErrExceedsMaximumUpdates) GRPCStatus() *status.Status {
 		spiceerrors.ForReason(
 			v1.ErrorReason_ERROR_REASON_TOO_MANY_UPDATES_IN_REQUEST,
 			map[string]string{
-				"update_count":            strconv.Itoa(int(err.updateCount)),
-				"maximum_updates_allowed": strconv.Itoa(int(err.maxCountAllowed)),
+				"update_count":            strconv.FormatUint(err.updateCount, 10),
+				"maximum_updates_allowed": strconv.FormatUint(err.maxCountAllowed, 10),
 			},
 		),
 	)
 }
 
 // NewExceedsMaximumUpdatesErr creates a new error representing that too many updates were given to a WriteRelationships call.
-func NewExceedsMaximumUpdatesErr(updateCount uint16, maxCountAllowed uint16) ErrExceedsMaximumUpdates {
+func NewExceedsMaximumUpdatesErr(updateCount uint64, maxCountAllowed uint64) ErrExceedsMaximumUpdates {
 	return ErrExceedsMaximumUpdates{
 		error:           fmt.Errorf("update count of %d is greater than maximum allowed of %d", updateCount, maxCountAllowed),
 		updateCount:     updateCount,
@@ -54,13 +126,13 @@ func NewExceedsMaximumUpdatesErr(updateCount uint16, maxCountAllowed uint16) Err
 // ErrExceedsMaximumPreconditions occurs when too many preconditions are given to a call.
 type ErrExceedsMaximumPreconditions struct {
 	error
-	preconditionCount uint16
-	maxCountAllowed   uint16
+	preconditionCount uint64
+	maxCountAllowed   uint64
 }
 
 // MarshalZerologObject implements zerolog object marshalling.
 func (err ErrExceedsMaximumPreconditions) MarshalZerologObject(e *zerolog.Event) {
-	e.Err(err.error).Uint16("preconditionCount", err.preconditionCount).Uint16("maxCountAllowed", err.maxCountAllowed)
+	e.Err(err.error).Uint64("preconditionCount", err.preconditionCount).Uint64("maxCountAllowed", err.maxCountAllowed)
 }
 
 // GRPCStatus implements retrieving the gRPC status for the error.
@@ -71,15 +143,15 @@ func (err ErrExceedsMaximumPreconditions) GRPCStatus() *status.Status {
 		spiceerrors.ForReason(
 			v1.ErrorReason_ERROR_REASON_TOO_MANY_PRECONDITIONS_IN_REQUEST,
 			map[string]string{
-				"precondition_count":      strconv.Itoa(int(err.preconditionCount)),
-				"maximum_updates_allowed": strconv.Itoa(int(err.maxCountAllowed)),
+				"precondition_count":      strconv.FormatUint(err.preconditionCount, 10),
+				"maximum_updates_allowed": strconv.FormatUint(err.maxCountAllowed, 10),
 			},
 		),
 	)
 }
 
 // NewExceedsMaximumPreconditionsErr creates a new error representing that too many preconditions were given to a call.
-func NewExceedsMaximumPreconditionsErr(preconditionCount uint16, maxCountAllowed uint16) ErrExceedsMaximumPreconditions {
+func NewExceedsMaximumPreconditionsErr(preconditionCount uint64, maxCountAllowed uint64) ErrExceedsMaximumPreconditions {
 	return ErrExceedsMaximumPreconditions{
 		error: fmt.Errorf(
 			"precondition count of %d is greater than maximum allowed of %d",
@@ -112,12 +184,19 @@ func NewPreconditionFailedErr(precondition *v1.Precondition) error {
 // GRPCStatus implements retrieving the gRPC status for the error.
 func (err ErrPreconditionFailed) GRPCStatus() *status.Status {
 	metadata := map[string]string{
-		"precondition_resource_type": err.precondition.Filter.ResourceType,
-		"precondition_operation":     v1.Precondition_Operation_name[int32(err.precondition.Operation)],
+		"precondition_operation": v1.Precondition_Operation_name[int32(err.precondition.Operation)],
+	}
+
+	if err.precondition.Filter.ResourceType != "" {
+		metadata["precondition_resource_type"] = err.precondition.Filter.ResourceType
 	}
 
 	if err.precondition.Filter.OptionalResourceId != "" {
 		metadata["precondition_resource_id"] = err.precondition.Filter.OptionalResourceId
+	}
+
+	if err.precondition.Filter.OptionalResourceIdPrefix != "" {
+		metadata["precondition_resource_id_prefix"] = err.precondition.Filter.OptionalResourceIdPrefix
 	}
 
 	if err.precondition.Filter.OptionalRelation != "" {
@@ -296,6 +375,94 @@ func (err ErrInvalidCursor) GRPCStatus() *status.Status {
 			v1.ErrorReason_ERROR_REASON_INVALID_CURSOR,
 			map[string]string{
 				"reason": err.reason,
+			},
+		),
+	)
+}
+
+// ErrInvalidFilter indicates the specified relationship filter was invalid.
+type ErrInvalidFilter struct {
+	error
+
+	filter string
+}
+
+// GRPCStatus implements retrieving the gRPC status for the error.
+func (err ErrInvalidFilter) GRPCStatus() *status.Status {
+	return spiceerrors.WithCodeAndDetails(
+		err,
+		codes.InvalidArgument,
+		spiceerrors.ForReason(
+			v1.ErrorReason_ERROR_REASON_INVALID_FILTER,
+			map[string]string{
+				"filter": err.filter,
+			},
+		),
+	)
+}
+
+// NewInvalidFilterErr constructs a new invalid filter error.
+func NewInvalidFilterErr(reason string, filter string) ErrInvalidFilter {
+	return ErrInvalidFilter{
+		error: fmt.Errorf(
+			"the relationship filter provided is not valid: %s", reason,
+		),
+		filter: filter,
+	}
+}
+
+// NewEmptyPreconditionErr constructs a new empty precondition error.
+func NewEmptyPreconditionErr() ErrEmptyPrecondition {
+	return ErrEmptyPrecondition{
+		error: fmt.Errorf(
+			"one of the specified preconditions is empty",
+		),
+	}
+}
+
+// ErrEmptyPrecondition indicates an empty precondition was found.
+type ErrEmptyPrecondition struct {
+	error
+}
+
+// GRPCStatus implements retrieving the gRPC status for the error.
+func (err ErrEmptyPrecondition) GRPCStatus() *status.Status {
+	// TODO(jschorr): Put a proper error reason in here.
+	return spiceerrors.WithCodeAndDetails(
+		err,
+		codes.InvalidArgument,
+		spiceerrors.ForReason(
+			v1.ErrorReason_ERROR_REASON_UNSPECIFIED,
+			map[string]string{},
+		),
+	)
+}
+
+// NewNotAPermissionError constructs a new not a permission error.
+func NewNotAPermissionError(relationName string) ErrNotAPermission {
+	return ErrNotAPermission{
+		error: fmt.Errorf(
+			"the relation `%s` is not a permission", relationName,
+		),
+		relationName: relationName,
+	}
+}
+
+// ErrNotAPermission indicates that the relation is not a permission.
+type ErrNotAPermission struct {
+	error
+	relationName string
+}
+
+// GRPCStatus implements retrieving the gRPC status for the error.
+func (err ErrNotAPermission) GRPCStatus() *status.Status {
+	return spiceerrors.WithCodeAndDetails(
+		err,
+		codes.InvalidArgument,
+		spiceerrors.ForReason(
+			v1.ErrorReason_ERROR_REASON_UNKNOWN_RELATION_OR_PERMISSION,
+			map[string]string{
+				"relationName": err.relationName,
 			},
 		),
 	)

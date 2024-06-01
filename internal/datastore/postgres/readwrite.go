@@ -4,15 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 
 	"github.com/zapravila/spicedb/pkg/tuple"
 
 	sq "github.com/Masterminds/squirrel"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/jackc/pgx/v5"
 	"github.com/jzelinskie/stringz"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/proto"
 
 	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
@@ -21,10 +25,12 @@ import (
 )
 
 const (
-	errUnableToWriteConfig         = "unable to write namespace config: %w"
-	errUnableToDeleteConfig        = "unable to delete namespace config: %w"
-	errUnableToWriteRelationships  = "unable to write relationships: %w"
-	errUnableToDeleteRelationships = "unable to delete relationships: %w"
+	errUnableToWriteConfig                = "unable to write namespace config: %w"
+	errUnableToDeleteConfig               = "unable to delete namespace config: %w"
+	errUnableToWriteRelationships         = "unable to write relationships: %w"
+	errUnableToDeleteRelationships        = "unable to delete relationships: %w"
+	errUnableToWriteRelationshipsCounter  = "unable to write relationships counter: %w"
+	errUnableToDeleteRelationshipsCounter = "unable to delete relationships counter: %w"
 )
 
 var (
@@ -50,7 +56,27 @@ var (
 		colComment,
 	)
 
-	deleteTuple = psql.Update(tableTuple).Where(sq.Eq{colDeletedXid: liveDeletedTxnID})
+	deleteTuple     = psql.Update(tableTuple).Where(sq.Eq{colDeletedXid: liveDeletedTxnID})
+	selectForDelete = psql.Select(
+		colNamespace,
+		colObjectID,
+		colRelation,
+		colUsersetNamespace,
+		colUsersetObjectID,
+		colUsersetRelation,
+		colCreatedXid,
+	).From(tableTuple).Where(sq.Eq{colDeletedXid: liveDeletedTxnID})
+
+	writeRelationshipCounter = psql.Insert(tableRelationshipCounter).Columns(
+		colCounterName,
+		colCounterFilter,
+		colCounterCurrentCount,
+		colCounterSnapshot,
+	)
+
+	updateRelationshipCounter = psql.Update(tableRelationshipCounter).Where(sq.Eq{colDeletedXid: liveDeletedTxnID})
+
+	deleteRelationshipCounter = psql.Update(tableRelationshipCounter).Where(sq.Eq{colDeletedXid: liveDeletedTxnID})
 )
 
 type pgReadWriteTXN struct {
@@ -93,13 +119,87 @@ func appendForInsertion(builder sq.InsertBuilder, tpl *core.RelationTuple) sq.In
 	return builder.Values(valuesToWrite...)
 }
 
+func (rwt *pgReadWriteTXN) collectSimplifiedTouchTypes(ctx context.Context, mutations []*core.RelationTupleUpdate) (*mapz.Set[string], error) {
+	// Collect the list of namespaces used for resources for relationships being TOUCHed.
+	touchedResourceNamespaces := mapz.NewSet[string]()
+	for _, mut := range mutations {
+		if mut.Operation == core.RelationTupleUpdate_TOUCH {
+			touchedResourceNamespaces.Add(mut.Tuple.ResourceAndRelation.Namespace)
+		}
+	}
+
+	// Load the namespaces for any resources that are being TOUCHed and check if the relation being touched
+	// *can* have a caveat. If not, mark the relation as supported simplified TOUCH operations.
+	relationSupportSimplifiedTouch := mapz.NewSet[string]()
+	if touchedResourceNamespaces.IsEmpty() {
+		return relationSupportSimplifiedTouch, nil
+	}
+
+	namespaces, err := rwt.LookupNamespacesWithNames(ctx, touchedResourceNamespaces.AsSlice())
+	if err != nil {
+		return nil, fmt.Errorf(errUnableToWriteRelationships, err)
+	}
+
+	if len(namespaces) == 0 {
+		return relationSupportSimplifiedTouch, nil
+	}
+
+	nsDefByName := make(map[string]*core.NamespaceDefinition, len(namespaces))
+	for _, ns := range namespaces {
+		nsDefByName[ns.Definition.Name] = ns.Definition
+	}
+
+	for _, mut := range mutations {
+		tpl := mut.Tuple
+
+		if mut.Operation != core.RelationTupleUpdate_TOUCH {
+			continue
+		}
+
+		nsDef, ok := nsDefByName[tpl.ResourceAndRelation.Namespace]
+		if !ok {
+			continue
+		}
+
+		vts, err := typesystem.NewNamespaceTypeSystem(nsDef, typesystem.ResolverForDatastoreReader(rwt))
+		if err != nil {
+			return nil, fmt.Errorf(errUnableToWriteRelationships, err)
+		}
+
+		notAllowed, err := vts.RelationDoesNotAllowCaveatsForSubject(tpl.ResourceAndRelation.Relation, tpl.Subject.Namespace)
+		if err != nil {
+			// Ignore errors and just fallback to the less efficient path.
+			continue
+		}
+
+		if notAllowed {
+			relationSupportSimplifiedTouch.Add(nsDef.Name + "#" + tpl.ResourceAndRelation.Relation + "@" + tpl.Subject.Namespace)
+			continue
+		}
+	}
+
+	return relationSupportSimplifiedTouch, nil
+}
+
 func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*core.RelationTupleUpdate) error {
 	touchMutationsByNonCaveat := make(map[string]*core.RelationTupleUpdate, len(mutations))
 	hasCreateInserts := false
 
 	createInserts := writeTuple
 	touchInserts := writeTuple
+
 	deleteClauses := sq.Or{}
+
+	// Determine the set of relation+subject types for whom a "simplified" TOUCH operation can be used. A
+	// simplified TOUCH operation is one in which the relationship does not support caveats for the subject
+	// type. In such cases, the "DELETE" operation is unnecessary because the relationship does not support
+	// caveats for the subject type, and thus the relationship can be TOUCHed without needing to check for
+	// the existence of a relationship with a different caveat name and/or context which might need to be
+	// replaced.
+	relationSupportSimplifiedTouch, err := rwt.collectSimplifiedTouchTypes(ctx, mutations)
+	if err != nil {
+		return err
+	}
 
 	// Parse the updates, building inserts for CREATE/TOUCH and deletes for DELETE.
 	for _, mut := range mutations {
@@ -111,8 +211,8 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 			hasCreateInserts = true
 
 		case core.RelationTupleUpdate_TOUCH:
-			touchMutationsByNonCaveat[tuple.StringWithoutCaveat(tpl)] = mut
 			touchInserts = appendForInsertion(touchInserts, tpl)
+			touchMutationsByNonCaveat[tuple.StringWithoutCaveat(tpl)] = mut
 
 		case core.RelationTupleUpdate_DELETE:
 			deleteClauses = append(deleteClauses, exactRelationshipClause(tpl))
@@ -193,18 +293,24 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 		}
 		rows.Close()
 
-		// For each remaining TOUCH mutation, add a DELETE operation for the row iff the caveat and/or
-		// context has changed. For ones in which the caveat name and/or context did not change, there is
-		// no need to replace the row, as it is already present.
+		// For each remaining TOUCH mutation, add a "DELETE" operation for the row such that if the caveat and/or
+		// context has changed, the row will be deleted. For ones in which the caveat name and/or context did cause
+		// the deletion (because of a change), the row will be re-inserted with the new caveat name and/or context.
 		for _, mut := range touchMutationsByNonCaveat {
+			// If the relation support a simplified TOUCH operation, then skip the DELETE operation, as it is unnecessary
+			// because the relation does not support a caveat for a subject of this type.
+			if relationSupportSimplifiedTouch.Has(mut.Tuple.ResourceAndRelation.Namespace + "#" + mut.Tuple.ResourceAndRelation.Relation + "@" + mut.Tuple.Subject.Namespace) {
+				continue
+			}
+
 			deleteClauses = append(deleteClauses, exactRelationshipDifferentCaveatClause(mut.Tuple))
 		}
 	}
 
-	// Execute the DELETE operation for any DELETE mutations or TOUCH mutations that matched existing
-	// relationships and whose caveat name or context is different in some manner. We use RETURNING
-	// to determine which TOUCHed relationships were deleted by virtue of their caveat name and/or
-	// context being changed.
+	// Execute the "DELETE" operation (an UPDATE with setting the deletion ID to the current transaction ID)
+	// for any DELETE mutations or TOUCH mutations that matched existing relationships and whose caveat name
+	// or context is different in some manner. We use RETURNING to determine which TOUCHed relationships were
+	// deleted by virtue of their caveat name and/or context being changed.
 	if len(deleteClauses) == 0 {
 		// Nothing more to do.
 		return nil
@@ -291,14 +397,98 @@ func (rwt *pgReadWriteTXN) WriteRelationships(ctx context.Context, mutations []*
 	return nil
 }
 
-func (rwt *pgReadWriteTXN) DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter) error {
-	// Add clauses for the ResourceFilter
-	query := deleteTuple.Where(sq.Eq{colNamespace: filter.ResourceType})
+func (rwt *pgReadWriteTXN) DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter, opts ...options.DeleteOptionsOption) (bool, error) {
+	delOpts := options.NewDeleteOptionsWithOptionsAndDefaults(opts...)
+	if delOpts.DeleteLimit != nil && *delOpts.DeleteLimit > 0 {
+		return rwt.deleteRelationshipsWithLimit(ctx, filter, *delOpts.DeleteLimit)
+	}
+
+	return false, rwt.deleteRelationships(ctx, filter)
+}
+
+func (rwt *pgReadWriteTXN) deleteRelationshipsWithLimit(ctx context.Context, filter *v1.RelationshipFilter, limit uint64) (bool, error) {
+	// Construct a select query for the relationships to be removed.
+	query := selectForDelete
+
+	if filter.ResourceType != "" {
+		query = query.Where(sq.Eq{colNamespace: filter.ResourceType})
+	}
 	if filter.OptionalResourceId != "" {
 		query = query.Where(sq.Eq{colObjectID: filter.OptionalResourceId})
 	}
 	if filter.OptionalRelation != "" {
 		query = query.Where(sq.Eq{colRelation: filter.OptionalRelation})
+	}
+	if filter.OptionalResourceIdPrefix != "" {
+		if strings.Contains(filter.OptionalResourceIdPrefix, "%") {
+			return false, fmt.Errorf("unable to delete relationships with a prefix containing the %% character")
+		}
+
+		query = query.Where(sq.Like{colObjectID: filter.OptionalResourceIdPrefix + "%"})
+	}
+
+	// Add clauses for the SubjectFilter
+	if subjectFilter := filter.OptionalSubjectFilter; subjectFilter != nil {
+		query = query.Where(sq.Eq{colUsersetNamespace: subjectFilter.SubjectType})
+		if subjectFilter.OptionalSubjectId != "" {
+			query = query.Where(sq.Eq{colUsersetObjectID: subjectFilter.OptionalSubjectId})
+		}
+		if relationFilter := subjectFilter.OptionalRelation; relationFilter != nil {
+			query = query.Where(sq.Eq{colUsersetRelation: stringz.DefaultEmpty(relationFilter.Relation, datastore.Ellipsis)})
+		}
+	}
+
+	query = query.Limit(limit)
+
+	selectSQL, args, err := query.ToSql()
+	if err != nil {
+		return false, fmt.Errorf(errUnableToDeleteRelationships, err)
+	}
+
+	args = append(args, rwt.newXID)
+
+	// Construct a CTE to update the relationships as removed.
+	cteSQL := fmt.Sprintf(
+		"WITH found_tuples AS (%s)\nUPDATE %s SET %s = $%d WHERE (%s, %s, %s, %s, %s, %s, %s) IN (select * from found_tuples)",
+		selectSQL,
+		tableTuple,
+		colDeletedXid,
+		len(args),
+		colNamespace,
+		colObjectID,
+		colRelation,
+		colUsersetNamespace,
+		colUsersetObjectID,
+		colUsersetRelation,
+		colCreatedXid,
+	)
+
+	result, err := rwt.tx.Exec(ctx, cteSQL, args...)
+	if err != nil {
+		return false, fmt.Errorf(errUnableToDeleteRelationships, err)
+	}
+
+	return result.RowsAffected() == int64(limit), nil
+}
+
+func (rwt *pgReadWriteTXN) deleteRelationships(ctx context.Context, filter *v1.RelationshipFilter) error {
+	// Add clauses for the ResourceFilter
+	query := deleteTuple
+	if filter.ResourceType != "" {
+		query = query.Where(sq.Eq{colNamespace: filter.ResourceType})
+	}
+	if filter.OptionalResourceId != "" {
+		query = query.Where(sq.Eq{colObjectID: filter.OptionalResourceId})
+	}
+	if filter.OptionalRelation != "" {
+		query = query.Where(sq.Eq{colRelation: filter.OptionalRelation})
+	}
+	if filter.OptionalResourceIdPrefix != "" {
+		if strings.Contains(filter.OptionalResourceIdPrefix, "%") {
+			return fmt.Errorf("unable to delete relationships with a prefix containing the %% character")
+		}
+
+		query = query.Where(sq.Like{colObjectID: filter.OptionalResourceIdPrefix + "%"})
 	}
 
 	// Add clauses for the SubjectFilter
@@ -379,14 +569,14 @@ func (rwt *pgReadWriteTXN) DeleteNamespaces(ctx context.Context, nsNames ...stri
 		switch {
 		case errors.As(err, &datastore.ErrNamespaceNotFound{}):
 			return err
+
 		case err == nil:
-			break
+			nsClauses = append(nsClauses, sq.Eq{colNamespace: nsName})
+			tplClauses = append(tplClauses, sq.Eq{colNamespace: nsName})
+
 		default:
 			return fmt.Errorf(errUnableToDeleteConfig, err)
 		}
-
-		nsClauses = append(nsClauses, sq.Eq{colNamespace: nsName})
-		tplClauses = append(tplClauses, sq.Eq{colNamespace: nsName})
 	}
 
 	delSQL, delArgs, err := deleteNamespace.
@@ -413,6 +603,102 @@ func (rwt *pgReadWriteTXN) DeleteNamespaces(ctx context.Context, nsNames ...stri
 	_, err = rwt.tx.Exec(ctx, deleteTupleSQL, deleteTupleArgs...)
 	if err != nil {
 		return fmt.Errorf(errUnableToDeleteConfig, err)
+	}
+
+	return nil
+}
+
+func (rwt *pgReadWriteTXN) RegisterCounter(ctx context.Context, name string, filter *core.RelationshipFilter) error {
+	// Ensure the counter exists.
+	counters, err := rwt.lookupCounters(ctx, name)
+	if err != nil {
+		return err
+	}
+
+	if len(counters) != 0 {
+		return datastore.NewCounterAlreadyRegisteredErr(name, filter)
+	}
+
+	serializedFilter, err := filter.MarshalVT()
+	if err != nil {
+		return fmt.Errorf("unable to serialize filter: %w", err)
+	}
+
+	writeQuery := writeRelationshipCounter
+	writeQuery = writeQuery.Values(name, serializedFilter, 0, nil)
+
+	sql, args, err := writeQuery.ToSql()
+	if err != nil {
+		return fmt.Errorf(errUnableToWriteRelationshipsCounter, err)
+	}
+
+	if _, err = rwt.tx.Exec(ctx, sql, args...); err != nil {
+		// If this is a constraint violation, return that the filter is already registered.
+		if pgxcommon.IsConstraintFailureError(err) {
+			return datastore.NewCounterAlreadyRegisteredErr(name, filter)
+		}
+
+		return fmt.Errorf(errUnableToWriteConfig, err)
+	}
+
+	return nil
+}
+
+func (rwt *pgReadWriteTXN) UnregisterCounter(ctx context.Context, name string) error {
+	// Ensure the counter exists.
+	counters, err := rwt.lookupCounters(ctx, name)
+	if err != nil {
+		return err
+	}
+
+	if len(counters) == 0 {
+		return datastore.NewCounterNotRegisteredErr(name)
+	}
+
+	deleteQuery := deleteRelationshipCounter.Where(sq.Eq{colCounterName: name})
+
+	delSQL, delArgs, err := deleteQuery.
+		Set(colDeletedXid, rwt.newXID).
+		ToSql()
+	if err != nil {
+		return fmt.Errorf(errUnableToDeleteConfig, err)
+	}
+
+	_, err = rwt.tx.Exec(ctx, delSQL, delArgs...)
+	if err != nil {
+		return fmt.Errorf(errUnableToDeleteConfig, err)
+	}
+
+	return nil
+}
+
+func (rwt *pgReadWriteTXN) StoreCounterValue(ctx context.Context, name string, value int, computedAtRevision datastore.Revision) error {
+	// Ensure the counter exists.
+	counters, err := rwt.lookupCounters(ctx, name)
+	if err != nil {
+		return err
+	}
+
+	if len(counters) == 0 {
+		return datastore.NewCounterNotRegisteredErr(name)
+	}
+
+	computedAtRevisionSnapshot := computedAtRevision.(postgresRevision).snapshot
+
+	// Update the counter.
+	updateQuery := updateRelationshipCounter.
+		Set(colCounterCurrentCount, value).
+		Set(colCounterSnapshot, computedAtRevisionSnapshot)
+
+	sql, args, err := updateQuery.
+		Where(sq.Eq{colCounterName: name}).
+		ToSql()
+	if err != nil {
+		return fmt.Errorf(errUnableToWriteRelationshipsCounter, err)
+	}
+
+	if _, err = rwt.tx.Exec(ctx, sql, args...); err != nil {
+		return fmt.Errorf(errUnableToWriteRelationshipsCounter, err)
 	}
 
 	return nil

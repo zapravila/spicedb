@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/pkg/datastore"
 	"github.com/zapravila/spicedb/pkg/datastore/options"
@@ -20,7 +20,12 @@ func checkPreconditions(
 	preconditions []*v1.Precondition,
 ) error {
 	for _, precond := range preconditions {
-		iter, err := rwt.QueryRelationships(ctx, datastore.RelationshipsFilterFromPublicFilter(precond.Filter), options.WithLimit(&limitOne))
+		dsFilter, err := datastore.RelationshipsFilterFromPublicFilter(precond.Filter)
+		if err != nil {
+			return fmt.Errorf("error converting filter: %w", err)
+		}
+
+		iter, err := rwt.QueryRelationships(ctx, dsFilter, options.WithLimit(&limitOne))
 		if err != nil {
 			return fmt.Errorf("error reading relationships: %w", err)
 		}

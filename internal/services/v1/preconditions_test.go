@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/internal/datastore/memdb"
 	"github.com/zapravila/spicedb/internal/testfixtures"
@@ -20,6 +20,14 @@ var companyPlanFolder = &v1.RelationshipFilter{
 		SubjectType:       "folder",
 		OptionalSubjectId: "company",
 	},
+}
+
+var prefixMatch = &v1.RelationshipFilter{
+	OptionalResourceIdPrefix: "c",
+}
+
+var prefixNoMatch = &v1.RelationshipFilter{
+	OptionalResourceIdPrefix: "zzz",
 }
 
 func TestPreconditions(t *testing.T) {
@@ -41,6 +49,18 @@ func TestPreconditions(t *testing.T) {
 			{
 				Operation: v1.Precondition_OPERATION_MUST_NOT_MATCH,
 				Filter:    companyPlanFolder,
+			},
+		}))
+		require.NoError(checkPreconditions(ctx, rwt, []*v1.Precondition{
+			{
+				Operation: v1.Precondition_OPERATION_MUST_MATCH,
+				Filter:    prefixMatch,
+			},
+		}))
+		require.Error(checkPreconditions(ctx, rwt, []*v1.Precondition{
+			{
+				Operation: v1.Precondition_OPERATION_MUST_MATCH,
+				Filter:    prefixNoMatch,
 			},
 		}))
 		return nil

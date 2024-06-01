@@ -6,8 +6,8 @@ import (
 	"net"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	humanize "github.com/dustin/go-humanize"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -18,6 +18,7 @@ import (
 	"github.com/zapravila/spicedb/internal/dispatch"
 	"github.com/zapravila/spicedb/internal/dispatch/graph"
 	maingraph "github.com/zapravila/spicedb/internal/graph"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 	log "github.com/zapravila/spicedb/internal/logging"
 	"github.com/zapravila/spicedb/internal/middleware/consistency"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
@@ -148,14 +149,13 @@ func (dc *DevContext) RunV1InMemoryService() (*grpc.ClientConn, func(), error) {
 		}
 	}()
 
-	conn, err := grpc.DialContext(
+	conn, err := grpchelpers.DialAndWait(
 		context.Background(),
 		"",
 		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return listener.Dial()
 		}),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	return conn, func() {
 		conn.Close()

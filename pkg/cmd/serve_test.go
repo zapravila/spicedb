@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +18,8 @@ import (
 func RunServeTest(t *testing.T, args []string, assertConfig func(t *testing.T, mergedConfig *server.Config)) {
 	config := server.NewConfigWithOptionsAndDefaults()
 	cmd := NewServeCommand("spicedb", config)
-	RegisterRootFlags(cmd)
+	err := RegisterRootFlags(cmd)
+	require.Nil(t, err)
 	require.Nil(t, RegisterServeFlags(cmd, config))
 	// Disable all metrics as they are singletons
 	config.DispatchClusterMetricsEnabled = false
@@ -30,10 +32,10 @@ func RunServeTest(t *testing.T, args []string, assertConfig func(t *testing.T, m
 	cmd.SetArgs(args)
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		_, err := config.Complete(cmd.Context())
-		t.Cleanup(func() {
-			// TODO: RunnableServer.closeFunc should be called on Cleanup, but it is private.
-		})
+		ctx, cancel := context.WithCancel(cmd.Context())
+		t.Cleanup(cancel)
+
+		_, err := config.Complete(ctx)
 		if err != nil {
 			return err
 		}

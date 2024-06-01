@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/stretchr/testify/require"
@@ -72,14 +73,13 @@ func TestDispatchTimeout(t *testing.T) {
 				_ = s.Serve(listener)
 			}()
 
-			conn, err := grpc.DialContext(
+			conn, err := grpchelpers.DialAndWait(
 				context.Background(),
 				"",
 				grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 					return listener.Dial()
 				}),
 				grpc.WithTransportCredentials(insecure.NewCredentials()),
-				grpc.WithBlock(),
 			)
 			require.NoError(t, err)
 
@@ -253,14 +253,13 @@ func connectionForDispatching(t *testing.T, svc v1.DispatchServiceServer) *grpc.
 		_ = s.Serve(listener)
 	}()
 
-	conn, err := grpc.DialContext(
+	conn, err := grpchelpers.DialAndWait(
 		context.Background(),
 		"",
 		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return listener.Dial()
 		}),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	require.NoError(t, err)
 

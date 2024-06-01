@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/authzed/consistent"
@@ -15,7 +14,6 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"github.com/ecordell/optgen/helpers"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
-	grpcprom "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/hashicorp/go-multierror"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/cors"
@@ -43,6 +41,7 @@ import (
 	datastorecfg "github.com/zapravila/spicedb/pkg/cmd/datastore"
 	"github.com/zapravila/spicedb/pkg/cmd/util"
 	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/middleware/requestid"
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
@@ -105,13 +104,17 @@ type Config struct {
 	ClusterDispatchCacheConfig CacheConfig `debugmap:"visible"`
 
 	// API Behavior
-	DisableV1SchemaAPI       bool          `debugmap:"visible"`
-	V1SchemaAdditiveOnly     bool          `debugmap:"visible"`
-	MaximumUpdatesPerWrite   uint16        `debugmap:"visible"`
-	MaximumPreconditionCount uint16        `debugmap:"visible"`
-	MaxDatastoreReadPageSize uint64        `debugmap:"visible"`
-	StreamingAPITimeout      time.Duration `debugmap:"visible"`
-	WatchHeartbeat           time.Duration `debugmap:"visible"`
+	DisableV1SchemaAPI              bool          `debugmap:"visible"`
+	V1SchemaAdditiveOnly            bool          `debugmap:"visible"`
+	MaximumUpdatesPerWrite          uint16        `debugmap:"visible"`
+	MaximumPreconditionCount        uint16        `debugmap:"visible"`
+	MaxDatastoreReadPageSize        uint64        `debugmap:"visible"`
+	StreamingAPITimeout             time.Duration `debugmap:"visible"`
+	WatchHeartbeat                  time.Duration `debugmap:"visible"`
+	MaxReadRelationshipsLimit       uint32        `debugmap:"visible"`
+	MaxDeleteRelationshipsLimit     uint32        `debugmap:"visible"`
+	MaxLookupResourcesLimit         uint32        `debugmap:"visible"`
+	MaxBulkExportRelationshipsLimit uint32        `debugmap:"visible"`
 
 	// Additional Services
 	MetricsAPI util.HTTPServerConfig `debugmap:"visible"`
@@ -133,6 +136,9 @@ type Config struct {
 	// Logs
 	EnableRequestLogs  bool `debugmap:"visible"`
 	EnableResponseLogs bool `debugmap:"visible"`
+
+	// Metrics
+	DisableGRPCLatencyHistogram bool `debugmap:"visible"`
 }
 
 type closeableStack struct {
@@ -237,8 +243,6 @@ func (c *Config) Complete(ctx context.Context) (RunnableServer, error) {
 	ds = schemacaching.NewCachingDatastoreProxy(ds, nscc, c.DatastoreConfig.GCWindow, cachingMode, c.SchemaWatchHeartbeat)
 	closeables.AddWithError(ds.Close)
 
-	enableGRPCHistogram()
-
 	specificConcurrencyLimits := c.DispatchConcurrencyLimits
 	concurrencyLimits := specificConcurrencyLimits.WithOverallDefaultLimit(c.GlobalDispatchConcurrencyLimit)
 
@@ -275,8 +279,14 @@ func (c *Config) Complete(ctx context.Context) (RunnableServer, error) {
 			combineddispatch.SecondaryUpstreamExprs(c.DispatchSecondaryUpstreamExprs),
 			combineddispatch.GrpcPresharedKey(dispatchPresharedKey),
 			combineddispatch.GrpcDialOpts(
-				grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()), // nolint: staticcheck
+				grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 				grpc.WithDefaultServiceConfig(hashringConfigJSON),
+				grpc.WithChainUnaryInterceptor(
+					requestid.UnaryClientInterceptor(),
+				),
+				grpc.WithChainStreamInterceptor(
+					requestid.StreamClientInterceptor(),
+				),
 			),
 			combineddispatch.MetricsEnabled(c.DispatchClientMetricsEnabled),
 			combineddispatch.PrometheusSubsystem(c.DispatchClientMetricsPrefix),
@@ -293,9 +303,9 @@ func (c *Config) Complete(ctx context.Context) (RunnableServer, error) {
 
 	if len(c.DispatchUnaryMiddleware) == 0 && len(c.DispatchStreamingMiddleware) == 0 {
 		if c.GRPCAuthFunc == nil {
-			c.DispatchUnaryMiddleware, c.DispatchStreamingMiddleware = DefaultDispatchMiddleware(log.Logger, auth.MustRequirePresharedKey(c.PresharedSecureKey), ds)
+			c.DispatchUnaryMiddleware, c.DispatchStreamingMiddleware = DefaultDispatchMiddleware(log.Logger, auth.MustRequirePresharedKey(c.PresharedSecureKey), ds, c.DisableGRPCLatencyHistogram)
 		} else {
-			c.DispatchUnaryMiddleware, c.DispatchStreamingMiddleware = DefaultDispatchMiddleware(log.Logger, c.GRPCAuthFunc, ds)
+			c.DispatchUnaryMiddleware, c.DispatchStreamingMiddleware = DefaultDispatchMiddleware(log.Logger, c.GRPCAuthFunc, ds, c.DisableGRPCLatencyHistogram)
 		}
 	}
 
@@ -332,6 +342,7 @@ func (c *Config) Complete(ctx context.Context) (RunnableServer, error) {
 		},
 		grpc.ChainUnaryInterceptor(c.DispatchUnaryMiddleware...),
 		grpc.ChainStreamInterceptor(c.DispatchStreamingMiddleware...),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create dispatch gRPC server: %w", err)
@@ -364,6 +375,7 @@ func (c *Config) Complete(ctx context.Context) (RunnableServer, error) {
 		ds,
 		c.EnableRequestLogs,
 		c.EnableResponseLogs,
+		c.DisableGRPCLatencyHistogram,
 	}
 	defaultUnaryMiddlewareChain, err := DefaultUnaryMiddleware(opts)
 	if err != nil {
@@ -394,13 +406,17 @@ func (c *Config) Complete(ctx context.Context) (RunnableServer, error) {
 	}
 
 	permSysConfig := v1svc.PermissionsServerConfig{
-		MaxPreconditionsCount:      c.MaximumPreconditionCount,
-		MaxUpdatesPerWrite:         c.MaximumUpdatesPerWrite,
-		MaximumAPIDepth:            c.DispatchMaxDepth,
-		MaxCaveatContextSize:       c.MaxCaveatContextSize,
-		MaxRelationshipContextSize: c.MaxRelationshipContextSize,
-		MaxDatastoreReadPageSize:   c.MaxDatastoreReadPageSize,
-		StreamingAPITimeout:        c.StreamingAPITimeout,
+		MaxPreconditionsCount:           c.MaximumPreconditionCount,
+		MaxUpdatesPerWrite:              c.MaximumUpdatesPerWrite,
+		MaximumAPIDepth:                 c.DispatchMaxDepth,
+		MaxCaveatContextSize:            c.MaxCaveatContextSize,
+		MaxRelationshipContextSize:      c.MaxRelationshipContextSize,
+		MaxDatastoreReadPageSize:        c.MaxDatastoreReadPageSize,
+		StreamingAPITimeout:             c.StreamingAPITimeout,
+		MaxReadRelationshipsLimit:       c.MaxReadRelationshipsLimit,
+		MaxDeleteRelationshipsLimit:     c.MaxDeleteRelationshipsLimit,
+		MaxLookupResourcesLimit:         c.MaxLookupResourcesLimit,
+		MaxBulkExportRelationshipsLimit: c.MaxBulkExportRelationshipsLimit,
 	}
 
 	healthManager := health.NewHealthManager(dispatcher, ds)
@@ -614,7 +630,11 @@ func (c *completedServerConfig) Run(ctx context.Context) error {
 		}
 	}
 
-	grpcServer := c.gRPCServer.WithOpts(grpc.ChainUnaryInterceptor(c.unaryMiddleware...), grpc.ChainStreamInterceptor(c.streamingMiddleware...))
+	grpcServer := c.gRPCServer.WithOpts(
+		grpc.ChainUnaryInterceptor(c.unaryMiddleware...),
+		grpc.ChainStreamInterceptor(c.streamingMiddleware...),
+		grpc.StatsHandler(otelgrpc.NewServerHandler()))
+
 	g.Go(c.healthManager.Checker(ctx))
 	g.Go(grpcServer.Listen(ctx))
 	g.Go(c.dispatchGRPCServer.Listen(ctx))
@@ -630,18 +650,4 @@ func (c *completedServerConfig) Run(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-var promOnce sync.Once
-
-// enableGRPCHistogram enables the standard time history for gRPC requests,
-// ensuring that it is only enabled once
-func enableGRPCHistogram() {
-	// EnableHandlingTimeHistogram is not thread safe and only needs to happen
-	// once
-	promOnce.Do(func() {
-		grpcprom.EnableHandlingTimeHistogram(grpcprom.WithHistogramBuckets(
-			[]float64{.006, .010, .018, .024, .032, .042, .056, .075, .100, .178, .316, .562, 1.000},
-		))
-	})
 }

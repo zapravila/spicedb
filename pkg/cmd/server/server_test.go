@@ -12,8 +12,8 @@ import (
 	"github.com/zapravila/spicedb/pkg/cmd/datastore"
 	"github.com/zapravila/spicedb/pkg/cmd/util"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -230,7 +230,7 @@ func TestModifyUnaryMiddleware(t *testing.T) {
 		},
 	}}
 
-	opt := MiddlewareOption{logging.Logger, nil, false, nil, nil, false, false}
+	opt := MiddlewareOption{logging.Logger, nil, false, nil, nil, false, false, false}
 	defaultMw, err := DefaultUnaryMiddleware(opt)
 	require.NoError(t, err)
 
@@ -256,7 +256,7 @@ func TestModifyStreamingMiddleware(t *testing.T) {
 		},
 	}}
 
-	opt := MiddlewareOption{logging.Logger, nil, false, nil, nil, false, false}
+	opt := MiddlewareOption{logging.Logger, nil, false, nil, nil, false, false, false}
 	defaultMw, err := DefaultStreamingMiddleware(opt)
 	require.NoError(t, err)
 

@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"slices"
 	"sort"
+	"strings"
 
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
 
@@ -23,6 +24,87 @@ type memdbReader struct {
 	TryLocker
 	txSource txFactory
 	initErr  error
+}
+
+func (r *memdbReader) CountRelationships(ctx context.Context, name string) (int, error) {
+	counters, err := r.LookupCounters(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	var found *core.RelationshipFilter
+	for _, counter := range counters {
+		if counter.Name == name {
+			found = counter.Filter
+			break
+		}
+	}
+
+	if found == nil {
+		return 0, datastore.NewCounterNotRegisteredErr(name)
+	}
+
+	coreFilter, err := datastore.RelationshipsFilterFromCoreFilter(found)
+	if err != nil {
+		return 0, err
+	}
+
+	iter, err := r.QueryRelationships(ctx, coreFilter)
+	if err != nil {
+		return 0, err
+	}
+	defer iter.Close()
+
+	count := 0
+	for iter.Next() != nil {
+		if iter.Err() != nil {
+			return 0, iter.Err()
+		}
+
+		count++
+	}
+	iter.Close()
+
+	return count, nil
+}
+
+func (r *memdbReader) LookupCounters(ctx context.Context) ([]datastore.RelationshipCounter, error) {
+	if r.initErr != nil {
+		return nil, r.initErr
+	}
+
+	r.mustLock()
+	defer r.Unlock()
+
+	tx, err := r.txSource()
+	if err != nil {
+		return nil, err
+	}
+
+	var counters []datastore.RelationshipCounter
+
+	it, err := tx.LowerBound(tableCounters, indexID)
+	if err != nil {
+		return nil, err
+	}
+
+	for foundRaw := it.Next(); foundRaw != nil; foundRaw = it.Next() {
+		found := foundRaw.(*counter)
+
+		loaded := &core.RelationshipFilter{}
+		if err := loaded.UnmarshalVT(found.filterBytes); err != nil {
+			return nil, err
+		}
+
+		counters = append(counters, datastore.RelationshipCounter{
+			Name:               found.name,
+			Filter:             loaded,
+			Count:              found.count,
+			ComputedAtRevision: found.updated,
+		})
+	}
+
+	return counters, nil
 }
 
 // QueryRelationships reads relationships starting from the resource side.
@@ -55,8 +137,9 @@ func (r *memdbReader) QueryRelationships(
 	}
 
 	matchingRelationshipsFilterFunc := filterFuncForFilters(
-		filter.ResourceType,
+		filter.OptionalResourceType,
 		filter.OptionalResourceIds,
+		filter.OptionalResourceIDPrefix,
 		filter.OptionalResourceRelation,
 		filter.OptionalSubjectsSelectors,
 		filter.OptionalCaveatName,
@@ -124,6 +207,7 @@ func (r *memdbReader) ReverseQueryRelationships(
 	matchingRelationshipsFilterFunc := filterFuncForFilters(
 		filterObjectType,
 		nil,
+		"",
 		filterRelation,
 		[]datastore.SubjectsSelector{subjectsFilter.AsSelector()},
 		"",
@@ -261,11 +345,26 @@ func (r *memdbReader) mustLock() {
 }
 
 func iteratorForFilter(txn *memdb.Txn, filter datastore.RelationshipsFilter) (memdb.ResultIterator, error) {
-	index := indexNamespace
-	args := []any{filter.ResourceType}
-	if filter.OptionalResourceRelation != "" {
+	// "_prefix" is a specialized index suffix used by github.com/hashicorp/go-memdb to match on
+	// a prefix of a string.
+	// See: https://github.com/hashicorp/go-memdb/blob/9940d4a14258e3b887bfb4bc6ebc28f65461a01c/txn.go#L531
+	index := indexNamespace + "_prefix"
+
+	var args []any
+	if filter.OptionalResourceType != "" {
+		args = append(args, filter.OptionalResourceType)
+		index = indexNamespace
+	} else {
+		args = append(args, "")
+	}
+
+	if filter.OptionalResourceType != "" && filter.OptionalResourceRelation != "" {
 		args = append(args, filter.OptionalResourceRelation)
 		index = indexNamespaceAndRelation
+	}
+
+	if len(args) == 0 {
+		return nil, spiceerrors.MustBugf("cannot specify an empty filter")
 	}
 
 	iter, err := txn.Get(tableRelationship, index, args...)
@@ -279,6 +378,7 @@ func iteratorForFilter(txn *memdb.Txn, filter datastore.RelationshipsFilter) (me
 func filterFuncForFilters(
 	optionalResourceType string,
 	optionalResourceIds []string,
+	optionalResourceIDPrefix string,
 	optionalRelation string,
 	optionalSubjectsSelectors []datastore.SubjectsSelector,
 	optionalCaveatFilter string,
@@ -291,6 +391,8 @@ func filterFuncForFilters(
 		case optionalResourceType != "" && optionalResourceType != tuple.namespace:
 			return true
 		case len(optionalResourceIds) > 0 && !slices.Contains(optionalResourceIds, tuple.resourceID):
+			return true
+		case optionalResourceIDPrefix != "" && !strings.HasPrefix(tuple.resourceID, optionalResourceIDPrefix):
 			return true
 		case optionalRelation != "" && optionalRelation != tuple.relation:
 			return true

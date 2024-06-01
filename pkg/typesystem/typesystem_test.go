@@ -468,6 +468,16 @@ func TestTypeSystemAccessors(t *testing.T) {
 						require.True(t, vts.IsPermission("edit"))
 					})
 
+					t.Run("RelationDoesNotAllowCaveatsForSubject", func(t *testing.T) {
+						ok, err := vts.RelationDoesNotAllowCaveatsForSubject("viewer", "user")
+						require.NoError(t, err)
+						require.True(t, ok)
+
+						ok, err = vts.RelationDoesNotAllowCaveatsForSubject("editor", "user")
+						require.NoError(t, err)
+						require.True(t, ok)
+					})
+
 					t.Run("IsAllowedPublicNamespace", func(t *testing.T) {
 						require.Equal(t, PublicSubjectNotAllowed, noError(vts.IsAllowedPublicNamespace("editor", "user")))
 						require.Equal(t, PublicSubjectNotAllowed, noError(vts.IsAllowedPublicNamespace("viewer", "user")))
@@ -481,6 +491,12 @@ func TestTypeSystemAccessors(t *testing.T) {
 						require.Equal(t, AllowedNamespaceValid, noError(vts.IsAllowedDirectNamespace("viewer", "user")))
 
 						_, err := vts.IsAllowedPublicNamespace("unknown", "user")
+						require.Error(t, err)
+					})
+
+					t.Run("GetAllowedDirectNamespaceSubjectRelations", func(t *testing.T) {
+						require.Equal(t, []string{"..."}, noError(vts.GetAllowedDirectNamespaceSubjectRelations("editor", "user")).AsSlice())
+						_, err := vts.GetAllowedDirectNamespaceSubjectRelations("unknown", "user")
 						require.Error(t, err)
 					})
 
@@ -544,6 +560,16 @@ func TestTypeSystemAccessors(t *testing.T) {
 						require.True(t, vts.IsPermission("view"))
 					})
 
+					t.Run("RelationDoesNotAllowCaveatsForSubject", func(t *testing.T) {
+						ok, err := vts.RelationDoesNotAllowCaveatsForSubject("viewer", "user")
+						require.NoError(t, err)
+						require.True(t, ok)
+
+						ok, err = vts.RelationDoesNotAllowCaveatsForSubject("editor", "user")
+						require.NoError(t, err)
+						require.True(t, ok)
+					})
+
 					t.Run("IsAllowedPublicNamespace", func(t *testing.T) {
 						require.Equal(t, PublicSubjectNotAllowed, noError(vts.IsAllowedPublicNamespace("editor", "user")))
 						require.Equal(t, PublicSubjectAllowed, noError(vts.IsAllowedPublicNamespace("viewer", "user")))
@@ -552,6 +578,12 @@ func TestTypeSystemAccessors(t *testing.T) {
 					t.Run("IsAllowedDirectNamespace", func(t *testing.T) {
 						require.Equal(t, AllowedNamespaceValid, noError(vts.IsAllowedDirectNamespace("editor", "user")))
 						require.Equal(t, AllowedNamespaceValid, noError(vts.IsAllowedDirectNamespace("viewer", "user")))
+					})
+
+					t.Run("GetAllowedDirectNamespaceSubjectRelations", func(t *testing.T) {
+						require.Equal(t, []string{"..."}, noError(vts.GetAllowedDirectNamespaceSubjectRelations("viewer", "user")).AsSlice())
+						_, err := vts.GetAllowedDirectNamespaceSubjectRelations("unknown", "user")
+						require.Error(t, err)
 					})
 
 					t.Run("IsAllowedDirectRelation", func(t *testing.T) {
@@ -596,11 +628,23 @@ func TestTypeSystemAccessors(t *testing.T) {
 
 			definition group {
 				relation member: user | group#member
+				relation other: user
+				relation three: user | group#member | group#other
 			}`,
 			map[string]tsTester{
 				"group": func(t *testing.T, vts *ValidatedNamespaceTypeSystem) {
 					t.Run("IsPermission", func(t *testing.T) {
 						require.False(t, vts.IsPermission("member"))
+					})
+
+					t.Run("RelationDoesNotAllowCaveatsForSubject", func(t *testing.T) {
+						ok, err := vts.RelationDoesNotAllowCaveatsForSubject("member", "user")
+						require.NoError(t, err)
+						require.True(t, ok)
+
+						ok, err = vts.RelationDoesNotAllowCaveatsForSubject("member", "group")
+						require.NoError(t, err)
+						require.True(t, ok)
 					})
 
 					t.Run("IsAllowedPublicNamespace", func(t *testing.T) {
@@ -611,6 +655,14 @@ func TestTypeSystemAccessors(t *testing.T) {
 						require.Equal(t, AllowedNamespaceValid, noError(vts.IsAllowedDirectNamespace("member", "user")))
 						require.Equal(t, AllowedNamespaceValid, noError(vts.IsAllowedDirectNamespace("member", "group")))
 						require.Equal(t, AllowedNamespaceNotValid, noError(vts.IsAllowedDirectNamespace("member", "thirdtype")))
+					})
+
+					t.Run("GetAllowedDirectNamespaceSubjectRelations", func(t *testing.T) {
+						require.Equal(t, []string{"..."}, noError(vts.GetAllowedDirectNamespaceSubjectRelations("member", "user")).AsSlice())
+						require.Equal(t, []string{"member"}, noError(vts.GetAllowedDirectNamespaceSubjectRelations("member", "group")).AsSlice())
+						require.ElementsMatch(t, []string{"member", "other"}, noError(vts.GetAllowedDirectNamespaceSubjectRelations("three", "group")).AsSlice())
+						_, err := vts.GetAllowedDirectNamespaceSubjectRelations("unknown", "user")
+						require.Error(t, err)
 					})
 
 					t.Run("IsAllowedDirectRelation", func(t *testing.T) {
@@ -662,6 +714,20 @@ func TestTypeSystemAccessors(t *testing.T) {
 						require.False(t, vts.IsPermission("editor"))
 						require.False(t, vts.IsPermission("viewer"))
 						require.False(t, vts.IsPermission("onlycaveated"))
+					})
+
+					t.Run("RelationDoesNotAllowCaveatsForSubject", func(t *testing.T) {
+						ok, err := vts.RelationDoesNotAllowCaveatsForSubject("viewer", "user")
+						require.NoError(t, err)
+						require.False(t, ok)
+
+						ok, err = vts.RelationDoesNotAllowCaveatsForSubject("editor", "user")
+						require.NoError(t, err)
+						require.True(t, ok)
+
+						ok, err = vts.RelationDoesNotAllowCaveatsForSubject("onlycaveated", "user")
+						require.NoError(t, err)
+						require.False(t, ok)
 					})
 
 					t.Run("IsAllowedPublicNamespace", func(t *testing.T) {

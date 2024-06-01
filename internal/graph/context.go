@@ -7,14 +7,12 @@ import (
 
 	log "github.com/zapravila/spicedb/internal/logging"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/pkg/middleware/requestid"
 )
 
 // branchContext returns a context disconnected from the parent context, but populated with the datastore.
 // Also returns a function for canceling the newly created context, without canceling the parent context.
 func branchContext(ctx context.Context) (context.Context, func(cancelErr error)) {
-	// TODO(jschorr): Replace with https://pkg.go.dev/context@master#WithoutCancel once
-	// Go 1.21 lands.
-
 	// Add tracing to the context.
 	span := trace.SpanFromContext(ctx)
 	detachedContext := trace.ContextWithSpan(context.Background(), span)
@@ -28,6 +26,8 @@ func branchContext(ctx context.Context) (context.Context, func(cancelErr error))
 	if loggerFromContext != nil {
 		detachedContext = loggerFromContext.WithContext(detachedContext)
 	}
+
+	detachedContext = requestid.PropagateIfExists(ctx, detachedContext)
 
 	return context.WithCancelCause(detachedContext)
 }

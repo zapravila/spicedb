@@ -81,6 +81,10 @@ func (c *Config) ToOption() ConfigOption {
 		to.MaxDatastoreReadPageSize = c.MaxDatastoreReadPageSize
 		to.StreamingAPITimeout = c.StreamingAPITimeout
 		to.WatchHeartbeat = c.WatchHeartbeat
+		to.MaxReadRelationshipsLimit = c.MaxReadRelationshipsLimit
+		to.MaxDeleteRelationshipsLimit = c.MaxDeleteRelationshipsLimit
+		to.MaxLookupResourcesLimit = c.MaxLookupResourcesLimit
+		to.MaxBulkExportRelationshipsLimit = c.MaxBulkExportRelationshipsLimit
 		to.MetricsAPI = c.MetricsAPI
 		to.UnaryMiddlewareModification = c.UnaryMiddlewareModification
 		to.StreamingMiddlewareModification = c.StreamingMiddlewareModification
@@ -92,6 +96,7 @@ func (c *Config) ToOption() ConfigOption {
 		to.TelemetryInterval = c.TelemetryInterval
 		to.EnableRequestLogs = c.EnableRequestLogs
 		to.EnableResponseLogs = c.EnableResponseLogs
+		to.DisableGRPCLatencyHistogram = c.DisableGRPCLatencyHistogram
 	}
 }
 
@@ -141,6 +146,10 @@ func (c Config) DebugMap() map[string]any {
 	debugMap["MaxDatastoreReadPageSize"] = helpers.DebugValue(c.MaxDatastoreReadPageSize, false)
 	debugMap["StreamingAPITimeout"] = helpers.DebugValue(c.StreamingAPITimeout, false)
 	debugMap["WatchHeartbeat"] = helpers.DebugValue(c.WatchHeartbeat, false)
+	debugMap["MaxReadRelationshipsLimit"] = helpers.DebugValue(c.MaxReadRelationshipsLimit, false)
+	debugMap["MaxDeleteRelationshipsLimit"] = helpers.DebugValue(c.MaxDeleteRelationshipsLimit, false)
+	debugMap["MaxLookupResourcesLimit"] = helpers.DebugValue(c.MaxLookupResourcesLimit, false)
+	debugMap["MaxBulkExportRelationshipsLimit"] = helpers.DebugValue(c.MaxBulkExportRelationshipsLimit, false)
 	debugMap["MetricsAPI"] = helpers.DebugValue(c.MetricsAPI, false)
 	debugMap["SilentlyDisableTelemetry"] = helpers.DebugValue(c.SilentlyDisableTelemetry, false)
 	debugMap["TelemetryCAOverridePath"] = helpers.DebugValue(c.TelemetryCAOverridePath, false)
@@ -148,6 +157,7 @@ func (c Config) DebugMap() map[string]any {
 	debugMap["TelemetryInterval"] = helpers.DebugValue(c.TelemetryInterval, false)
 	debugMap["EnableRequestLogs"] = helpers.DebugValue(c.EnableRequestLogs, false)
 	debugMap["EnableResponseLogs"] = helpers.DebugValue(c.EnableResponseLogs, false)
+	debugMap["DisableGRPCLatencyHistogram"] = helpers.DebugValue(c.DisableGRPCLatencyHistogram, false)
 	return debugMap
 }
 
@@ -496,6 +506,34 @@ func WithWatchHeartbeat(watchHeartbeat time.Duration) ConfigOption {
 	}
 }
 
+// WithMaxReadRelationshipsLimit returns an option that can set MaxReadRelationshipsLimit on a Config
+func WithMaxReadRelationshipsLimit(maxReadRelationshipsLimit uint32) ConfigOption {
+	return func(c *Config) {
+		c.MaxReadRelationshipsLimit = maxReadRelationshipsLimit
+	}
+}
+
+// WithMaxDeleteRelationshipsLimit returns an option that can set MaxDeleteRelationshipsLimit on a Config
+func WithMaxDeleteRelationshipsLimit(maxDeleteRelationshipsLimit uint32) ConfigOption {
+	return func(c *Config) {
+		c.MaxDeleteRelationshipsLimit = maxDeleteRelationshipsLimit
+	}
+}
+
+// WithMaxLookupResourcesLimit returns an option that can set MaxLookupResourcesLimit on a Config
+func WithMaxLookupResourcesLimit(maxLookupResourcesLimit uint32) ConfigOption {
+	return func(c *Config) {
+		c.MaxLookupResourcesLimit = maxLookupResourcesLimit
+	}
+}
+
+// WithMaxBulkExportRelationshipsLimit returns an option that can set MaxBulkExportRelationshipsLimit on a Config
+func WithMaxBulkExportRelationshipsLimit(maxBulkExportRelationshipsLimit uint32) ConfigOption {
+	return func(c *Config) {
+		c.MaxBulkExportRelationshipsLimit = maxBulkExportRelationshipsLimit
+	}
+}
+
 // WithMetricsAPI returns an option that can set MetricsAPI on a Config
 func WithMetricsAPI(metricsAPI util.HTTPServerConfig) ConfigOption {
 	return func(c *Config) {
@@ -598,5 +636,12 @@ func WithEnableRequestLogs(enableRequestLogs bool) ConfigOption {
 func WithEnableResponseLogs(enableResponseLogs bool) ConfigOption {
 	return func(c *Config) {
 		c.EnableResponseLogs = enableResponseLogs
+	}
+}
+
+// WithDisableGRPCLatencyHistogram returns an option that can set DisableGRPCLatencyHistogram on a Config
+func WithDisableGRPCLatencyHistogram(disableGRPCLatencyHistogram bool) ConfigOption {
+	return func(c *Config) {
+		c.DisableGRPCLatencyHistogram = disableGRPCLatencyHistogram
 	}
 }

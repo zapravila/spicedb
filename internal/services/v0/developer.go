@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	v0 "github.com/authzed/authzed-go/proto/authzed/api/v0"
 	"github.com/authzed/grpcutil"
+	v0 "github.com/zapravila/authzed-go/proto/authzed/api/v0"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/prototext"
 

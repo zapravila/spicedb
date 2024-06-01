@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/internal/testserver"
 	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"

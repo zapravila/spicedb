@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/spiceerrors"

@@ -9,9 +9,9 @@ import (
 
 	"github.com/zapravila/spicedb/pkg/tuple"
 
-	"github.com/authzed/authzed-go/pkg/responsemeta"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
@@ -44,6 +44,25 @@ func TestAllMethodsReturnMetadata(t *testing.T) {
 					Resource:   obj("document", "masterplan"),
 					Permission: "view",
 					Subject:    sub("user", "eng_lead", ""),
+				}, grpc.Trailer(&trailer))
+				require.NoError(t, err)
+				return trailer
+			},
+			"CheckBulkPermissions": func(t *testing.T, client v1.PermissionsServiceClient) metadata.MD {
+				var trailer metadata.MD
+				_, err := client.CheckBulkPermissions(ctx, &v1.CheckBulkPermissionsRequest{
+					Consistency: &v1.Consistency{
+						Requirement: &v1.Consistency_AtLeastAsFresh{
+							AtLeastAsFresh: zedtoken.MustNewFromRevision(revision),
+						},
+					},
+					Items: []*v1.CheckBulkPermissionsRequestItem{
+						{
+							Resource:   obj("document", "masterplan"),
+							Permission: "view",
+							Subject:    sub("user", "eng_lead", ""),
+						},
+					},
 				}, grpc.Trailer(&trailer))
 				require.NoError(t, err)
 				return trailer

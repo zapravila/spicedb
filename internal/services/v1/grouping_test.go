@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"golang.org/x/exp/maps"
 
 	"github.com/zapravila/spicedb/internal/graph/computed"
@@ -179,10 +179,10 @@ func TestGroupItems(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			var items []*v1.BulkCheckPermissionRequestItem
+			var items []*v1.CheckBulkPermissionsRequestItem
 			for _, r := range tt.requests {
 				rel := tuple.ParseRel(r)
-				item := &v1.BulkCheckPermissionRequestItem{
+				item := &v1.CheckBulkPermissionsRequestItem{
 					Resource:   rel.Resource,
 					Permission: rel.Relation,
 					Subject:    rel.Subject,
@@ -256,7 +256,7 @@ func TestCaveatContextSizeLimitIsEnforced(t *testing.T) {
 		maximumAPIDepth:      1,
 	}
 	rel := tuple.ParseRel(`document:1#view@user:1[somecaveat:{"hey": "bud"}]`)
-	items := []*v1.BulkCheckPermissionRequestItem{
+	items := []*v1.CheckBulkPermissionsRequestItem{
 		{
 			Resource:   rel.Resource,
 			Permission: rel.Relation,

@@ -8,7 +8,6 @@ import (
 
 	"github.com/zapravila/spicedb/internal/dispatch"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
-	"github.com/zapravila/spicedb/internal/namespace"
 	"github.com/zapravila/spicedb/pkg/datastore"
 	"github.com/zapravila/spicedb/pkg/datastore/options"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
@@ -107,12 +106,12 @@ func (crr *CursoredReachableResources) afterSameType(
 	// Load the type system and reachability graph to find the entrypoints for the reachability.
 	ds := datastoremw.MustFromContext(ctx)
 	reader := ds.SnapshotReader(req.Revision)
-	_, typeSystem, err := namespace.ReadNamespaceAndTypes(ctx, req.ResourceRelation.Namespace, reader)
+	_, typeSystem, err := typesystem.ReadNamespaceAndTypes(ctx, req.ResourceRelation.Namespace, reader)
 	if err != nil {
 		return err
 	}
 
-	rg := typesystem.ReachabilityGraphFor(typeSystem.AsValidated())
+	rg := typesystem.ReachabilityGraphFor(typeSystem)
 	entrypoints, err := rg.OptimizedEntrypointsForSubjectToResource(ctx, &core.RelationReference{
 		Namespace: req.SubjectRelation.Namespace,
 		Relation:  req.SubjectRelation.Relation,
@@ -174,7 +173,7 @@ func (crr *CursoredReachableResources) lookupRelationEntrypoint(
 		return err
 	}
 
-	_, relTypeSystem, err := namespace.ReadNamespaceAndTypes(ctx, relationReference.Namespace, reader)
+	_, relTypeSystem, err := typesystem.ReadNamespaceAndTypes(ctx, relationReference.Namespace, reader)
 	if err != nil {
 		return err
 	}
@@ -349,7 +348,7 @@ func (crr *CursoredReachableResources) lookupTTUEntrypoint(ctx context.Context,
 ) error {
 	containingRelation := entrypoint.ContainingRelationOrPermission()
 
-	_, ttuTypeSystem, err := namespace.ReadNamespaceAndTypes(ctx, containingRelation.Namespace, reader)
+	_, ttuTypeSystem, err := typesystem.ReadNamespaceAndTypes(ctx, containingRelation.Namespace, reader)
 	if err != nil {
 		return err
 	}
@@ -362,12 +361,12 @@ func (crr *CursoredReachableResources) lookupTTUEntrypoint(ctx context.Context,
 	// Determine whether this TTU should be followed, which will be the case if the subject relation's namespace
 	// is allowed in any form on the relation; since arrows ignore the subject's relation (if any), we check
 	// for the subject namespace as a whole.
-	isAllowed, err := ttuTypeSystem.IsAllowedDirectNamespace(tuplesetRelation, req.SubjectRelation.Namespace)
+	allowedRelations, err := ttuTypeSystem.GetAllowedDirectNamespaceSubjectRelations(tuplesetRelation, req.SubjectRelation.Namespace)
 	if err != nil {
 		return err
 	}
 
-	if isAllowed != typesystem.AllowedNamespaceValid {
+	if allowedRelations == nil {
 		return nil
 	}
 
@@ -375,6 +374,13 @@ func (crr *CursoredReachableResources) lookupTTUEntrypoint(ctx context.Context,
 	subjectsFilter := datastore.SubjectsFilter{
 		SubjectType:        req.SubjectRelation.Namespace,
 		OptionalSubjectIds: req.SubjectIds,
+	}
+
+	// Optimization: if there is a single allowed relation, pass it as a subject relation filter to make things faster
+	// on querying.
+	if allowedRelations.Len() == 1 {
+		allowedRelationName := allowedRelations.AsSlice()[0]
+		subjectsFilter.RelationFilter = datastore.SubjectRelationFilter{}.WithRelation(allowedRelationName)
 	}
 
 	tuplesetRelationReference := &core.RelationReference{

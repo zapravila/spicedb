@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	v0 "github.com/authzed/authzed-go/proto/authzed/api/v0"
+	v0 "github.com/zapravila/authzed-go/proto/authzed/api/v0"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"

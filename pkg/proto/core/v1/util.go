@@ -1,7 +1,7 @@
 package corev1
 
 import (
-	v0 "github.com/authzed/authzed-go/proto/authzed/api/v0"
+	v0 "github.com/zapravila/authzed-go/proto/authzed/api/v0"
 )
 
 // ToCoreRelationTuple converts the input to a core RelationTuple.

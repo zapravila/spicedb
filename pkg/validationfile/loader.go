@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	log "github.com/zapravila/spicedb/internal/logging"
 	dsctx "github.com/zapravila/spicedb/internal/middleware/datastore"

@@ -1,10 +1,10 @@
 package memdb
 
 import (
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/hashicorp/go-memdb"
 	"github.com/jzelinskie/stringz"
 	"github.com/rs/zerolog"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/zapravila/spicedb/pkg/datastore"
@@ -20,6 +20,8 @@ const (
 	indexNamespaceAndRelation = "namespaceAndRelation"
 	indexSubjectNamespace     = "subjectNamespace"
 
+	tableCounters = "counters"
+
 	tableChangelog = "changelog"
 	indexRevision  = "id"
 )
@@ -32,6 +34,13 @@ type namespace struct {
 
 func (ns namespace) MarshalZerologObject(e *zerolog.Event) {
 	e.Stringer("rev", ns.updated).Str("name", ns.name)
+}
+
+type counter struct {
+	name        string
+	filterBytes []byte
+	count       int
+	updated     datastore.Revision
 }
 
 type relationship struct {
@@ -181,6 +190,16 @@ var schema = &memdb.DBSchema{
 		},
 		tableCaveats: {
 			Name: tableCaveats,
+			Indexes: map[string]*memdb.IndexSchema{
+				indexID: {
+					Name:    indexID,
+					Unique:  true,
+					Indexer: &memdb.StringFieldIndex{Field: "name"},
+				},
+			},
+		},
+		tableCounters: {
+			Name: tableCounters,
 			Indexes: map[string]*memdb.IndexSchema{
 				indexID: {
 					Name:    indexID,

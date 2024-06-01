@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/internal/datastore/revisions"
 	"github.com/zapravila/spicedb/pkg/datastore"

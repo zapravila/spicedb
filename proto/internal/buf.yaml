@@ -6,7 +6,7 @@ version: "v1"
 # - "googleapis/googleapis"
 # build:
 #   excludes:
-#     # - "google"
+#     - "google"
 #     - protoc-gen-openapiv2
 #     - validate
 #     - "authzed/api"

@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/tuple"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 )
 
 func TestRelationshipsFilterFromPublicFilter(t *testing.T) {

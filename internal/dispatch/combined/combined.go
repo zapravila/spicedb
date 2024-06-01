@@ -17,6 +17,7 @@ import (
 	"github.com/zapravila/spicedb/internal/dispatch/keys"
 	"github.com/zapravila/spicedb/internal/dispatch/remote"
 	"github.com/zapravila/spicedb/internal/dispatch/singleflight"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 	log "github.com/zapravila/spicedb/internal/logging"
 	"github.com/zapravila/spicedb/pkg/cache"
 	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"

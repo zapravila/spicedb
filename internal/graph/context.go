@@ -7,6 +7,7 @@ import (
 
 	log "github.com/zapravila/spicedb/internal/logging"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/pkg/middleware/requestid"
 )
 
 // branchContext returns a context disconnected from the parent context, but populated with the datastore.

@@ -5,10 +5,10 @@ import (
 
 	log "github.com/zapravila/spicedb/internal/logging"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
 	"github.com/rs/xid"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

@@ -5,18 +5,16 @@ import (
 	"errors"
 	"fmt"
 
-	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
 	"github.com/zapravila/spicedb/pkg/migrate"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"go.opentelemetry.io/otel"
 
-	log "github.com/authzed/spicedb/internal/logging"
+	log "github.com/zapravila/spicedb/internal/logging"
 
-	pgxcommon "github.com/authzed/spicedb/internal/datastore/postgres/common"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/migrate"
+	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 const postgresMissingTableErrorCode = "42P01"

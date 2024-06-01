@@ -8,13 +8,13 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/authzed/authzed-go/proto"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/authzed/grpcutil"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/zapravila/authzed-go/proto"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
@@ -24,7 +24,7 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/authzed/spicedb/internal/grpchelpers"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 )
 
 var histogram = promauto.NewHistogramVec(prometheus.HistogramOpts{

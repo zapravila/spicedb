@@ -3,9 +3,9 @@ package proxy
 import (
 	"context"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

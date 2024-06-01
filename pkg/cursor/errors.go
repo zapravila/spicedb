@@ -3,7 +3,7 @@ package cursor
 import (
 	"errors"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 

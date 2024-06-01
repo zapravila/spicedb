@@ -1,4 +1,4 @@
-module github.com/authzed/spicedb/tools/analyzers
+module github.com/zapravila/spicedb/tools/analyzers
 
 go 1.22.2
 

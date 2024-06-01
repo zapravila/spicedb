@@ -7,11 +7,11 @@ import (
 	"io"
 	"testing"
 
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/testing/testpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 

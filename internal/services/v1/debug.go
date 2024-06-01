@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	cexpr "github.com/zapravila/spicedb/internal/caveats"
 	"github.com/zapravila/spicedb/pkg/datastore"

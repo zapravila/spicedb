@@ -12,6 +12,7 @@ import (
 	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 	"github.com/zapravila/spicedb/pkg/tuple"
 	"github.com/zapravila/spicedb/pkg/typesystem"
 )

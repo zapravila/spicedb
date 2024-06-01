@@ -29,6 +29,7 @@ import (
 	// Register cert watcher metrics
 	_ "sigs.k8s.io/controller-runtime/pkg/certwatcher/metrics"
 
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 	log "github.com/zapravila/spicedb/internal/logging"
 	"github.com/zapravila/spicedb/pkg/x509util"
 )

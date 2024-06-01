@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	grpcvalidate "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	"github.com/jzelinskie/stringz"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
 
@@ -26,9 +26,9 @@ import (
 	"github.com/zapravila/spicedb/pkg/datastore"
 	"github.com/zapravila/spicedb/pkg/datastore/options"
 	"github.com/zapravila/spicedb/pkg/datastore/pagination"
+	"github.com/zapravila/spicedb/pkg/genutil"
 	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	"github.com/zapravila/spicedb/pkg/middleware/consistency"
-	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 	"github.com/zapravila/spicedb/pkg/tuple"
 	"github.com/zapravila/spicedb/pkg/zedtoken"

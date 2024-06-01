@@ -12,24 +12,18 @@ import (
 	"google.golang.org/grpc/codes"
 
 	"github.com/zapravila/spicedb/internal/dispatch"
-	"github.com/zapravila/spicedb/internal/graph"
-	"github.com/zapravila/spicedb/internal/graph/computed"
 	log "github.com/zapravila/spicedb/internal/logging"
 	"github.com/zapravila/spicedb/internal/middleware"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
 	"github.com/zapravila/spicedb/internal/middleware/handwrittenvalidation"
 	"github.com/zapravila/spicedb/internal/middleware/streamtimeout"
 	"github.com/zapravila/spicedb/internal/middleware/usagemetrics"
-	"github.com/zapravila/spicedb/internal/namespace"
 	"github.com/zapravila/spicedb/internal/relationships"
 	"github.com/zapravila/spicedb/internal/services/shared"
 	"github.com/zapravila/spicedb/internal/services/v1/options"
-	"github.com/zapravila/spicedb/internal/taskrunner"
 	"github.com/zapravila/spicedb/pkg/cursor"
 	"github.com/zapravila/spicedb/pkg/datastore"
 	dsoptions "github.com/zapravila/spicedb/pkg/datastore/options"
-	"github.com/zapravila/spicedb/pkg/genutil/mapz"
-	"github.com/zapravila/spicedb/pkg/genutil/slicez"
 	"github.com/zapravila/spicedb/pkg/middleware/consistency"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
@@ -37,6 +31,11 @@ import (
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
 	"github.com/zapravila/spicedb/pkg/tuple"
 	"github.com/zapravila/spicedb/pkg/typesystem"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
+
+	grpcvalidate "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
+	"github.com/samber/lo"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 )
 
 const (

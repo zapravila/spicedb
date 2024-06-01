@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	grpcvalidate "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -14,6 +14,7 @@ import (
 	"github.com/zapravila/spicedb/internal/middleware/usagemetrics"
 	"github.com/zapravila/spicedb/internal/services/shared"
 	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 	"github.com/zapravila/spicedb/pkg/tuple"

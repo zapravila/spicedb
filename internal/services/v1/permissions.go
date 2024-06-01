@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/jzelinskie/stringz"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"

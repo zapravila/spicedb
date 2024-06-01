@@ -6,14 +6,17 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 
 	"github.com/zapravila/spicedb/pkg/tuple"
 
 	sq "github.com/Masterminds/squirrel"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/jackc/pgx/v5"
 	"github.com/jzelinskie/stringz"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/proto"
 
 	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"

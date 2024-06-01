@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	v0 "github.com/authzed/authzed-go/proto/authzed/api/v0"
 	"github.com/authzed/grpcutil"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -19,6 +18,7 @@ import (
 	"github.com/jzelinskie/cobrautil/v2/cobrahttp"
 	"github.com/jzelinskie/stringz"
 	"github.com/spf13/cobra"
+	v0 "github.com/zapravila/authzed-go/proto/authzed/api/v0"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"

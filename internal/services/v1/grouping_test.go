@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"golang.org/x/exp/maps"
 
 	"github.com/zapravila/spicedb/internal/graph/computed"

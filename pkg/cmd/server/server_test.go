@@ -12,8 +12,8 @@ import (
 	"github.com/zapravila/spicedb/pkg/cmd/datastore"
 	"github.com/zapravila/spicedb/pkg/cmd/util"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"

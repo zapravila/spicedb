@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
 )
 
 func TestResolver(t *testing.T) {

@@ -17,12 +17,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	yamlv2 "gopkg.in/yaml.v2"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	"github.com/zapravila/spicedb/internal/developmentmembership"
 	"github.com/zapravila/spicedb/internal/dispatch"
 	"github.com/zapravila/spicedb/internal/graph"
-	"github.com/zapravila/spicedb/internal/namespace"
 	"github.com/zapravila/spicedb/internal/services/integrationtesting/consistencytestutil"
 	"github.com/zapravila/spicedb/pkg/datastore"
 	"github.com/zapravila/spicedb/pkg/development"
@@ -31,6 +30,7 @@ import (
 	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
 	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 	"github.com/zapravila/spicedb/pkg/validationfile"
 	"github.com/zapravila/spicedb/pkg/validationfile/blocks"
 )

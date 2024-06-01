@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/zapravila/spicedb/pkg/datastore"
 	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	"github.com/zapravila/spicedb/pkg/graph"
 	nspkg "github.com/zapravila/spicedb/pkg/namespace"

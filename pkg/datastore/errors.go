@@ -6,7 +6,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // ErrNotFound is a shared interface for not found errors.

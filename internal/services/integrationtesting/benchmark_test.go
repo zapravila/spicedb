@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
 	"github.com/zapravila/spicedb/internal/services/integrationtesting/consistencytestutil"
 	"github.com/zapravila/spicedb/internal/testserver"

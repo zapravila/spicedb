@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/diff/caveats"
-	"github.com/authzed/spicedb/pkg/diff/namespace"
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/diff/caveats"
+	"github.com/zapravila/spicedb/pkg/diff/namespace"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
 )
 
 func TestDiffSchemas(t *testing.T) {

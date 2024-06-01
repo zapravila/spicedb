@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/stretchr/testify/require"

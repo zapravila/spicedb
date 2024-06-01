@@ -83,7 +83,7 @@ brews:
           type: "build"
       custom_block: |
         head "https://github.com/authzed/spicedb.git", :branch => "main"
-      url_template: "https://github.com/authzed/spicedb/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+      url_template: "https://github.com/zapravila/spicedb/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
       install: |
         if build.head?
           versionVar = "github.com/jzelinskie/cobrautil/v2.Version"

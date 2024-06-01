@@ -13,6 +13,7 @@ import (
 
 	"github.com/zapravila/spicedb/internal/testfixtures"
 	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 

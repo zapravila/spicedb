@@ -41,6 +41,7 @@ import (
 	datastorecfg "github.com/zapravila/spicedb/pkg/cmd/datastore"
 	"github.com/zapravila/spicedb/pkg/cmd/util"
 	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/middleware/requestid"
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 

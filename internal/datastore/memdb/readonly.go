@@ -6,8 +6,9 @@ import (
 	"runtime"
 	"slices"
 	"sort"
+	"strings"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 
 	"github.com/hashicorp/go-memdb"
 

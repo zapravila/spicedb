@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/google/go-cmp/cmp"
 	"github.com/scylladb/go-set/strset"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"github.com/zapravila/spicedb/internal/datastore/common"

@@ -3,13 +3,13 @@ package v1
 import (
 	"context"
 
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/diff"
-	"github.com/authzed/spicedb/pkg/middleware/consistency"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/diff"
+	"github.com/zapravila/spicedb/pkg/middleware/consistency"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
 )
 
 func loadCurrentSchema(ctx context.Context) (*diff.DiffableSchema, datastore.Revision, error) {

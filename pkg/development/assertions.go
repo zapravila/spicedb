@@ -3,7 +3,7 @@ package development
 import (
 	"fmt"
 
-	v1t "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1t "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
 	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"

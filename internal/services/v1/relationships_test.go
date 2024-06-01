@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/authzed/grpcutil"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,6 +21,7 @@ import (
 	"github.com/zapravila/spicedb/internal/datastore/memdb"
 	tf "github.com/zapravila/spicedb/internal/testfixtures"
 	"github.com/zapravila/spicedb/internal/testserver"
+	"github.com/zapravila/spicedb/pkg/datastore"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/spiceerrors"
 	"github.com/zapravila/spicedb/pkg/tuple"

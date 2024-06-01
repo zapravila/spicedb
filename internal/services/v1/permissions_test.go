@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	"github.com/authzed/authzed-go/pkg/responsemeta"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/authzed/grpcutil"
 	"github.com/stretchr/testify/require"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"go.uber.org/goleak"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -25,6 +25,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	"github.com/zapravila/spicedb/internal/namespace"
+	"github.com/zapravila/spicedb/internal/services/shared"
 	v1svc "github.com/zapravila/spicedb/internal/services/v1"
 	tf "github.com/zapravila/spicedb/internal/testfixtures"
 	"github.com/zapravila/spicedb/internal/testserver"
@@ -34,6 +36,7 @@ import (
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
 	"github.com/zapravila/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/testutil"
 	"github.com/zapravila/spicedb/pkg/tuple"
 	"github.com/zapravila/spicedb/pkg/zedtoken"
 )

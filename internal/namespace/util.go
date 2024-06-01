@@ -6,7 +6,6 @@ import (
 	"github.com/zapravila/spicedb/pkg/datastore"
 	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
-	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // ReadNamespaceAndRelation checks that the specified namespace and relation exist in the

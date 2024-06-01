@@ -6,6 +6,7 @@ import (
 	"github.com/jzelinskie/cobrautil/v2"
 	"github.com/jzelinskie/cobrautil/v2/cobraotel"
 	"github.com/jzelinskie/cobrautil/v2/cobrazerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/zapravila/spicedb/pkg/cmd/server"
@@ -15,6 +16,13 @@ import (
 )
 
 func RegisterRootFlags(cmd *cobra.Command) error {
+	cobrazerolog.New().RegisterFlags(cmd.PersistentFlags())
+	cobraotel.New(cmd.Use).RegisterFlags(cmd.PersistentFlags())
+	releases.RegisterFlags(cmd.PersistentFlags())
+	termination.RegisterFlags(cmd.PersistentFlags())
+	runtime.RegisterFlags(cmd.PersistentFlags())
+
+
 	zl := cobrazerolog.New()
 	zl.RegisterFlags(cmd.PersistentFlags())
 	if err := zl.RegisterFlagCompletion(cmd); err != nil {
@@ -30,6 +38,8 @@ func RegisterRootFlags(cmd *cobra.Command) error {
 	releases.RegisterFlags(cmd.PersistentFlags())
 	termination.RegisterFlags(cmd.PersistentFlags())
 	runtime.RegisterFlags(cmd.PersistentFlags())
+
+
 
 	return nil
 }

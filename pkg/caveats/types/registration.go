@@ -6,7 +6,7 @@ import (
 	"github.com/authzed/cel-go/cel"
 	"github.com/authzed/cel-go/common/types/ref"
 
-	"github.com/authzed/spicedb/pkg/genutil"
+	"github.com/zapravila/spicedb/pkg/genutil"
 )
 
 var definitions = map[string]typeDefinition{}

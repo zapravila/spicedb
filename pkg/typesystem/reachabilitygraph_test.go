@@ -9,6 +9,7 @@ import (
 
 	"github.com/zapravila/spicedb/internal/datastore/memdb"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
 	ns "github.com/zapravila/spicedb/pkg/namespace"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"

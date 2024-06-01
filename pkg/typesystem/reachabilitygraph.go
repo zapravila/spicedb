@@ -10,7 +10,9 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"golang.org/x/exp/maps"
 
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 	"github.com/zapravila/spicedb/pkg/tuple"
 )
 

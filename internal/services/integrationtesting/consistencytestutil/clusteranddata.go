@@ -15,9 +15,9 @@ import (
 	"github.com/zapravila/spicedb/internal/dispatch/graph"
 	"github.com/zapravila/spicedb/internal/dispatch/keys"
 	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
-	"github.com/zapravila/spicedb/internal/namespace"
 	"github.com/zapravila/spicedb/internal/testserver"
 	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 	"github.com/zapravila/spicedb/pkg/validationfile"
 )
 

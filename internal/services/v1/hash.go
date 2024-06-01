@@ -3,7 +3,7 @@ package v1
 import (
 	"strconv"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/zapravila/spicedb/pkg/caveats"

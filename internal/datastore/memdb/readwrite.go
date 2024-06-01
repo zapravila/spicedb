@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"strings"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/hashicorp/go-memdb"
 	"github.com/jzelinskie/stringz"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/zapravila/spicedb/internal/datastore/common"
 	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
 	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 	"github.com/zapravila/spicedb/pkg/tuple"
 )

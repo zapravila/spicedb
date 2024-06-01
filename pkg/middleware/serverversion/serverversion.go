@@ -3,9 +3,9 @@ package serverversion
 import (
 	"context"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 

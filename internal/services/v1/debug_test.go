@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	"github.com/authzed/authzed-go/pkg/responsemeta"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/prototext"

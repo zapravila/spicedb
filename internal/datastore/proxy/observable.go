@@ -142,6 +142,22 @@ func (p *observableProxy) Close() error { return p.delegate.Close() }
 
 type observableReader struct{ delegate datastore.Reader }
 
+func (r *observableReader) CountRelationships(ctx context.Context, name string) (int, error) {
+	ctx, closer := observe(ctx, "CountRelationships", trace.WithAttributes(
+		attribute.String("name", name),
+	))
+	defer closer()
+
+	return r.delegate.CountRelationships(ctx, name)
+}
+
+func (r *observableReader) LookupCounters(ctx context.Context) ([]datastore.RelationshipCounter, error) {
+	ctx, closer := observe(ctx, "LookupCounters")
+	defer closer()
+
+	return r.delegate.LookupCounters(ctx)
+}
+
 func (r *observableReader) ReadCaveatByName(ctx context.Context, name string) (*core.CaveatDefinition, datastore.Revision, error) {
 	ctx, closer := observe(ctx, "ReadCaveatByName", trace.WithAttributes(
 		attribute.String("name", name),
@@ -194,7 +210,7 @@ func (r *observableReader) ReadNamespaceByName(ctx context.Context, nsName strin
 
 func (r *observableReader) QueryRelationships(ctx context.Context, filter datastore.RelationshipsFilter, options ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
 	ctx, closer := observe(ctx, "QueryRelationships", trace.WithAttributes(
-		attribute.String("resourceType", filter.ResourceType),
+		attribute.String("resourceType", filter.OptionalResourceType),
 		attribute.String("resourceRelation", filter.OptionalResourceRelation),
 		attribute.String("caveatName", filter.OptionalCaveatName),
 	))
@@ -242,6 +258,35 @@ func (r *observableReader) ReverseQueryRelationships(ctx context.Context, subjec
 type observableRWT struct {
 	*observableReader
 	delegate datastore.ReadWriteTransaction
+}
+
+func (rwt *observableRWT) RegisterCounter(ctx context.Context, name string, filter *core.RelationshipFilter) error {
+	ctx, closer := observe(ctx, "RegisterCounter", trace.WithAttributes(
+		attribute.String("name", name),
+	))
+	defer closer()
+
+	return rwt.delegate.RegisterCounter(ctx, name, filter)
+}
+
+func (rwt *observableRWT) UnregisterCounter(ctx context.Context, name string) error {
+	ctx, closer := observe(ctx, "UnregisterCounter", trace.WithAttributes(
+		attribute.String("name", name),
+	))
+	defer closer()
+
+	return rwt.delegate.UnregisterCounter(ctx, name)
+}
+
+func (rwt *observableRWT) StoreCounterValue(ctx context.Context, name string, value int, computedAtRevision datastore.Revision) error {
+	ctx, closer := observe(ctx, "StoreCounterValue", trace.WithAttributes(
+		attribute.String("name", name),
+		attribute.Int("value", value),
+		attribute.String("revision", computedAtRevision.String()),
+	))
+	defer closer()
+
+	return rwt.delegate.StoreCounterValue(ctx, name, value, computedAtRevision)
 }
 
 func (rwt *observableRWT) WriteCaveats(ctx context.Context, caveats []*core.CaveatDefinition) error {
@@ -299,13 +344,13 @@ func (rwt *observableRWT) DeleteNamespaces(ctx context.Context, nsNames ...strin
 	return rwt.delegate.DeleteNamespaces(ctx, nsNames...)
 }
 
-func (rwt *observableRWT) DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter) error {
+func (rwt *observableRWT) DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter, options ...options.DeleteOptionsOption) (bool, error) {
 	ctx, closer := observe(ctx, "DeleteRelationships", trace.WithAttributes(
 		filterToAttributes(filter)...,
 	))
 	defer closer()
 
-	return rwt.delegate.DeleteRelationships(ctx, filter)
+	return rwt.delegate.DeleteRelationships(ctx, filter, options...)
 }
 
 func (rwt *observableRWT) BulkLoad(ctx context.Context, iter datastore.BulkWriteRelationshipSource) (uint64, error) {

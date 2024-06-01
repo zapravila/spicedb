@@ -129,21 +129,6 @@ func CheckNamespaceAndRelation(
 	return NewRelationNotFoundErr(namespace, relation)
 }
 
-// ReadNamespaceAndTypes reads a namespace definition, version, and type system and returns it if found.
-func ReadNamespaceAndTypes(
-	ctx context.Context,
-	nsName string,
-	ds datastore.Reader,
-) (*core.NamespaceDefinition, *typesystem.TypeSystem, error) {
-	nsDef, _, err := ds.ReadNamespaceByName(ctx, nsName)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	ts, terr := typesystem.NewNamespaceTypeSystem(nsDef, typesystem.ResolverForDatastoreReader(ds))
-	return nsDef, ts, terr
-}
-
 // ListReferencedNamespaces returns the names of all namespaces referenced in the
 // given namespace definitions. This includes the namespaces themselves, as well as
 // any found in type information on relations.

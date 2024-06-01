@@ -46,6 +46,11 @@ func (c Categories) GC() bool {
 	return ok
 }
 
+func (c Categories) Stats() bool {
+	_, ok := c[StatsCategory]
+	return ok
+}
+
 func (c Categories) Watch() bool {
 	_, ok := c[WatchCategory]
 	return ok
@@ -68,6 +73,7 @@ const (
 	WatchCategory            = "Watch"
 	WatchSchemaCategory      = "WatchSchema"
 	WatchCheckpointsCategory = "WatchCheckpoints"
+	StatsCategory            = "Stats"
 )
 
 func WithCategories(cats ...string) Categories {
@@ -95,12 +101,21 @@ func AllWithExceptions(t *testing.T, tester DatastoreTester, except Categories) 
 	t.Run("TestDeleteRelationships", func(t *testing.T) { DeleteRelationshipsTest(t, tester) })
 	t.Run("TestDeleteNonExistant", func(t *testing.T) { DeleteNotExistantTest(t, tester) })
 	t.Run("TestDeleteAlreadyDeleted", func(t *testing.T) { DeleteAlreadyDeletedTest(t, tester) })
+	t.Run("TestRecreateRelationshipsAfterDeleteWithFilter", func(t *testing.T) { RecreateRelationshipsAfterDeleteWithFilter(t, tester) })
 	t.Run("TestWriteDeleteWrite", func(t *testing.T) { WriteDeleteWriteTest(t, tester) })
 	t.Run("TestCreateAlreadyExisting", func(t *testing.T) { CreateAlreadyExistingTest(t, tester) })
-	t.Run("TestTouchAlreadyExisting", func(t *testing.T) { TouchAlreadyExistingTest(t, tester) })
-	t.Run("TestCreateDeleteTouchTest", func(t *testing.T) { CreateDeleteTouchTest(t, tester) })
-	t.Run("TestCreateTouchDeleteTouchTest", func(t *testing.T) { CreateTouchDeleteTouchTest(t, tester) })
+	t.Run("TestTouchAlreadyExistingWithoutCaveat", func(t *testing.T) { TouchAlreadyExistingTest(t, tester) })
+	t.Run("TestCreateDeleteTouch", func(t *testing.T) { CreateDeleteTouchTest(t, tester) })
+	t.Run("TestDeleteOneThousandIndividualInOneCall", func(t *testing.T) { DeleteOneThousandIndividualInOneCallTest(t, tester) })
+	t.Run("TestCreateTouchDeleteTouch", func(t *testing.T) { CreateTouchDeleteTouchTest(t, tester) })
 	t.Run("TestTouchAlreadyExistingCaveated", func(t *testing.T) { TouchAlreadyExistingCaveatedTest(t, tester) })
+	t.Run("TestBulkDeleteRelationships", func(t *testing.T) { BulkDeleteRelationshipsTest(t, tester) })
+	t.Run("TestDeleteCaveatedTuple", func(t *testing.T) { DeleteCaveatedTupleTest(t, tester) })
+	t.Run("TestDeleteWithLimit", func(t *testing.T) { DeleteWithLimitTest(t, tester) })
+	t.Run("TestQueryRelationshipsWithVariousFilters", func(t *testing.T) { QueryRelationshipsWithVariousFiltersTest(t, tester) })
+	t.Run("TestDeleteRelationshipsWithVariousFilters", func(t *testing.T) { DeleteRelationshipsWithVariousFiltersTest(t, tester) })
+	t.Run("TestTouchTypedAlreadyExistingWithoutCaveat", func(t *testing.T) { TypedTouchAlreadyExistingTest(t, tester) })
+	t.Run("TestTouchTypedAlreadyExistingWithCaveat", func(t *testing.T) { TypedTouchAlreadyExistingWithCaveatTest(t, tester) })
 
 	t.Run("TestMultipleReadsInRWT", func(t *testing.T) { MultipleReadsInRWTTest(t, tester) })
 	t.Run("TestConcurrentWriteSerialization", func(t *testing.T) { ConcurrentWriteSerializationTest(t, tester) })
@@ -123,8 +138,12 @@ func AllWithExceptions(t *testing.T, tester DatastoreTester, except Categories) 
 
 	t.Run("TestBulkUpload", func(t *testing.T) { BulkUploadTest(t, tester) })
 	t.Run("TestBulkUploadErrors", func(t *testing.T) { BulkUploadErrorsTest(t, tester) })
+	t.Run("TestBulkUploadAlreadyExistsError", func(t *testing.T) { BulkUploadAlreadyExistsErrorTest(t, tester) })
+	t.Run("TestBulkUploadAlreadyExistsSameCallError", func(t *testing.T) { BulkUploadAlreadyExistsSameCallErrorTest(t, tester) })
 
-	t.Run("TestStats", func(t *testing.T) { StatsTest(t, tester) })
+	if !except.Stats() {
+		t.Run("TestStats", func(t *testing.T) { StatsTest(t, tester) })
+	}
 
 	t.Run("TestRetries", func(t *testing.T) { RetryTest(t, tester) })
 
@@ -150,6 +169,9 @@ func AllWithExceptions(t *testing.T, tester DatastoreTester, except Categories) 
 	if !except.Watch() && !except.WatchCheckpoints() {
 		t.Run("TestWatchCheckpoints", func(t *testing.T) { WatchCheckpointsTest(t, tester) })
 	}
+
+	t.Run("TestRelationshipCounters", func(t *testing.T) { RelationshipCountersTest(t, tester) })
+	t.Run("TestUpdateRelationshipCounter", func(t *testing.T) { UpdateRelationshipCounterTest(t, tester) })
 }
 
 // All runs all generic datastore tests on a DatastoreTester.

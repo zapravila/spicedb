@@ -93,6 +93,7 @@ type Config struct {
 	LegacyFuzzing               time.Duration `debugmap:"visible"`
 	RevisionQuantization        time.Duration `debugmap:"visible"`
 	MaxRevisionStalenessPercent float64       `debugmap:"visible"`
+	CredentialsProviderName     string        `debugmap:"visible"`
 
 	// Options
 	ReadConnPool           ConnPoolConfig `debugmap:"visible"`
@@ -160,6 +161,7 @@ func RegisterDatastoreFlagsWithPrefix(flagSet *pflag.FlagSet, prefix string, opt
 
 	flagSet.StringVar(&opts.Engine, flagName("datastore-engine"), defaults.Engine, fmt.Sprintf(`type of datastore to initialize (%s)`, datastore.EngineOptions()))
 	flagSet.StringVar(&opts.URI, flagName("datastore-conn-uri"), defaults.URI, `connection string used by remote datastores (e.g. "postgres://postgres:password@localhost:5432/spicedb")`)
+	flagSet.StringVar(&opts.CredentialsProviderName, flagName("datastore-credentials-provider-name"), defaults.CredentialsProviderName, fmt.Sprintf(`retrieve datastore credentials dynamically using (%s)`, datastore.CredentialsProviderOptions()))
 
 	var legacyConnPool ConnPoolConfig
 	RegisterConnPoolFlagsWithPrefix(flagSet, "datastore-conn", DefaultReadConnPool(), &legacyConnPool)
@@ -184,7 +186,7 @@ func RegisterDatastoreFlagsWithPrefix(flagSet *pflag.FlagSet, prefix string, opt
 	flagSet.DurationVar(&opts.GCInterval, flagName("datastore-gc-interval"), defaults.GCInterval, "amount of time between passes of garbage collection (postgres driver only)")
 	flagSet.DurationVar(&opts.GCMaxOperationTime, flagName("datastore-gc-max-operation-time"), defaults.GCMaxOperationTime, "maximum amount of time a garbage collection pass can operate before timing out (postgres driver only)")
 	flagSet.DurationVar(&opts.RevisionQuantization, flagName("datastore-revision-quantization-interval"), defaults.RevisionQuantization, "boundary interval to which to round the quantized revision")
-	flagSet.Float64Var(&opts.MaxRevisionStalenessPercent, flagName("datastore-revision-quantization-max-staleness-percent"), defaults.MaxRevisionStalenessPercent, "percentage of the revision quantization interval where we may opt to select a stale revision for performance reasons")
+	flagSet.Float64Var(&opts.MaxRevisionStalenessPercent, flagName("datastore-revision-quantization-max-staleness-percent"), defaults.MaxRevisionStalenessPercent, "float percentage (where 1 = 100%) of the revision quantization interval where we may opt to select a stale revision for performance reasons. Defaults to 0.1 (representing 10%)")
 	flagSet.BoolVar(&opts.ReadOnly, flagName("datastore-readonly"), defaults.ReadOnly, "set the service to read-only mode")
 	flagSet.StringSliceVar(&opts.BootstrapFiles, flagName("datastore-bootstrap-files"), defaults.BootstrapFiles, "bootstrap data yaml files to load")
 	flagSet.BoolVar(&opts.BootstrapOverwrite, flagName("datastore-bootstrap-overwrite"), defaults.BootstrapOverwrite, "overwrite any existing data with bootstrap data")
@@ -221,10 +223,9 @@ func RegisterDatastoreFlagsWithPrefix(flagSet *pflag.FlagSet, prefix string, opt
 		return fmt.Errorf("failed to mark flag as deprecated: %w", err)
 	}
 
-	// TODO(jschorr): Remove this flag after a few versions.
 	flagSet.Uint16Var(&unusedSplitQueryCount, flagName("datastore-query-userset-batch-size"), 1024, "number of usersets after which a relationship query will be split into multiple queries")
-	if err := flagSet.MarkDeprecated(flagName("datastore-query-userset-batch-size"), "no longer has any effect"); err != nil {
-		return fmt.Errorf("failed to mark flag as deprecated: %w", err)
+	if err := flagSet.MarkHidden(flagName("datastore-query-userset-batch-size")); err != nil {
+		return fmt.Errorf("failed to mark flag as hidden: %w", err)
 	}
 
 	return nil
@@ -354,6 +355,7 @@ func NewDatastore(ctx context.Context, options ...ConfigOption) (datastore.Datas
 
 func newPostgresDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
 	pgOpts := []postgres.Option{
+		postgres.CredentialsProviderName(opts.CredentialsProviderName),
 		postgres.GCWindow(opts.GCWindow),
 		postgres.GCEnabled(!opts.ReadOnly),
 		postgres.RevisionQuantization(opts.RevisionQuantization),

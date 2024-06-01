@@ -148,14 +148,13 @@ func (dc *DevContext) RunV1InMemoryService() (*grpc.ClientConn, func(), error) {
 		}
 	}()
 
-	conn, err := grpc.DialContext(
+	conn, err := grpchelpers.DialAndWait(
 		context.Background(),
 		"",
 		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return listener.Dial()
 		}),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	return conn, func() {
 		conn.Close()

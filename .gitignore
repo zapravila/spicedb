@@ -1,4 +1,7 @@
 dist/
+completions/
 *.wasm
-.DS_Store
+.vscode/settings.json
+.env.local
+coverage.txt.DS_Store
 .vscode

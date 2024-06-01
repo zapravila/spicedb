@@ -14,6 +14,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/tracelog"
+	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
@@ -128,7 +129,14 @@ func ConfigurePGXLogger(connConfig *pgx.ConnConfig) {
 		}
 	}
 
-	l := zerologadapter.NewLogger(log.Logger, zerologadapter.WithSubDictionary("pgx"))
+	l := zerologadapter.NewLogger(log.Logger, zerologadapter.WithoutPGXModule(), zerologadapter.WithSubDictionary("pgx"),
+		zerologadapter.WithContextFunc(func(ctx context.Context, z zerolog.Context) zerolog.Context {
+			if logger := log.Ctx(ctx); logger != nil {
+				return logger.With()
+			}
+
+			return z
+		}))
 	addTracer(connConfig, &tracelog.TraceLog{Logger: levelMappingFn(l), LogLevel: tracelog.LogLevelInfo})
 }
 
@@ -251,9 +259,10 @@ func (opts PoolOptions) ConfigurePgx(pgxConfig *pgxpool.Config) {
 		pgxConfig.MaxConns = int32(*opts.MaxOpenConns)
 	}
 
+	// Default to keeping the pool maxed out at all times.
+	pgxConfig.MinConns = pgxConfig.MaxConns
 	if opts.MinOpenConns != nil {
-		// Default to keeping the pool maxed out at all times.
-		pgxConfig.MinConns = pgxConfig.MaxConns
+		pgxConfig.MinConns = int32(*opts.MinOpenConns)
 	}
 
 	if pgxConfig.MaxConns > 0 && pgxConfig.MinConns > 0 && pgxConfig.MaxConns < pgxConfig.MinConns {

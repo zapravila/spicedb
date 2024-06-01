@@ -79,6 +79,68 @@ func TestReadRelationships(t *testing.T) {
 			},
 		},
 		{
+			"resource id prefix and resource id",
+			&v1.RelationshipFilter{
+				OptionalResourceId:       "master",
+				OptionalResourceIdPrefix: "master",
+				OptionalRelation:         "parent",
+			},
+			codes.InvalidArgument,
+			nil,
+		},
+		{
+			"just relation",
+			&v1.RelationshipFilter{
+				OptionalRelation: "parent",
+			},
+			codes.OK,
+			map[string]struct{}{
+				"document:companyplan#parent@folder:company": {},
+				"document:masterplan#parent@folder:strategy": {},
+				"document:masterplan#parent@folder:plans":    {},
+				"document:healthplan#parent@folder:plans":    {},
+				"folder:strategy#parent@folder:company":      {},
+			},
+		},
+		{
+			"just resource ID",
+			&v1.RelationshipFilter{
+				OptionalResourceId: "masterplan",
+			},
+			codes.OK,
+			map[string]struct{}{
+				"document:masterplan#parent@folder:strategy":     {},
+				"document:masterplan#parent@folder:plans":        {},
+				"document:masterplan#owner@user:product_manager": {},
+				"document:masterplan#viewer@user:eng_lead":       {},
+			},
+		},
+		{
+			"just resource ID prefix",
+			&v1.RelationshipFilter{
+				OptionalResourceIdPrefix: "masterpl",
+			},
+			codes.OK,
+			map[string]struct{}{
+				"document:masterplan#parent@folder:strategy":     {},
+				"document:masterplan#parent@folder:plans":        {},
+				"document:masterplan#owner@user:product_manager": {},
+				"document:masterplan#viewer@user:eng_lead":       {},
+			},
+		},
+		{
+			"relation and resource ID prefix",
+			&v1.RelationshipFilter{
+				OptionalRelation:         "parent",
+				OptionalResourceIdPrefix: "masterpl",
+			},
+			codes.OK,
+			map[string]struct{}{
+				"document:masterplan#parent@folder:strategy": {},
+				"document:masterplan#parent@folder:plans":    {},
+			},
+		},
+		{
 			"namespace and userset",
 			&v1.RelationshipFilter{
 				ResourceType: tf.DocumentNS.Name,
@@ -107,12 +169,6 @@ func TestReadRelationships(t *testing.T) {
 			map[string]struct{}{
 				"document:masterplan#parent@folder:plans": {},
 			},
-		},
-		{
-			"bad namespace",
-			&v1.RelationshipFilter{ResourceType: ""},
-			codes.InvalidArgument,
-			nil,
 		},
 		{
 			"bad objectId",
@@ -202,6 +258,15 @@ func TestReadRelationships(t *testing.T) {
 			codes.FailedPrecondition,
 			nil,
 		},
+		{
+			"invalid filter",
+			&v1.RelationshipFilter{
+				OptionalResourceId:       "auditors",
+				OptionalResourceIdPrefix: "aud",
+			},
+			codes.InvalidArgument,
+			nil,
+		},
 	}
 
 	for _, pageSize := range []int{0, 1, 5, 10} {
@@ -253,6 +318,11 @@ func TestReadRelationships(t *testing.T) {
 									}
 
 									require.NoError(err)
+
+									dsFilter, err := datastore.RelationshipsFilterFromPublicFilter(tc.filter)
+									require.NoError(err)
+
+									require.True(dsFilter.Test(tuple.MustFromRelationship(rel.Relationship)), "relationship did not match filter: %v", rel.Relationship)
 
 									relString := tuple.MustRelString(rel.Relationship)
 									_, found := tc.expected[relString]
@@ -572,7 +642,7 @@ func TestInvalidWriteRelationship(t *testing.T) {
 			[]*v1.RelationshipFilter{{}},
 			nil,
 			codes.InvalidArgument,
-			"value does not match regex pattern",
+			"the relationship filter provided is not valid",
 		},
 		{
 			"good precondition, invalid update",
@@ -753,6 +823,40 @@ func TestDeleteRelationships(t *testing.T) {
 			},
 			deleted: map[string]struct{}{
 				"folder:auditors#viewer@user:auditor": {},
+			},
+		},
+		{
+			name: "delete by resource ID",
+			req: &v1.DeleteRelationshipsRequest{
+				RelationshipFilter: &v1.RelationshipFilter{
+					OptionalResourceId: "auditors",
+				},
+			},
+			deleted: map[string]struct{}{
+				"folder:auditors#viewer@user:auditor": {},
+			},
+		},
+		{
+			name: "delete by resource ID prefix",
+			req: &v1.DeleteRelationshipsRequest{
+				RelationshipFilter: &v1.RelationshipFilter{
+					OptionalResourceIdPrefix: "a",
+				},
+			},
+			deleted: map[string]struct{}{
+				"folder:auditors#viewer@user:auditor": {},
+			},
+		},
+		{
+			name: "delete by relation and resource ID prefix",
+			req: &v1.DeleteRelationshipsRequest{
+				RelationshipFilter: &v1.RelationshipFilter{
+					OptionalResourceIdPrefix: "s",
+					OptionalRelation:         "editor",
+				},
+			},
+			deleted: map[string]struct{}{
+				"document:specialplan#editor@user:multiroleguy": {},
 			},
 		},
 		{
@@ -948,11 +1052,11 @@ func TestDeleteRelationships(t *testing.T) {
 			name: "delete no resource type",
 			req: &v1.DeleteRelationshipsRequest{
 				RelationshipFilter: &v1.RelationshipFilter{
-					OptionalResourceId: "specialplan",
+					OptionalResourceId: "someunknownid",
 				},
 			},
-			expectedCode:  codes.InvalidArgument,
-			errorContains: "invalid DeleteRelationshipsRequest.RelationshipFilter: embedded message failed validation",
+			expectedCode: codes.OK,
+			deleted:      map[string]struct{}{},
 		},
 		{
 			name: "delete unknown resource type",
@@ -1012,6 +1116,17 @@ func TestDeleteRelationships(t *testing.T) {
 			},
 			expectedCode:  codes.FailedPrecondition,
 			errorContains: "unable to satisfy write precondition",
+		},
+		{
+			name: "invalid filter",
+			req: &v1.DeleteRelationshipsRequest{
+				RelationshipFilter: &v1.RelationshipFilter{
+					OptionalResourceId:       "auditors",
+					OptionalResourceIdPrefix: "aud",
+				},
+			},
+			expectedCode:  codes.InvalidArgument,
+			errorContains: "resource_id and resource_id_prefix cannot be set at the same time",
 		},
 	}
 	for _, delta := range testTimedeltas {
@@ -1075,7 +1190,26 @@ func TestDeleteRelationshipsBeyondAllowedLimit(t *testing.T) {
 		OptionalAllowPartialDeletions: false,
 	})
 	require.Error(err)
-	require.Contains(err.Error(), "value must be inside range [0, 1000]")
+	require.Contains(err.Error(), "provided limit 1005 is greater than maximum allowed of 1000")
+}
+
+func TestReadRelationshipsBeyondAllowedLimit(t *testing.T) {
+	require := require.New(t)
+	conn, cleanup, _, _ := testserver.NewTestServer(require, 0, memdb.DisableGC, true, tf.StandardDatastoreWithData)
+	client := v1.NewPermissionsServiceClient(conn)
+	t.Cleanup(cleanup)
+
+	resp, err := client.ReadRelationships(context.Background(), &v1.ReadRelationshipsRequest{
+		RelationshipFilter: &v1.RelationshipFilter{
+			ResourceType: "document",
+		},
+		OptionalLimit: 1005,
+	})
+	require.NoError(err)
+
+	_, err = resp.Recv()
+	require.Error(err)
+	require.Contains(err.Error(), "provided limit 1005 is greater than maximum allowed of 1000")
 }
 
 func TestDeleteRelationshipsBeyondLimitPartial(t *testing.T) {
@@ -1122,10 +1256,7 @@ func TestDeleteRelationshipsBeyondLimitPartial(t *testing.T) {
 				})
 				require.NoError(err)
 
-				headRev, err = ds.HeadRevision(context.Background())
-				require.NoError(err)
-
-				afterDelete := readOfType(require, "document", client, zedtoken.MustNewFromRevision(headRev))
+				afterDelete := readOfType(require, "document", client, resp.DeletedAt)
 				require.LessOrEqual(len(beforeDelete)-len(afterDelete), batchSize)
 
 				if i == 0 {

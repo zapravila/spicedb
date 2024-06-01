@@ -14,5 +14,6 @@ func main() {
 		exprstatementcheck.Analyzer(),
 		closeafterusagecheck.Analyzer(),
 		paniccheck.Analyzer(),
+		lendowncastcheck.Analyzer(),
 	)
 }

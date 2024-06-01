@@ -94,7 +94,7 @@ func BenchmarkDatastoreDriver(b *testing.B) {
 					for n := 0; n < b.N; n++ {
 						randDocNum := rand.Intn(numDocuments)
 						iter, err := ds.SnapshotReader(headRev).QueryRelationships(ctx, datastore.RelationshipsFilter{
-							ResourceType:             testfixtures.DocumentNS.Name,
+							OptionalResourceType:     testfixtures.DocumentNS.Name,
 							OptionalResourceIds:      []string{strconv.Itoa(randDocNum)},
 							OptionalResourceRelation: "viewer",
 						})
@@ -114,7 +114,7 @@ func BenchmarkDatastoreDriver(b *testing.B) {
 						b.Run(orderName, func(b *testing.B) {
 							for n := 0; n < b.N; n++ {
 								iter, err := ds.SnapshotReader(headRev).QueryRelationships(ctx, datastore.RelationshipsFilter{
-									ResourceType: testfixtures.DocumentNS.Name,
+									OptionalResourceType: testfixtures.DocumentNS.Name,
 								}, options.WithSort(order))
 								require.NoError(b, err)
 								var count int
@@ -133,7 +133,7 @@ func BenchmarkDatastoreDriver(b *testing.B) {
 						b.Run(orderName, func(b *testing.B) {
 							for n := 0; n < b.N; n++ {
 								iter, err := ds.SnapshotReader(headRev).QueryRelationships(ctx, datastore.RelationshipsFilter{
-									ResourceType:             testfixtures.DocumentNS.Name,
+									OptionalResourceType:     testfixtures.DocumentNS.Name,
 									OptionalResourceRelation: "viewer",
 								}, options.WithSort(order))
 								require.NoError(b, err)
@@ -154,7 +154,7 @@ func BenchmarkDatastoreDriver(b *testing.B) {
 							for n := 0; n < b.N; n++ {
 								randDocNum := rand.Intn(numDocuments)
 								iter, err := ds.SnapshotReader(headRev).QueryRelationships(ctx, datastore.RelationshipsFilter{
-									ResourceType:             testfixtures.DocumentNS.Name,
+									OptionalResourceType:     testfixtures.DocumentNS.Name,
 									OptionalResourceIds:      []string{strconv.Itoa(randDocNum)},
 									OptionalResourceRelation: "viewer",
 								}, options.WithSort(order))

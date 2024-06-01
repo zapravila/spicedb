@@ -37,11 +37,12 @@ func init() {
 }
 
 const (
-	Engine           = "postgres"
-	tableNamespace   = "namespace_config"
-	tableTransaction = "relation_tuple_transaction"
-	tableTuple       = "relation_tuple"
-	tableCaveat      = "caveat"
+	Engine                   = "postgres"
+	tableNamespace           = "namespace_config"
+	tableTransaction         = "relation_tuple_transaction"
+	tableTuple               = "relation_tuple"
+	tableCaveat              = "caveat"
+	tableRelationshipCounter = "relationship_counter"
 
 	colXID               = "xid"
 	colTimestamp         = "timestamp"
@@ -62,6 +63,11 @@ const (
 	colDescription       = "description"
 	colComment           = "comment"
 
+	colCounterName         = "name"
+	colCounterFilter       = "serialized_filter"
+	colCounterCurrentCount = "current_count"
+	colCounterSnapshot     = "updated_revision_snapshot"
+
 	errUnableToInstantiate = "unable to instantiate datastore"
 
 	// The parameters to this format string are:
@@ -76,9 +82,9 @@ const (
 	tracingDriverName = "postgres-tracing"
 
 	gcBatchDeleteSize = 1000
-
-	livingTupleConstraint = "uq_relation_tuple_living_xid"
 )
+
+var livingTupleConstraints = []string{"uq_relation_tuple_living_xid", "pk_relation_tuple"}
 
 func init() {
 	dbsql.Register(tracingDriverName, sqlmw.Driver(stdlib.GetDefaultDriver(), new(traceInterceptor)))
@@ -148,6 +154,15 @@ func newPostgresDatastore(
 		return nil, common.RedactAndLogSensitiveConnString(ctx, errUnableToInstantiate, err, pgURL)
 	}
 
+	// Setup the credentials provider
+	var credentialsProvider datastore.CredentialsProvider
+	if config.credentialsProviderName != "" {
+		credentialsProvider, err = datastore.NewCredentialsProvider(ctx, config.credentialsProviderName)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// Setup the config for each of the read and write pools.
 	readPoolConfig := pgConfig.Copy()
 	config.readPoolOpts.ConfigurePgx(readPoolConfig)
@@ -163,6 +178,16 @@ func newPostgresDatastore(
 	writePoolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
 		RegisterTypes(conn.TypeMap())
 		return nil
+	}
+
+	if credentialsProvider != nil {
+		// add before connect callbacks to trigger the token
+		getToken := func(ctx context.Context, config *pgx.ConnConfig) error {
+			config.User, config.Password, err = credentialsProvider.Get(ctx, fmt.Sprintf("%s:%d", config.Host, config.Port), config.User)
+			return err
+		}
+		readPoolConfig.BeforeConnect = getToken
+		writePoolConfig.BeforeConnect = getToken
 	}
 
 	if config.migrationPhase != "" {
@@ -262,6 +287,7 @@ func newPostgresDatastore(
 		cancelGc:                cancelGc,
 		readTxOptions:           pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly},
 		maxRetries:              config.maxRetries,
+		credentialsProvider:     credentialsProvider,
 	}
 
 	datastore.SetOptimizedRevisionFunc(datastore.optimizedRevisionFunc)
@@ -301,6 +327,8 @@ type pgDatastore struct {
 	readTxOptions           pgx.TxOptions
 	maxRetries              uint8
 	watchEnabled            bool
+
+	credentialsProvider datastore.CredentialsProvider
 
 	gcGroup  *errgroup.Group
 	gcCtx    context.Context
@@ -360,7 +388,6 @@ func (pgd *pgDatastore) ReadWriteTx(
 
 			return fn(ctx, rwt)
 		}))
-
 		if err != nil {
 			if !config.DisableRetries && errorRetryable(err) {
 				pgxcommon.SleepOnErr(ctx, err, i)
@@ -471,7 +498,7 @@ func (pgd *pgDatastore) RepairOperations() []datastore.RepairOperation {
 	return []datastore.RepairOperation{
 		{
 			Name:        repairTransactionIDsOperation,
-			Description: "Brings the Postgres database up to the expected transaction ID (Postgres v14+ only)",
+			Description: "Brings the Postgres database up to the expected transaction ID (Postgres v15+ only)",
 		},
 	}
 }
@@ -479,7 +506,7 @@ func (pgd *pgDatastore) RepairOperations() []datastore.RepairOperation {
 func wrapError(err error) error {
 	// If a unique constraint violation is returned, then its likely that the cause
 	// was an existing relationship given as a CREATE.
-	if cerr := pgxcommon.ConvertToWriteConstraintError(livingTupleConstraint, err); cerr != nil {
+	if cerr := pgxcommon.ConvertToWriteConstraintError(livingTupleConstraints, err); cerr != nil {
 		return cerr
 	}
 
@@ -537,7 +564,7 @@ func (pgd *pgDatastore) ReadyState(ctx context.Context) (datastore.ReadyState, e
 		return datastore.ReadyState{}, fmt.Errorf("invalid head migration found for postgres: %w", err)
 	}
 
-	pgDriver, err := migrations.NewAlembicPostgresDriver(ctx, pgd.dburl)
+	pgDriver, err := migrations.NewAlembicPostgresDriver(ctx, pgd.dburl, pgd.credentialsProvider)
 	if err != nil {
 		return datastore.ReadyState{}, err
 	}

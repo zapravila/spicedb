@@ -98,6 +98,16 @@ func (dm *MockReader) ReadNamespaceByName(
 	return def, args.Get(1).(datastore.Revision), args.Error(2)
 }
 
+func (dm *MockReader) CountRelationships(ctx context.Context, name string) (int, error) {
+	args := dm.Called(name)
+	return args.Get(0).(int), args.Error(1)
+}
+
+func (dm *MockReader) LookupCounters(ctx context.Context) ([]datastore.RelationshipCounter, error) {
+	args := dm.Called()
+	return args.Get(0).([]datastore.RelationshipCounter), args.Error(1)
+}
+
 func (dm *MockReader) QueryRelationships(
 	_ context.Context,
 	filter datastore.RelationshipsFilter,
@@ -193,6 +203,16 @@ type MockReadWriteTransaction struct {
 	mock.Mock
 }
 
+func (dm *MockReadWriteTransaction) CountRelationships(ctx context.Context, name string) (int, error) {
+	args := dm.Called(name)
+	return args.Get(0).(int), args.Error(1)
+}
+
+func (dm *MockReadWriteTransaction) LookupCounters(ctx context.Context) ([]datastore.RelationshipCounter, error) {
+	args := dm.Called()
+	return args.Get(0).([]datastore.RelationshipCounter), args.Error(1)
+}
+
 func (dm *MockReadWriteTransaction) ReadNamespaceByName(
 	_ context.Context,
 	nsName string,
@@ -282,9 +302,9 @@ func (dm *MockReadWriteTransaction) WriteRelationships(_ context.Context, mutati
 	return args.Error(0)
 }
 
-func (dm *MockReadWriteTransaction) DeleteRelationships(_ context.Context, filter *v1.RelationshipFilter) error {
+func (dm *MockReadWriteTransaction) DeleteRelationships(_ context.Context, filter *v1.RelationshipFilter, options ...options.DeleteOptionsOption) (bool, error) {
 	args := dm.Called(filter)
-	return args.Error(0)
+	return false, args.Error(0)
 }
 
 func (dm *MockReadWriteTransaction) WriteNamespaces(_ context.Context, newConfigs ...*core.NamespaceDefinition) error {
@@ -335,6 +355,21 @@ func (dm *MockReadWriteTransaction) WriteCaveats(_ context.Context, caveats []*c
 
 func (dm *MockReadWriteTransaction) DeleteCaveats(_ context.Context, _ []string) error {
 	panic("not used")
+}
+
+func (dm *MockReadWriteTransaction) RegisterCounter(ctx context.Context, name string, filter *core.RelationshipFilter) error {
+	args := dm.Called(name, filter)
+	return args.Error(0)
+}
+
+func (dm *MockReadWriteTransaction) UnregisterCounter(ctx context.Context, name string) error {
+	args := dm.Called(name)
+	return args.Error(0)
+}
+
+func (dm *MockReadWriteTransaction) StoreCounterValue(ctx context.Context, name string, value int, computedAtRevision datastore.Revision) error {
+	args := dm.Called(name, value, computedAtRevision)
+	return args.Error(0)
 }
 
 var (

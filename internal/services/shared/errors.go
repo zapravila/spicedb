@@ -118,6 +118,10 @@ type ConfigForErrors struct {
 	MaximumAPIDepth uint32
 }
 
+func RewriteErrorWithoutConfig(ctx context.Context, err error) error {
+	return RewriteError(ctx, err, nil)
+}
+
 func RewriteError(ctx context.Context, err error, config *ConfigForErrors) error {
 	// Check if the error can be directly used.
 	if _, ok := status.FromError(err); ok {
@@ -167,6 +171,10 @@ func RewriteError(ctx context.Context, err error, config *ConfigForErrors) error
 		return spiceerrors.WithCodeAndReason(err, codes.FailedPrecondition, v1.ErrorReason_ERROR_REASON_UNKNOWN_CAVEAT)
 	case errors.As(err, &datastore.ErrWatchDisabled{}):
 		return status.Errorf(codes.FailedPrecondition, "%s", err)
+	case errors.As(err, &datastore.ErrCounterAlreadyRegistered{}):
+		return spiceerrors.WithCodeAndReason(err, codes.FailedPrecondition, v1.ErrorReason_ERROR_REASON_COUNTER_ALREADY_REGISTERED)
+	case errors.As(err, &datastore.ErrCounterNotRegistered{}):
+		return spiceerrors.WithCodeAndReason(err, codes.FailedPrecondition, v1.ErrorReason_ERROR_REASON_COUNTER_NOT_REGISTERED)
 
 	case errors.As(err, &graph.ErrInvalidArgument{}):
 		return status.Errorf(codes.InvalidArgument, "%s", err)

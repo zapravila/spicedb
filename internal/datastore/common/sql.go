@@ -116,6 +116,10 @@ func NewSchemaQueryFilterer(schema SchemaInformation, initialQuery sq.SelectBuil
 	}
 }
 
+func (sqf SchemaQueryFilterer) UnderlyingQueryBuilder() sq.SelectBuilder {
+	return sqf.queryBuilder
+}
+
 func (sqf SchemaQueryFilterer) TupleOrder(order options.SortOrder) SchemaQueryFilterer {
 	switch order {
 	case options.ByResource:
@@ -148,6 +152,7 @@ type nameAndValue struct {
 }
 
 func (sqf SchemaQueryFilterer) After(cursor *core.RelationTuple, order options.SortOrder) SchemaQueryFilterer {
+	// NOTE: The ordering of these columns can affect query performance, be aware when changing.
 	columnsAndValues := map[options.SortOrder][]nameAndValue{
 		options.ByResource: {
 			{
@@ -177,9 +182,6 @@ func (sqf SchemaQueryFilterer) After(cursor *core.RelationTuple, order options.S
 				sqf.schema.colUsersetObjectID, cursor.Subject.ObjectId,
 			},
 			{
-				sqf.schema.colUsersetRelation, cursor.Subject.Relation,
-			},
-			{
 				sqf.schema.colNamespace, cursor.ResourceAndRelation.Namespace,
 			},
 			{
@@ -187,6 +189,9 @@ func (sqf SchemaQueryFilterer) After(cursor *core.RelationTuple, order options.S
 			},
 			{
 				sqf.schema.colRelation, cursor.ResourceAndRelation.Relation,
+			},
+			{
+				sqf.schema.colUsersetRelation, cursor.Subject.Relation,
 			},
 		},
 	}[order]
@@ -275,10 +280,38 @@ func (sqf SchemaQueryFilterer) MustFilterToResourceIDs(resourceIds []string) Sch
 	return updated
 }
 
+// FilterWithResourceIDPrefix returns new SchemaQueryFilterer that is limited to resources whose ID
+// starts with the specified prefix.
+func (sqf SchemaQueryFilterer) FilterWithResourceIDPrefix(prefix string) (SchemaQueryFilterer, error) {
+	if strings.Contains(prefix, "%") {
+		return sqf, spiceerrors.MustBugf("prefix cannot contain the percent sign")
+	}
+	if prefix == "" {
+		return sqf, spiceerrors.MustBugf("prefix cannot be empty")
+	}
+
+	prefix = strings.ReplaceAll(prefix, `\`, `\\`)
+	prefix = strings.ReplaceAll(prefix, "_", `\_`)
+
+	sqf.queryBuilder = sqf.queryBuilder.Where(sq.Like{sqf.schema.colObjectID: prefix + "%"})
+	sqf.tracerAttributes = append(sqf.tracerAttributes, ObjIDKey.String(prefix+"*"))
+
+	// NOTE: we do *not* record the use of the resource ID column here, because it is not used
+	// statically and thus is necessary for sorting operations.
+	return sqf, nil
+}
+
+func (sqf SchemaQueryFilterer) MustFilterWithResourceIDPrefix(prefix string) SchemaQueryFilterer {
+	updated, err := sqf.FilterWithResourceIDPrefix(prefix)
+	if err != nil {
+		panic(err)
+	}
+	return updated
+}
+
 // FilterToResourceIDs returns a new SchemaQueryFilterer that is limited to resources with any of the
 // specified IDs.
 func (sqf SchemaQueryFilterer) FilterToResourceIDs(resourceIds []string) (SchemaQueryFilterer, error) {
-	// TODO(jschorr): Change this panic into an automatic query split, if we find it necessary.
 	if len(resourceIds) > int(datastore.FilterMaximumIDCount) {
 		return sqf, spiceerrors.MustBugf("cannot have more than %d resources IDs in a single filter", datastore.FilterMaximumIDCount)
 	}
@@ -326,33 +359,49 @@ func (sqf SchemaQueryFilterer) MustFilterWithRelationshipsFilter(filter datastor
 }
 
 func (sqf SchemaQueryFilterer) FilterWithRelationshipsFilter(filter datastore.RelationshipsFilter) (SchemaQueryFilterer, error) {
-	sqf = sqf.FilterToResourceType(filter.ResourceType)
+	csqf := sqf
+
+	if filter.OptionalResourceType != "" {
+		csqf = csqf.FilterToResourceType(filter.OptionalResourceType)
+	}
 
 	if filter.OptionalResourceRelation != "" {
-		sqf = sqf.FilterToRelation(filter.OptionalResourceRelation)
+		csqf = csqf.FilterToRelation(filter.OptionalResourceRelation)
+	}
+
+	if len(filter.OptionalResourceIds) > 0 && filter.OptionalResourceIDPrefix != "" {
+		return csqf, spiceerrors.MustBugf("cannot filter by both resource IDs and ID prefix")
 	}
 
 	if len(filter.OptionalResourceIds) > 0 {
-		usqf, err := sqf.FilterToResourceIDs(filter.OptionalResourceIds)
+		usqf, err := csqf.FilterToResourceIDs(filter.OptionalResourceIds)
 		if err != nil {
-			return sqf, err
+			return csqf, err
 		}
-		sqf = usqf
+		csqf = usqf
+	}
+
+	if len(filter.OptionalResourceIDPrefix) > 0 {
+		usqf, err := csqf.FilterWithResourceIDPrefix(filter.OptionalResourceIDPrefix)
+		if err != nil {
+			return csqf, err
+		}
+		csqf = usqf
 	}
 
 	if len(filter.OptionalSubjectsSelectors) > 0 {
-		usqf, err := sqf.FilterWithSubjectsSelectors(filter.OptionalSubjectsSelectors...)
+		usqf, err := csqf.FilterWithSubjectsSelectors(filter.OptionalSubjectsSelectors...)
 		if err != nil {
-			return sqf, err
+			return csqf, err
 		}
-		sqf = usqf
+		csqf = usqf
 	}
 
 	if filter.OptionalCaveatName != "" {
-		sqf = sqf.FilterWithCaveatName(filter.OptionalCaveatName)
+		csqf = csqf.FilterWithCaveatName(filter.OptionalCaveatName)
 	}
 
-	return sqf, nil
+	return csqf, nil
 }
 
 // MustFilterWithSubjectsSelectors returns a new SchemaQueryFilterer that is limited to resources with
@@ -380,7 +429,6 @@ func (sqf SchemaQueryFilterer) FilterWithSubjectsSelectors(selectors ...datastor
 		}
 
 		if len(selector.OptionalSubjectIds) > 0 {
-			// TODO(jschorr): Change this panic into an automatic query split, if we find it necessary.
 			if len(selector.OptionalSubjectIds) > int(datastore.FilterMaximumIDCount) {
 				return sqf, spiceerrors.MustBugf("cannot have more than %d subject IDs in a single filter", datastore.FilterMaximumIDCount)
 			}

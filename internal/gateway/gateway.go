@@ -23,6 +23,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/metadata"
+
+	"github.com/authzed/spicedb/internal/grpchelpers"
 )
 
 var histogram = promauto.NewHistogramVec(prometheus.HistogramOpts{
@@ -40,8 +42,7 @@ func NewHandler(ctx context.Context, upstreamAddr, upstreamTLSCertPath string) (
 	}
 
 	opts := []grpc.DialOption{
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),   // nolint: staticcheck
-		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()), // nolint: staticcheck
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	}
 	if upstreamTLSCertPath == "" {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -53,7 +54,7 @@ func NewHandler(ctx context.Context, upstreamAddr, upstreamTLSCertPath string) (
 		opts = append(opts, certsOpt)
 	}
 
-	healthConn, err := grpc.DialContext(ctx, upstreamAddr, opts...)
+	healthConn, err := grpchelpers.Dial(ctx, upstreamAddr, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +130,7 @@ type HandlerRegisterer func(ctx context.Context, mux *runtime.ServeMux, conn *gr
 func registerHandler(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption,
 	registerer HandlerRegisterer,
 ) (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial(endpoint, opts...)
+	conn, err := grpchelpers.Dial(ctx, endpoint, opts...)
 	if err != nil {
 		return nil, err
 	}

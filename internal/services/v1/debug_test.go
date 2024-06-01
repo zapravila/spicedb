@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/structpb"
 
@@ -483,11 +482,10 @@ func TestCheckPermissionWithDebug(t *testing.T) {
 					encodedDebugInfo, err := responsemeta.GetResponseTrailerMetadataOrNil(trailer, responsemeta.DebugInformation)
 					req.NoError(err)
 
-					req.NotNil(encodedDebugInfo)
+					// DebugInfo No longer comes as part of the trailer
+					req.Nil(encodedDebugInfo)
 
-					debugInfo := &v1.DebugInformation{}
-					err = protojson.Unmarshal([]byte(*encodedDebugInfo), debugInfo)
-					req.NoError(err)
+					debugInfo := checkResp.DebugTrace
 					req.NotEmpty(debugInfo.SchemaUsed)
 
 					req.Equal(stc.checkRequest.resource.ObjectType, debugInfo.Check.Resource.ObjectType)

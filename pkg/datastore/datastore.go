@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -83,11 +84,16 @@ func (rc *RevisionChanges) MarshalZerologObject(e *zerolog.Event) {
 
 // RelationshipsFilter is a filter for relationships.
 type RelationshipsFilter struct {
-	// ResourceType is the namespace/type for the resources to be found.
-	ResourceType string
+	// OptionalResourceType is the namespace/type for the resources to be found.
+	OptionalResourceType string
 
 	// OptionalResourceIds are the IDs of the resources to find. If nil empty, any resource ID will be allowed.
+	// Cannot be used with OptionalResourceIDPrefix.
 	OptionalResourceIds []string
+
+	// OptionalResourceIDPrefix is the prefix to use for resource IDs. If empty, any prefix is allowed.
+	// Cannot be used with OptionalResourceIds.
+	OptionalResourceIDPrefix string
 
 	// OptionalResourceRelation is the relation of the resource to find. If empty, any relation is allowed.
 	OptionalResourceRelation string
@@ -101,8 +107,77 @@ type RelationshipsFilter struct {
 	OptionalCaveatName string
 }
 
-// RelationshipsFilterFromPublicFilter constructs a datastore RelationshipsFilter from an API-defined RelationshipFilter.
-func RelationshipsFilterFromPublicFilter(filter *v1.RelationshipFilter) RelationshipsFilter {
+// Test returns true iff the given relationship is matched by this filter.
+func (rf RelationshipsFilter) Test(relationship *core.RelationTuple) bool {
+	if rf.OptionalResourceType != "" && rf.OptionalResourceType != relationship.ResourceAndRelation.Namespace {
+		return false
+	}
+
+	if len(rf.OptionalResourceIds) > 0 && !slices.Contains(rf.OptionalResourceIds, relationship.ResourceAndRelation.ObjectId) {
+		return false
+	}
+
+	if rf.OptionalResourceIDPrefix != "" && !strings.HasPrefix(relationship.ResourceAndRelation.ObjectId, rf.OptionalResourceIDPrefix) {
+		return false
+	}
+
+	if rf.OptionalResourceRelation != "" && rf.OptionalResourceRelation != relationship.ResourceAndRelation.Relation {
+		return false
+	}
+
+	if len(rf.OptionalSubjectsSelectors) > 0 {
+		for _, selector := range rf.OptionalSubjectsSelectors {
+			if selector.Test(relationship.Subject) {
+				return true
+			}
+		}
+		return false
+	}
+
+	if rf.OptionalCaveatName != "" {
+		if relationship.Caveat == nil || relationship.Caveat.CaveatName != rf.OptionalCaveatName {
+			return false
+		}
+	}
+
+	return true
+}
+
+// CoreFilterFromRelationshipFilter constructs a core RelationshipFilter from a V1 RelationshipsFilter.
+func CoreFilterFromRelationshipFilter(filter *v1.RelationshipFilter) *core.RelationshipFilter {
+	return &core.RelationshipFilter{
+		ResourceType:             filter.ResourceType,
+		OptionalResourceId:       filter.OptionalResourceId,
+		OptionalResourceIdPrefix: filter.OptionalResourceIdPrefix,
+		OptionalRelation:         filter.OptionalRelation,
+		OptionalSubjectFilter:    coreFilterFromSubjectsFilter(filter.OptionalSubjectFilter),
+	}
+}
+
+func coreFilterFromSubjectsFilter(filter *v1.SubjectFilter) *core.SubjectFilter {
+	if filter == nil {
+		return nil
+	}
+
+	return &core.SubjectFilter{
+		SubjectType:       filter.SubjectType,
+		OptionalSubjectId: filter.OptionalSubjectId,
+		OptionalRelation:  coreFilterFromSubjectRelationFilter(filter.OptionalRelation),
+	}
+}
+
+func coreFilterFromSubjectRelationFilter(filter *v1.SubjectFilter_RelationFilter) *core.SubjectFilter_RelationFilter {
+	if filter == nil {
+		return nil
+	}
+
+	return &core.SubjectFilter_RelationFilter{
+		Relation: filter.Relation,
+	}
+}
+
+// RelationshipsFilterFromCoreFilter constructs a datastore RelationshipsFilter from a core RelationshipFilter.
+func RelationshipsFilterFromCoreFilter(filter *core.RelationshipFilter) (RelationshipsFilter, error) {
 	var resourceIds []string
 	if filter.OptionalResourceId != "" {
 		resourceIds = []string{filter.OptionalResourceId}
@@ -133,12 +208,70 @@ func RelationshipsFilterFromPublicFilter(filter *v1.RelationshipFilter) Relation
 		})
 	}
 
+	if filter.OptionalResourceId != "" && filter.OptionalResourceIdPrefix != "" {
+		return RelationshipsFilter{}, fmt.Errorf("cannot specify both OptionalResourceId and OptionalResourceIDPrefix")
+	}
+
+	if filter.ResourceType == "" && filter.OptionalRelation == "" && len(resourceIds) == 0 && filter.OptionalResourceIdPrefix == "" && len(subjectsSelectors) == 0 {
+		return RelationshipsFilter{}, fmt.Errorf("at least one filter field must be set")
+	}
+
 	return RelationshipsFilter{
-		ResourceType:              filter.ResourceType,
+		OptionalResourceType:      filter.ResourceType,
 		OptionalResourceIds:       resourceIds,
+		OptionalResourceIDPrefix:  filter.OptionalResourceIdPrefix,
 		OptionalResourceRelation:  filter.OptionalRelation,
 		OptionalSubjectsSelectors: subjectsSelectors,
+	}, nil
+}
+
+// RelationshipsFilterFromPublicFilter constructs a datastore RelationshipsFilter from an API-defined RelationshipFilter.
+func RelationshipsFilterFromPublicFilter(filter *v1.RelationshipFilter) (RelationshipsFilter, error) {
+	var resourceIds []string
+	if filter.OptionalResourceId != "" {
+		resourceIds = []string{filter.OptionalResourceId}
 	}
+
+	var subjectsSelectors []SubjectsSelector
+	if filter.OptionalSubjectFilter != nil {
+		var subjectIds []string
+		if filter.OptionalSubjectFilter.OptionalSubjectId != "" {
+			subjectIds = []string{filter.OptionalSubjectFilter.OptionalSubjectId}
+		}
+
+		relationFilter := SubjectRelationFilter{}
+
+		if filter.OptionalSubjectFilter.OptionalRelation != nil {
+			relation := filter.OptionalSubjectFilter.OptionalRelation.GetRelation()
+			if relation != "" {
+				relationFilter = relationFilter.WithNonEllipsisRelation(relation)
+			} else {
+				relationFilter = relationFilter.WithEllipsisRelation()
+			}
+		}
+
+		subjectsSelectors = append(subjectsSelectors, SubjectsSelector{
+			OptionalSubjectType: filter.OptionalSubjectFilter.SubjectType,
+			OptionalSubjectIds:  subjectIds,
+			RelationFilter:      relationFilter,
+		})
+	}
+
+	if filter.OptionalResourceId != "" && filter.OptionalResourceIdPrefix != "" {
+		return RelationshipsFilter{}, fmt.Errorf("cannot specify both OptionalResourceId and OptionalResourceIDPrefix")
+	}
+
+	if filter.ResourceType == "" && filter.OptionalRelation == "" && len(resourceIds) == 0 && filter.OptionalResourceIdPrefix == "" && len(subjectsSelectors) == 0 {
+		return RelationshipsFilter{}, fmt.Errorf("at least one filter field must be set")
+	}
+
+	return RelationshipsFilter{
+		OptionalResourceType:      filter.ResourceType,
+		OptionalResourceIds:       resourceIds,
+		OptionalResourceIDPrefix:  filter.OptionalResourceIdPrefix,
+		OptionalResourceRelation:  filter.OptionalRelation,
+		OptionalSubjectsSelectors: subjectsSelectors,
+	}, nil
 }
 
 // SubjectsSelector is a selector for subjects.
@@ -152,6 +285,33 @@ type SubjectsSelector struct {
 	// RelationFilter is the filter to use for the relation(s) of the subjects. If neither field
 	// is set, any relation is allowed.
 	RelationFilter SubjectRelationFilter
+}
+
+// Test returns true iff the given subject is matched by this filter.
+func (ss SubjectsSelector) Test(subject *core.ObjectAndRelation) bool {
+	if ss.OptionalSubjectType != "" && ss.OptionalSubjectType != subject.Namespace {
+		return false
+	}
+
+	if len(ss.OptionalSubjectIds) > 0 && !slices.Contains(ss.OptionalSubjectIds, subject.ObjectId) {
+		return false
+	}
+
+	if !ss.RelationFilter.IsEmpty() {
+		if ss.RelationFilter.IncludeEllipsisRelation && subject.Relation == tuple.Ellipsis {
+			return true
+		}
+
+		if ss.RelationFilter.NonEllipsisRelation != "" && ss.RelationFilter.NonEllipsisRelation != subject.Relation {
+			return false
+		}
+
+		if ss.RelationFilter.OnlyNonEllipsisRelations && subject.Relation == tuple.Ellipsis {
+			return false
+		}
+	}
+
+	return true
 }
 
 // SubjectRelationFilter is the filter to use for relation(s) of subjects being queried.
@@ -252,6 +412,7 @@ type RevisionedNamespace = RevisionedDefinition[*core.NamespaceDefinition]
 // Reader is an interface for reading relationships from the datastore.
 type Reader interface {
 	CaveatReader
+	CounterReader
 
 	// QueryRelationships reads relationships, starting from the resource side.
 	QueryRelationships(
@@ -281,12 +442,17 @@ type Reader interface {
 type ReadWriteTransaction interface {
 	Reader
 	CaveatStorer
+	CounterRegisterer
 
 	// WriteRelationships takes a list of tuple mutations and applies them to the datastore.
 	WriteRelationships(ctx context.Context, mutations []*core.RelationTupleUpdate) error
 
-	// DeleteRelationships deletes all Relationships that match the provided filter.
-	DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter) error
+	// DeleteRelationships deletes relationships that match the provided filter, with
+	// the optional limit. If a limit is provided and reached, the method will return
+	// true as the first return value. Otherwise, the boolean can be ignored.
+	DeleteRelationships(ctx context.Context, filter *v1.RelationshipFilter,
+		options ...options.DeleteOptionsOption,
+	) (bool, error)
 
 	// WriteNamespaces takes proto namespace definitions and persists them.
 	WriteNamespaces(ctx context.Context, newConfigs ...*core.NamespaceDefinition) error

@@ -2,8 +2,11 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
+	mcobra "github.com/muesli/mango-cobra"
+	"github.com/muesli/roff"
 	"github.com/rs/zerolog"
 	"github.com/sercand/kuberesolver/v5"
 	"github.com/spf13/cobra"
@@ -36,17 +39,14 @@ func main() {
 		cmd.Println(cmd.UsageString())
 		return errParsing
 	})
-	cmd.RegisterRootFlags(rootCmd)
+	if err := cmd.RegisterRootFlags(rootCmd); err != nil {
+		log.Fatal().Err(err).Msg("failed to register root flags")
+	}
 
 	// Add a version command
 	versionCmd := cmd.NewVersionCommand(rootCmd.Use)
 	cmd.RegisterVersionFlags(versionCmd)
 	rootCmd.AddCommand(versionCmd)
-
-	// Add migration commands
-	migrateCmd := cmd.NewMigrateCommand(rootCmd.Use)
-	cmd.RegisterMigrateFlags(migrateCmd)
-	rootCmd.AddCommand(migrateCmd)
 
 	// Add datastore commands
 	datastoreCmd, err := cmd.NewDatastoreCommand(rootCmd.Use)
@@ -57,10 +57,19 @@ func main() {
 	cmd.RegisterDatastoreRootFlags(datastoreCmd)
 	rootCmd.AddCommand(datastoreCmd)
 
-	// Add head command.
+	// Add deprecated head command
 	headCmd := cmd.NewHeadCommand(rootCmd.Use)
 	cmd.RegisterHeadFlags(headCmd)
+	headCmd.Hidden = true
+	headCmd.RunE = cmd.DeprecatedRunE(headCmd.RunE, "spicedb datastore head")
 	rootCmd.AddCommand(headCmd)
+
+	// Add deprecated migrate command
+	migrateCmd := cmd.NewMigrateCommand(rootCmd.Use)
+	migrateCmd.Hidden = true
+	migrateCmd.RunE = cmd.DeprecatedRunE(migrateCmd.RunE, "spicedb datastore migrate")
+	cmd.RegisterMigrateFlags(migrateCmd)
+	rootCmd.AddCommand(migrateCmd)
 
 	// Add server commands
 	serverConfig := cmdutil.NewConfigWithOptionsAndDefaults()
@@ -74,10 +83,36 @@ func main() {
 	cmd.RegisterDevtoolsFlags(devtoolsCmd)
 	rootCmd.AddCommand(devtoolsCmd)
 
+	lspConfig := new(cmd.LSPConfig)
+	lspCmd := cmd.NewLSPCommand(rootCmd.Use, lspConfig)
+	if err := cmd.RegisterLSPFlags(lspCmd, lspConfig); err != nil {
+		log.Fatal().Err(err).Msg("failed to register lsp flags")
+	}
+	rootCmd.AddCommand(lspCmd)
+
 	var testServerConfig testserver.Config
 	testingCmd := cmd.NewTestingCommand(rootCmd.Use, &testServerConfig)
 	cmd.RegisterTestingFlags(testingCmd, &testServerConfig)
 	rootCmd.AddCommand(testingCmd)
+
+	rootCmd.AddCommand(&cobra.Command{
+		Use:                   "man",
+		Short:                 "Generate the SpiceDB manpage",
+		SilenceUsage:          true,
+		DisableFlagsInUseLine: true,
+		Hidden:                true,
+		Args:                  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			manPage, err := mcobra.NewManPage(1, cmd.Root())
+			if err != nil {
+				return err
+			}
+
+			_, err = fmt.Fprint(os.Stdout, manPage.Build(roff.NewDocument()))
+			return err
+		},
+	})
+
 	if err := rootCmd.Execute(); err != nil {
 		if !errors.Is(err, errParsing) {
 			log.Err(err).Msg("terminated with errors")

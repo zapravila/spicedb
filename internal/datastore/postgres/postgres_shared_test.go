@@ -5,7 +5,6 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -17,7 +16,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/samber/lo"
-	"github.com/scylladb/go-set/strset"
 	"github.com/stretchr/testify/require"
 	"github.com/zapravila/spicedb/internal/datastore/common"
 	pgcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
@@ -782,7 +780,7 @@ func ConcurrentRevisionHeadTest(t *testing.T, ds datastore.Datastore) {
 
 	reader := ds.SnapshotReader(headRev)
 	it, err := reader.QueryRelationships(ctx, datastore.RelationshipsFilter{
-		ResourceType: "resource",
+		OptionalResourceType: "resource",
 	})
 	require.NoError(err)
 	defer it.Close()
@@ -980,7 +978,6 @@ func OverlappingRevisionWatchTest(t *testing.T, ds datastore.Datastore) {
 			nexttx,
 			nexttx,
 		))
-
 		if err != nil {
 			return err
 		}
@@ -1180,7 +1177,7 @@ func BenchmarkPostgresQuery(b *testing.B) {
 
 		for i := 0; i < b.N; i++ {
 			iter, err := ds.SnapshotReader(revision).QueryRelationships(context.Background(), datastore.RelationshipsFilter{
-				ResourceType: testfixtures.DocumentNS.Name,
+				OptionalResourceType: testfixtures.DocumentNS.Name,
 			})
 			require.NoError(err)
 
@@ -1380,12 +1377,22 @@ func RepairTransactionsTest(t *testing.T, ds datastore.Datastore) {
 	// Break the datastore by adding a transaction entry with an XID greater the current one.
 	pds := ds.(*pgDatastore)
 
+	getVersionQuery := fmt.Sprintf("SELECT version()")
+	var version string
+	err := pds.writePool.QueryRow(context.Background(), getVersionQuery).Scan(&version)
+	require.NoError(t, err)
+
+	if strings.HasPrefix(version, "PostgreSQL 13.") || strings.HasPrefix(version, "PostgreSQL 14.") {
+		t.Skip("Skipping test on PostgreSQL 13 and 14 as they do not support xid8 max")
+		return
+	}
+
 	createLaterTxn := fmt.Sprintf(
 		"INSERT INTO %s (\"xid\") VALUES (12345::text::xid8)",
 		tableTransaction,
 	)
 
-	_, err := pds.writePool.Exec(context.Background(), createLaterTxn)
+	_, err = pds.writePool.Exec(context.Background(), createLaterTxn)
 	require.NoError(t, err)
 
 	// Run the repair code.
@@ -1442,7 +1449,7 @@ func NullCaveatWatchTest(t *testing.T, ds datastore.Datastore) {
 	require.NoError(err)
 
 	// Verify the relationship create was tracked by the watch.
-	verifyUpdates(require, [][]*core.RelationTupleUpdate{
+	test.VerifyUpdates(require, [][]*core.RelationTupleUpdate{
 		{
 			tuple.Touch(tuple.Parse("resource:someresourceid#somerelation@subject:somesubject")),
 		},
@@ -1458,7 +1465,7 @@ func NullCaveatWatchTest(t *testing.T, ds datastore.Datastore) {
 	require.NoError(err)
 
 	// Verify the delete.
-	verifyUpdates(require, [][]*core.RelationTupleUpdate{
+	test.VerifyUpdates(require, [][]*core.RelationTupleUpdate{
 		{
 			tuple.Delete(tuple.Parse("resource:someresourceid#somerelation@subject:somesubject")),
 		},
@@ -1470,54 +1477,3 @@ func NullCaveatWatchTest(t *testing.T, ds datastore.Datastore) {
 }
 
 const waitForChangesTimeout = 5 * time.Second
-
-// TODO(jschorr): Combine with the same impl in the datastore shared tests
-func verifyUpdates(
-	require *require.Assertions,
-	testUpdates [][]*core.RelationTupleUpdate,
-	changes <-chan *datastore.RevisionChanges,
-	errchan <-chan error,
-	expectDisconnect bool,
-) {
-	for _, expected := range testUpdates {
-		changeWait := time.NewTimer(waitForChangesTimeout)
-		select {
-		case change, ok := <-changes:
-			if !ok {
-				require.True(expectDisconnect, "unexpected disconnect")
-				errWait := time.NewTimer(waitForChangesTimeout)
-				select {
-				case err := <-errchan:
-					require.True(errors.As(err, &datastore.ErrWatchDisconnected{}))
-					return
-				case <-errWait.C:
-					require.Fail("Timed out waiting for ErrWatchDisconnected")
-				}
-				return
-			}
-
-			expectedChangeSet := setOfChanges(expected)
-			actualChangeSet := setOfChanges(change.RelationshipChanges)
-
-			missingExpected := strset.Difference(expectedChangeSet, actualChangeSet)
-			unexpected := strset.Difference(actualChangeSet, expectedChangeSet)
-
-			require.True(missingExpected.IsEmpty(), "expected changes missing: %s", missingExpected)
-			require.True(unexpected.IsEmpty(), "unexpected changes: %s", unexpected)
-
-			time.Sleep(1 * time.Millisecond)
-		case <-changeWait.C:
-			require.Fail("Timed out", "waiting for changes: %s", expected)
-		}
-	}
-
-	require.False(expectDisconnect, "all changes verified without expected disconnect")
-}
-
-func setOfChanges(changes []*core.RelationTupleUpdate) *strset.Set {
-	changeSet := strset.NewWithSize(len(changes))
-	for _, change := range changes {
-		changeSet.Add(fmt.Sprintf("OPERATION_%s(%s)", change.Operation, tuple.StringWithoutCaveat(change.Tuple)))
-	}
-	return changeSet
-}

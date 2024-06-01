@@ -5,13 +5,11 @@ import (
 	"fmt"
 
 	"github.com/authzed/authzed-go/pkg/requestmeta"
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/jzelinskie/stringz"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 
@@ -67,11 +65,16 @@ func (ps *permissionServer) CheckPermission(ctx context.Context, req *v1.CheckPe
 	}
 
 	debugOption := computed.NoDebugging
+
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		_, isDebuggingEnabled := md[string(requestmeta.RequestDebugInformation)]
 		if isDebuggingEnabled {
 			debugOption = computed.BasicDebuggingEnabled
 		}
+	}
+
+	if req.WithTracing {
+		debugOption = computed.BasicDebuggingEnabled
 	}
 
 	cr, metadata, err := computed.ComputeCheck(ctx, ps.dispatch,
@@ -94,25 +97,14 @@ func (ps *permissionServer) CheckPermission(ctx context.Context, req *v1.CheckPe
 	)
 	usagemetrics.SetInContext(ctx, metadata)
 
+	var debugTrace *v1.DebugInformation
 	if debugOption != computed.NoDebugging && metadata.DebugInfo != nil {
-		// Convert the dispatch debug information into API debug information and marshal into
-		// the footer.
+		// Convert the dispatch debug information into API debug information.
 		converted, cerr := ConvertCheckDispatchDebugInformation(ctx, caveatContext, metadata, ds)
 		if cerr != nil {
 			return nil, ps.rewriteError(ctx, cerr)
 		}
-
-		marshaled, merr := protojson.Marshal(converted)
-		if merr != nil {
-			return nil, ps.rewriteError(ctx, merr)
-		}
-
-		serr := responsemeta.SetResponseTrailerMetadata(ctx, map[responsemeta.ResponseMetadataTrailerKey]string{
-			responsemeta.DebugInformation: string(marshaled),
-		})
-		if serr != nil {
-			return nil, ps.rewriteError(ctx, serr)
-		}
+		debugTrace = converted
 	}
 
 	if err != nil {
@@ -125,6 +117,7 @@ func (ps *permissionServer) CheckPermission(ctx context.Context, req *v1.CheckPe
 		CheckedAt:         checkedAt,
 		Permissionship:    permissionship,
 		PartialCaveatInfo: partialCaveat,
+		DebugTrace:        debugTrace,
 	}, nil
 }
 
@@ -140,6 +133,50 @@ func checkResultToAPITypes(cr *dispatch.ResourceCheckResult) (v1.CheckPermission
 		}
 	}
 	return permissionship, partialCaveat
+}
+
+func (ps *permissionServer) CheckBulkPermissions(ctx context.Context, req *v1.CheckBulkPermissionsRequest) (*v1.CheckBulkPermissionsResponse, error) {
+	res, err := ps.bulkChecker.checkBulkPermissions(ctx, req)
+	if err != nil {
+		return nil, ps.rewriteError(ctx, err)
+	}
+
+	return res, nil
+}
+
+func pairItemFromCheckResult(checkResult *dispatch.ResourceCheckResult) *v1.CheckBulkPermissionsPair_Item {
+	permissionship, partialCaveat := checkResultToAPITypes(checkResult)
+	return &v1.CheckBulkPermissionsPair_Item{
+		Item: &v1.CheckBulkPermissionsResponseItem{
+			Permissionship:    permissionship,
+			PartialCaveatInfo: partialCaveat,
+		},
+	}
+}
+
+func requestItemFromResourceAndParameters(params *computed.CheckParameters, resourceID string) (*v1.CheckBulkPermissionsRequestItem, error) {
+	item := &v1.CheckBulkPermissionsRequestItem{
+		Resource: &v1.ObjectReference{
+			ObjectType: params.ResourceType.Namespace,
+			ObjectId:   resourceID,
+		},
+		Permission: params.ResourceType.Relation,
+		Subject: &v1.SubjectReference{
+			Object: &v1.ObjectReference{
+				ObjectType: params.Subject.Namespace,
+				ObjectId:   params.Subject.ObjectId,
+			},
+			OptionalRelation: denormalizeSubjectRelation(params.Subject.Relation),
+		},
+	}
+	if len(params.CaveatContext) > 0 {
+		var err error
+		item.Context, err = structpb.NewStruct(params.CaveatContext)
+		if err != nil {
+			return nil, fmt.Errorf("caveat context wasn't properly validated: %w", err)
+		}
+	}
+	return item, nil
 }
 
 func (ps *permissionServer) ExpandPermissionTree(ctx context.Context, req *v1.ExpandPermissionTreeRequest) (*v1.ExpandPermissionTreeResponse, error) {
@@ -332,6 +369,10 @@ func TranslateExpansionTree(node *core.RelationTupleTreeNode) *v1.PermissionRela
 }
 
 func (ps *permissionServer) LookupResources(req *v1.LookupResourcesRequest, resp v1.PermissionsService_LookupResourcesServer) error {
+	if req.OptionalLimit > 0 && req.OptionalLimit > ps.config.MaxLookupResourcesLimit {
+		return ps.rewriteError(resp.Context(), NewExceedsMaximumLimitErr(uint64(req.OptionalLimit), uint64(ps.config.MaxLookupResourcesLimit)))
+	}
+
 	ctx := resp.Context()
 
 	atRevision, revisionReadAt, err := consistency.RevisionFromContext(ctx)
@@ -448,7 +489,6 @@ func (ps *permissionServer) LookupResources(req *v1.LookupResourcesRequest, resp
 			OptionalLimit:  req.OptionalLimit,
 		},
 		stream)
-
 	if err != nil {
 		return ps.rewriteError(ctx, err)
 	}

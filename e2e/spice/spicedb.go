@@ -12,8 +12,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/zapravila/spicedb/e2e"
-	"github.com/zapravila/spicedb/e2e/cockroach"
+	"github.com/authzed/spicedb/e2e"
+	"github.com/authzed/spicedb/e2e/cockroach"
+	"github.com/authzed/spicedb/internal/grpchelpers"
 )
 
 //go:generate go run github.com/ecordell/optgen -output spicedb_options.go . Node
@@ -113,10 +114,9 @@ func (s *Node) Connect(ctx context.Context, out io.Writer) error {
 	addr := net.JoinHostPort("localhost", strconv.Itoa(s.GrpcPort))
 	e2e.WaitForServerReady(addr, out)
 
-	conn, err := grpc.DialContext(
+	conn, err := grpchelpers.DialAndWait(
 		ctx,
 		addr,
-		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpcutil.WithInsecureBearerToken(s.PresharedKey),
 	)

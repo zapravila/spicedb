@@ -367,5 +367,3 @@ require (
 )
 
 replace github.com/authzed/authzed-go => github.com/zapravila/authzed-go v0.0.10
-
-// github.com/authzed/authzed-go v0.11.2-0.20240507202708-8b150c491e4a

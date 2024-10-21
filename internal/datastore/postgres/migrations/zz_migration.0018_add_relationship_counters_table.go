@@ -19,7 +19,7 @@ const createRelationshipCountersTable = `CREATE TABLE relationship_counter (
 );`
 
 func init() {
-	if err := DatabaseMigrations.Register("create-relationships-counters-table", "add-rel-by-alive-resource-relation-subject",
+	if err := DatabaseMigrations.Register("create-relationships-counters-table", "add_opt_info",
 		func(ctx context.Context, conn *pgx.Conn) error {
 			if _, err := conn.Exec(ctx, createRelationshipCountersTable); err != nil {
 				return fmt.Errorf("failed to create relationships counters table: %w", err)

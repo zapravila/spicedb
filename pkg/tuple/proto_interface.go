@@ -23,4 +23,6 @@ type relationship[R objectReference, S subjectReference[R], C caveat] interface 
 	GetRelation() string
 	GetSubject() S
 	GetOptionalCaveat() C
+	GetOptionalDescription() string
+	GetOptionalComment() string
 }

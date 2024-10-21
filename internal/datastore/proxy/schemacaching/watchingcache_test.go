@@ -593,6 +593,10 @@ func (*fakeSnapshotReader) QueryRelationships(context.Context, datastore.Relatio
 	return nil, fmt.Errorf("not implemented")
 }
 
+func (*fakeSnapshotReader) QueryRelationshipsExt(context.Context, datastore.RelationshipsFilter, ...options.QueryOptionsOption) (datastore.RelationshipIterator, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
 func (*fakeSnapshotReader) ReverseQueryRelationships(context.Context, datastore.SubjectsFilter, ...options.ReverseQueryOptionsOption) (datastore.RelationshipIterator, error) {
 	return nil, fmt.Errorf("not implemented")
 }

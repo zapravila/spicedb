@@ -1,0 +1,89 @@
+//https://play.authzed.com/schema
+// version: 2024-01-25
+
+definition account {
+	relation assigned_ip: ip_address
+}
+
+definition resource_group {
+    relation direct_member: resource_group | subnet | ip_address
+    relation allowed_org_unit: org_unit | org_unit with temporal_grant | org_unit with protocol_port | org_unit with protocol_port_temporal_grant
+    relation allowed_role: role | role with temporal_grant | role with protocol_port | role  with protocol_port_temporal_grant
+    relation allowed_group_security: group_security | group_security with temporal_grant | group_security with protocol_port | group_security  with protocol_port_temporal_grant
+    relation allowed_group_account: group_account |  group_account with temporal_grant | group_account with protocol_port | group_account with protocol_port_temporal_grant
+    relation allowed_ip_address: ip_address | ip_address with temporal_grant | ip_address with protocol_port | ip_address with protocol_port_temporal_grant
+    relation allowed_account: account | account with temporal_grant | account with protocol_port | account with protocol_port_temporal_grant
+    relation allowed_subnet: subnet | subnet with temporal_grant | subnet with protocol_port | subnet  with protocol_port_temporal_grant
+    permission membership = direct_member + direct_member->membership
+    permission allow =  allowed_org_unit + allowed_org_unit->membership +
+    allowed_role + allowed_role->membership +
+    allowed_group_security + allowed_group_security->membership +
+    allowed_group_account + allowed_group_account->membership +
+        allowed_ip_address + allowed_account + allowed_subnet
+}
+
+definition org_unit {
+	relation direct_member: account | org_unit
+	permission membership = direct_member + direct_member->membership
+}
+
+definition group_account {
+	relation direct_member: account | group_account
+	permission membership = direct_member + direct_member->membership
+    permission allow = direct_member + direct_member->membership
+}
+
+definition group_security {
+	relation direct_member: subnet | group_account | ip_address | account | org_unit | group_security
+    permission membership = direct_member + direct_member->membership
+}
+
+definition role {
+	relation direct_member: subnet | group_account | ip_address | account | org_unit | group_security
+    permission membership = direct_member + direct_member->membership
+}
+
+definition subnet {
+    relation parent_resource_group: resource_group
+    relation allowed_org_unit: org_unit | org_unit with temporal_grant | org_unit with protocol_port | org_unit with protocol_port_temporal_grant
+    relation allowed_role: role | role with temporal_grant | role with protocol_port | role  with protocol_port_temporal_grant
+    relation allowed_group_security: group_security | group_security with temporal_grant | group_security with protocol_port | group_security  with protocol_port_temporal_grant
+    relation allowed_group_account: group_account |  group_account with temporal_grant | group_account with protocol_port | group_account with protocol_port_temporal_grant
+    relation allowed_ip_address: ip_address | ip_address with temporal_grant | ip_address with protocol_port | ip_address with protocol_port_temporal_grant
+    relation allowed_account: account | account with temporal_grant | account with protocol_port | account with protocol_port_temporal_grant
+    relation allowed_subnet: subnet | subnet with temporal_grant | subnet with protocol_port | subnet  with protocol_port_temporal_grant
+    permission allow = parent_resource_group->allow + allowed_org_unit + allowed_org_unit->membership +
+    allowed_role + allowed_role->membership +
+    allowed_group_security + allowed_group_security->membership +
+    allowed_group_account + allowed_group_account->membership +
+        allowed_ip_address + allowed_account + allowed_subnet
+}
+
+definition ip_address {
+    relation parent_resource_group: resource_group
+    relation allowed_org_unit: org_unit | org_unit with temporal_grant | org_unit with protocol_port | org_unit with protocol_port_temporal_grant
+    relation allowed_role: role | role with temporal_grant | role with protocol_port | role  with protocol_port_temporal_grant
+    relation allowed_group_security: group_security | group_security with temporal_grant | group_security with protocol_port | group_security  with protocol_port_temporal_grant
+    relation allowed_group_account: group_account |  group_account with temporal_grant | group_account with protocol_port | group_account with protocol_port_temporal_grant
+    relation allowed_ip_address: ip_address | ip_address with temporal_grant | ip_address with protocol_port | ip_address with protocol_port_temporal_grant
+    relation allowed_account: account | account with temporal_grant | account with protocol_port | account with protocol_port_temporal_grant
+    relation allowed_subnet: subnet | subnet with temporal_grant | subnet with protocol_port | subnet  with protocol_port_temporal_grant
+    permission allow = parent_resource_group->allow+ allowed_org_unit + allowed_org_unit->membership +
+    allowed_role + allowed_role->membership +
+    allowed_group_security + allowed_group_security->membership +
+    allowed_group_account + allowed_group_account->membership +
+        allowed_ip_address + allowed_account + allowed_subnet
+}
+
+
+caveat temporal_grant(current_timestamp string, grant_timestamp string) {
+	timestamp(current_timestamp) <= timestamp(grant_timestamp)
+}
+
+caveat protocol_port(port_uid string, allowed_ports_uids list<string>){
+    port_uid in allowed_ports_uids
+}
+//port is form 80_tcp, 80_udp, 80_ip
+caveat protocol_port_temporal_grant(port_uid string, allowed_ports_uids list<string>, current_timestamp string, grant_timestamp string){
+    port_uid in allowed_ports_uids && (timestamp(current_timestamp) <= timestamp(grant_timestamp))
+}

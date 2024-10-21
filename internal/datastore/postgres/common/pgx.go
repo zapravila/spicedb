@@ -55,27 +55,19 @@ func queryTuples(ctx context.Context, sqlStatement string, args []any, span trac
 			}
 			var caveatName sql.NullString
 			var caveatCtx map[string]any
-
-			if withIntegrity {
-				var integrityKeyID string
-				var integrityHash []byte
-				var timestamp time.Time
-
-				if err := rows.Scan(
-					&nextTuple.ResourceAndRelation.Namespace,
-					&nextTuple.ResourceAndRelation.ObjectId,
-					&nextTuple.ResourceAndRelation.Relation,
-					&nextTuple.Subject.Namespace,
-					&nextTuple.Subject.ObjectId,
-					&nextTuple.Subject.Relation,
-					&caveatName,
-					&caveatCtx,
-					&integrityKeyID,
-					&integrityHash,
-					&timestamp,
-				); err != nil {
-					return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("scan err: %w", err))
-				}
+			err := rows.Scan(
+				&nextTuple.ResourceAndRelation.Namespace,
+				&nextTuple.ResourceAndRelation.ObjectId,
+				&nextTuple.ResourceAndRelation.Relation,
+				&nextTuple.Subject.Namespace,
+				&nextTuple.Subject.ObjectId,
+				&nextTuple.Subject.Relation,
+				&caveatName,
+				&caveatCtx,
+			)
+			if err != nil {
+				return fmt.Errorf(errUnableToQueryTuples, fmt.Errorf("scan err: %w", err))
+			}
 
 				nextTuple.Integrity = &corev1.RelationshipIntegrity{
 					KeyId:    integrityKeyID,

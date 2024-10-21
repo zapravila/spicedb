@@ -1,4 +1,7 @@
 dist/
+*.wasm
+.DS_Store
+.vscodedist/
 completions/
 *.wasm
 .vscode/settings.json

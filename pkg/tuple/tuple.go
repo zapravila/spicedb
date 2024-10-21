@@ -347,6 +347,8 @@ func MustToRelationshipMutating(source *core.RelationTuple, targetRel *v1.Relati
 	targetRel.Subject.Object.ObjectId = source.Subject.ObjectId
 	targetRel.Subject.OptionalRelation = stringz.Default(source.Subject.Relation, "", Ellipsis)
 	targetRel.OptionalCaveat = nil
+	targetRel.OptionalDescription = nil
+	targetRel.OptionalComment = nil
 
 	if source.Caveat != nil {
 		if targetCaveat == nil {
@@ -355,6 +357,14 @@ func MustToRelationshipMutating(source *core.RelationTuple, targetRel *v1.Relati
 		targetCaveat.CaveatName = source.Caveat.CaveatName
 		targetCaveat.Context = source.Caveat.Context
 		targetRel.OptionalCaveat = targetCaveat
+	}
+
+	if source.OptionalDescription != nil {
+		targetRel.OptionalDescription = source.OptionalDescription
+	}
+
+	if source.OptionalComment != nil {
+		targetRel.OptionalComment = source.OptionalComment
 	}
 }
 
@@ -487,9 +497,14 @@ func CopyRelationshipToRelationTuple[T objectReference, S subjectReference[T], C
 		dst.Caveat = nil
 	}
 
+	optionalDescription := r.GetOptionalDescription()
+	optionalComment := r.GetOptionalComment()
+
 	dst.ResourceAndRelation.Namespace = r.GetResource().GetObjectType()
 	dst.ResourceAndRelation.ObjectId = r.GetResource().GetObjectId()
 	dst.ResourceAndRelation.Relation = r.GetRelation()
+	dst.OptionalDescription = &optionalDescription
+	dst.OptionalComment = &optionalComment
 	dst.Subject.Namespace = r.GetSubject().GetObject().GetObjectType()
 	dst.Subject.ObjectId = r.GetSubject().GetObject().GetObjectId()
 	dst.Subject.Relation = stringz.DefaultEmpty(r.GetSubject().GetOptionalRelation(), Ellipsis)
@@ -519,6 +534,9 @@ func CopyRelationTupleToRelationship(
 	} else {
 		dst.OptionalCaveat = nil
 	}
+
+	dst.OptionalDescription = src.OptionalDescription
+	dst.OptionalComment = src.OptionalComment
 }
 
 // UpdateFromRelationshipUpdate converts a RelationshipUpdate into a

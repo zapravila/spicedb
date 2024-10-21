@@ -34,6 +34,8 @@ var (
 		colUsersetRelation,
 		colCaveatContextName,
 		colCaveatContext,
+		colDescription,
+		colComment,
 	).From(tableTuple)
 
 	countTuples = psql.Select("COUNT(*)").From(tableTuple)

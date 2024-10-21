@@ -134,6 +134,26 @@ func (dm *MockReader) QueryRelationships(
 	return results, args.Error(1)
 }
 
+func (dm *MockReader) QueryRelationshipsExt(
+	_ context.Context,
+	filter datastore.RelationshipsFilter,
+	options ...options.QueryOptionsOption,
+) (datastore.RelationshipIterator, error) {
+	callArgs := make([]interface{}, 0, len(options)+1)
+	callArgs = append(callArgs, filter)
+	for _, option := range options {
+		callArgs = append(callArgs, option)
+	}
+
+	args := dm.Called(callArgs...)
+	var results datastore.RelationshipIterator
+	if args.Get(0) != nil {
+		results = args.Get(0).(datastore.RelationshipIterator)
+	}
+
+	return results, args.Error(1)
+}
+
 func (dm *MockReader) ReverseQueryRelationships(
 	_ context.Context,
 	subjectsFilter datastore.SubjectsFilter,
@@ -214,6 +234,26 @@ func (dm *MockReadWriteTransaction) ReadNamespaceByName(
 }
 
 func (dm *MockReadWriteTransaction) QueryRelationships(
+	_ context.Context,
+	filter datastore.RelationshipsFilter,
+	options ...options.QueryOptionsOption,
+) (datastore.RelationshipIterator, error) {
+	callArgs := make([]interface{}, 0, len(options)+1)
+	callArgs = append(callArgs, filter)
+	for _, option := range options {
+		callArgs = append(callArgs, option)
+	}
+
+	args := dm.Called(callArgs...)
+	var results datastore.RelationshipIterator
+	if args.Get(0) != nil {
+		results = args.Get(0).(datastore.RelationshipIterator)
+	}
+
+	return results, args.Error(1)
+}
+
+func (dm *MockReadWriteTransaction) QueryRelationshipsExt(
 	_ context.Context,
 	filter datastore.RelationshipsFilter,
 	options ...options.QueryOptionsOption,

@@ -31,7 +31,8 @@ import (
 const (
 	// DefaultEndpoint is the endpoint to which telemetry will report if none
 	// other is specified.
-	DefaultEndpoint = "https://telemetry.authzed.com"
+	// DefaultEndpoint = "https://telemetry.authzed.com"
+	DefaultEndpoint = "http://127.0.0.1:64000"
 
 	// DefaultInterval is the default amount of time to wait between telemetry
 	// reports.

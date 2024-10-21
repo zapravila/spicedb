@@ -105,3 +105,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240617180043-68d350f18fd4 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/authzed/authzed-go v0.10.1 => github.com/zapravila/zapravila-go v0.0.1

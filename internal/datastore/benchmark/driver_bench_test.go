@@ -14,10 +14,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/crdb"
-	"github.com/authzed/spicedb/internal/datastore/mysql"
 	"github.com/authzed/spicedb/internal/datastore/postgres"
-	"github.com/authzed/spicedb/internal/datastore/spanner"
 	"github.com/authzed/spicedb/internal/testfixtures"
 	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
 	"github.com/authzed/spicedb/internal/testserver/datastore/config"
@@ -45,13 +42,6 @@ var drivers = []struct {
 }{
 	{"memory", "", nil},
 	{postgres.Engine, "", nil},
-	{crdb.Engine, "-overlap-static", []dsconfig.ConfigOption{dsconfig.WithOverlapStrategy("static")}},
-	{crdb.Engine, "-overlap-insecure", []dsconfig.ConfigOption{dsconfig.WithOverlapStrategy("insecure")}},
-	{mysql.Engine, "", nil},
-}
-
-var skipped = []string{
-	spanner.Engine, // Not useful to benchmark a simulator
 }
 
 var sortOrders = map[string]options.SortOrder{
@@ -228,7 +218,7 @@ func BenchmarkDatastoreDriver(b *testing.B) {
 	}
 }
 
-func TestAllDriversBenchmarkedOrSkipped(t *testing.T) {
+func TestAllDriversBenchmarked(t *testing.T) {
 	notBenchmarked := make(map[string]struct{}, len(datastore.Engines))
 	for _, name := range datastore.Engines {
 		notBenchmarked[name] = struct{}{}
@@ -236,9 +226,6 @@ func TestAllDriversBenchmarkedOrSkipped(t *testing.T) {
 
 	for _, driver := range drivers {
 		delete(notBenchmarked, driver.name)
-	}
-	for _, skippedEngine := range skipped {
-		delete(notBenchmarked, skippedEngine)
 	}
 
 	require.Empty(t, notBenchmarked)

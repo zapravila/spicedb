@@ -64,6 +64,8 @@ const (
 	colCaveatDefinition  = "definition"
 	colCaveatContextName = "caveat_name"
 	colCaveatContext     = "caveat_context"
+	colDescription       = "description"
+	colComment           = "comment"
 
 	colCounterName         = "name"
 	colCounterFilter       = "serialized_filter"

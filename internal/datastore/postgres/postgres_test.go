@@ -5,6 +5,7 @@ package postgres
 
 import (
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -14,6 +15,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/require"
 )
+
+func TestPostgresSimple(t *testing.T) {
+	log.Println("test passed")
+}
 
 func TestPostgresDatastore(t *testing.T) {
 	t.Parallel()

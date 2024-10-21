@@ -12,12 +12,13 @@ import (
 	"github.com/ccoveille/go-safecast"
 	"github.com/spf13/pflag"
 
-	"github.com/authzed/spicedb/internal/datastore/crdb"
+	// "github.com/authzed/spicedb/internal/datastore/crdb"
 	"github.com/authzed/spicedb/internal/datastore/memdb"
-	"github.com/authzed/spicedb/internal/datastore/mysql"
+	// "github.com/authzed/spicedb/internal/datastore/mysql"
 	"github.com/authzed/spicedb/internal/datastore/postgres"
 	"github.com/authzed/spicedb/internal/datastore/proxy"
-	"github.com/authzed/spicedb/internal/datastore/spanner"
+
+	// "github.com/authzed/spicedb/internal/datastore/spanner"
 	log "github.com/authzed/spicedb/internal/logging"
 	"github.com/authzed/spicedb/pkg/datastore"
 	"github.com/authzed/spicedb/pkg/validationfile"
@@ -28,19 +29,19 @@ type engineBuilderFunc func(ctx context.Context, options Config) (datastore.Data
 const MaxReplicaCount = 16
 
 const (
-	MemoryEngine    = "memory"
-	PostgresEngine  = "postgres"
-	CockroachEngine = "cockroachdb"
-	SpannerEngine   = "spanner"
-	MySQLEngine     = "mysql"
+	MemoryEngine   = "memory"
+	PostgresEngine = "postgres"
+	// CockroachEngine = "cockroachdb"
+	// SpannerEngine   = "spanner"
+	// MySQLEngine     = "mysql"
 )
 
 var BuilderForEngine = map[string]engineBuilderFunc{
-	CockroachEngine: newCRDBDatastore,
-	PostgresEngine:  newPostgresDatastore,
-	MemoryEngine:    newMemoryDatstore,
-	SpannerEngine:   newSpannerDatastore,
-	MySQLEngine:     newMySQLDatastore,
+	// CockroachEngine: newCRDBDatastore,
+	PostgresEngine: newPostgresDatastore,
+	MemoryEngine:   newMemoryDatstore,
+	// SpannerEngine:   newSpannerDatastore,
+	// MySQLEngine:     newMySQLDatastore,
 }
 
 //go:generate go run github.com/ecordell/optgen -output zz_generated.connpool.options.go . ConnPoolConfig
@@ -465,48 +466,48 @@ func readExpiredKeys(expiredKeyStrings []string) ([]proxy.KeyConfig, error) {
 	return expiredKeys, nil
 }
 
-func newCRDBDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	if len(opts.ReadReplicaURIs) > 0 {
-		return nil, errors.New("read replicas are not supported for the CockroachDB datastore engine")
-	}
+// func newCRDBDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	if len(opts.ReadReplicaURIs) > 0 {
+// 		return nil, errors.New("read replicas are not supported for the CockroachDB datastore engine")
+// 	}
 
-	maxRetries, err := safecast.ToUint8(opts.MaxRetries)
-	if err != nil {
-		return nil, errors.New("max-retries could not be cast to uint8")
-	}
+// 	maxRetries, err := safecast.ToUint8(opts.MaxRetries)
+// 	if err != nil {
+// 		return nil, errors.New("max-retries could not be cast to uint8")
+// 	}
 
-	return crdb.NewCRDBDatastore(
-		ctx,
-		opts.URI,
-		crdb.GCWindow(opts.GCWindow),
-		crdb.RevisionQuantization(opts.RevisionQuantization),
-		crdb.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
-		crdb.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
-		crdb.ReadConnsMinOpen(opts.ReadConnPool.MinOpenConns),
-		crdb.ReadConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
-		crdb.ReadConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
-		crdb.ReadConnMaxLifetimeJitter(opts.ReadConnPool.MaxLifetimeJitter),
-		crdb.ReadConnHealthCheckInterval(opts.ReadConnPool.HealthCheckInterval),
-		crdb.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
-		crdb.WriteConnsMinOpen(opts.WriteConnPool.MinOpenConns),
-		crdb.WriteConnMaxIdleTime(opts.WriteConnPool.MaxIdleTime),
-		crdb.WriteConnMaxLifetime(opts.WriteConnPool.MaxLifetime),
-		crdb.WriteConnMaxLifetimeJitter(opts.WriteConnPool.MaxLifetimeJitter),
-		crdb.WriteConnHealthCheckInterval(opts.WriteConnPool.HealthCheckInterval),
-		crdb.FollowerReadDelay(opts.FollowerReadDelay),
-		crdb.MaxRetries(maxRetries),
-		crdb.OverlapKey(opts.OverlapKey),
-		crdb.OverlapStrategy(opts.OverlapStrategy),
-		crdb.WatchBufferLength(opts.WatchBufferLength),
-		crdb.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		crdb.WatchConnectTimeout(opts.WatchConnectTimeout),
-		crdb.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
-		crdb.WithEnableConnectionBalancing(opts.EnableConnectionBalancing),
-		crdb.ConnectRate(opts.ConnectRate),
-		crdb.FilterMaximumIDCount(opts.FilterMaximumIDCount),
-		crdb.WithIntegrity(opts.RelationshipIntegrityEnabled),
-	)
-}
+// 	return crdb.NewCRDBDatastore(
+// 		ctx,
+// 		opts.URI,
+// 		crdb.GCWindow(opts.GCWindow),
+// 		crdb.RevisionQuantization(opts.RevisionQuantization),
+// 		crdb.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
+// 		crdb.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
+// 		crdb.ReadConnsMinOpen(opts.ReadConnPool.MinOpenConns),
+// 		crdb.ReadConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
+// 		crdb.ReadConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
+// 		crdb.ReadConnMaxLifetimeJitter(opts.ReadConnPool.MaxLifetimeJitter),
+// 		crdb.ReadConnHealthCheckInterval(opts.ReadConnPool.HealthCheckInterval),
+// 		crdb.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
+// 		crdb.WriteConnsMinOpen(opts.WriteConnPool.MinOpenConns),
+// 		crdb.WriteConnMaxIdleTime(opts.WriteConnPool.MaxIdleTime),
+// 		crdb.WriteConnMaxLifetime(opts.WriteConnPool.MaxLifetime),
+// 		crdb.WriteConnMaxLifetimeJitter(opts.WriteConnPool.MaxLifetimeJitter),
+// 		crdb.WriteConnHealthCheckInterval(opts.WriteConnPool.HealthCheckInterval),
+// 		crdb.FollowerReadDelay(opts.FollowerReadDelay),
+// 		crdb.MaxRetries(maxRetries),
+// 		crdb.OverlapKey(opts.OverlapKey),
+// 		crdb.OverlapStrategy(opts.OverlapStrategy),
+// 		crdb.WatchBufferLength(opts.WatchBufferLength),
+// 		crdb.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		crdb.WatchConnectTimeout(opts.WatchConnectTimeout),
+// 		crdb.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
+// 		crdb.WithEnableConnectionBalancing(opts.EnableConnectionBalancing),
+// 		crdb.ConnectRate(opts.ConnectRate),
+// 		crdb.FilterMaximumIDCount(opts.FilterMaximumIDCount),
+// 		crdb.WithIntegrity(opts.RelationshipIntegrityEnabled),
+// 	)
+// }
 
 func newPostgresDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
 	primary, err := newPostgresPrimaryDatastore(ctx, opts)
@@ -602,115 +603,115 @@ func newPostgresPrimaryDatastore(ctx context.Context, opts Config) (datastore.Da
 	return postgres.NewPostgresDatastore(ctx, opts.URI, pgOpts...)
 }
 
-func newSpannerDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	if len(opts.ReadReplicaURIs) > 0 {
-		return nil, errors.New("read replicas are not supported for the Spanner datastore engine")
-	}
+// func newSpannerDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	if len(opts.ReadReplicaURIs) > 0 {
+// 		return nil, errors.New("read replicas are not supported for the Spanner datastore engine")
+// 	}
 
-	return spanner.NewSpannerDatastore(
-		ctx,
-		opts.URI,
-		spanner.FollowerReadDelay(opts.FollowerReadDelay),
-		spanner.RevisionQuantization(opts.RevisionQuantization),
-		spanner.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
-		spanner.CredentialsFile(opts.SpannerCredentialsFile),
-		spanner.CredentialsJSON(opts.SpannerCredentialsJSON),
-		spanner.WatchBufferLength(opts.WatchBufferLength),
-		spanner.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		spanner.EmulatorHost(opts.SpannerEmulatorHost),
-		spanner.DisableStats(opts.DisableStats),
-		spanner.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
-		spanner.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
-		spanner.MinSessionCount(opts.SpannerMinSessions),
-		spanner.MaxSessionCount(opts.SpannerMaxSessions),
-		spanner.MigrationPhase(opts.MigrationPhase),
-		spanner.FilterMaximumIDCount(opts.FilterMaximumIDCount),
-	)
-}
+// 	return spanner.NewSpannerDatastore(
+// 		ctx,
+// 		opts.URI,
+// 		spanner.FollowerReadDelay(opts.FollowerReadDelay),
+// 		spanner.RevisionQuantization(opts.RevisionQuantization),
+// 		spanner.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
+// 		spanner.CredentialsFile(opts.SpannerCredentialsFile),
+// 		spanner.CredentialsJSON(opts.SpannerCredentialsJSON),
+// 		spanner.WatchBufferLength(opts.WatchBufferLength),
+// 		spanner.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		spanner.EmulatorHost(opts.SpannerEmulatorHost),
+// 		spanner.DisableStats(opts.DisableStats),
+// 		spanner.ReadConnsMaxOpen(opts.ReadConnPool.MaxOpenConns),
+// 		spanner.WriteConnsMaxOpen(opts.WriteConnPool.MaxOpenConns),
+// 		spanner.MinSessionCount(opts.SpannerMinSessions),
+// 		spanner.MaxSessionCount(opts.SpannerMaxSessions),
+// 		spanner.MigrationPhase(opts.MigrationPhase),
+// 		spanner.FilterMaximumIDCount(opts.FilterMaximumIDCount),
+// 	)
+// }
 
-func newMySQLDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	primary, err := newMySQLPrimaryDatastore(ctx, opts)
-	if err != nil {
-		return nil, err
-	}
+// func newMySQLDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	primary, err := newMySQLPrimaryDatastore(ctx, opts)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	if len(opts.ReadReplicaURIs) > MaxReplicaCount {
-		return nil, fmt.Errorf("too many read replicas, max is %d", MaxReplicaCount)
-	}
+// 	if len(opts.ReadReplicaURIs) > MaxReplicaCount {
+// 		return nil, fmt.Errorf("too many read replicas, max is %d", MaxReplicaCount)
+// 	}
 
-	replicas := make([]datastore.ReadOnlyDatastore, 0, len(opts.ReadReplicaURIs))
-	for index, replicaURI := range opts.ReadReplicaURIs {
-		uintIndex, err := safecast.ToUint32(index)
-		if err != nil {
-			return nil, errors.New("too many replicas")
-		}
-		replica, err := newMySQLReplicaDatastore(ctx, uintIndex, replicaURI, opts)
-		if err != nil {
-			return nil, err
-		}
-		replicas = append(replicas, replica)
-	}
+// 	replicas := make([]datastore.ReadOnlyDatastore, 0, len(opts.ReadReplicaURIs))
+// 	for index, replicaURI := range opts.ReadReplicaURIs {
+// 		uintIndex, err := safecast.ToUint32(index)
+// 		if err != nil {
+// 			return nil, errors.New("too many replicas")
+// 		}
+// 		replica, err := newMySQLReplicaDatastore(ctx, uintIndex, replicaURI, opts)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		replicas = append(replicas, replica)
+// 	}
 
-	return proxy.NewCheckingReplicatedDatastore(primary, replicas...)
-}
+// 	return proxy.NewCheckingReplicatedDatastore(primary, replicas...)
+// }
 
-func commonMySQLDatastoreOptions(opts Config) ([]mysql.Option, error) {
-	maxRetries, err := safecast.ToUint8(opts.MaxRetries)
-	if err != nil {
-		return nil, errors.New("max-retries could not be cast to uint8")
-	}
+// func commonMySQLDatastoreOptions(opts Config) ([]mysql.Option, error) {
+// 	maxRetries, err := safecast.ToUint8(opts.MaxRetries)
+// 	if err != nil {
+// 		return nil, errors.New("max-retries could not be cast to uint8")
+// 	}
 
-	return []mysql.Option{
-		mysql.TablePrefix(opts.TablePrefix),
-		mysql.MaxRetries(maxRetries),
-		mysql.OverrideLockWaitTimeout(1),
-		mysql.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
-		mysql.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
-		mysql.RevisionQuantization(opts.RevisionQuantization),
-		mysql.FilterMaximumIDCount(opts.FilterMaximumIDCount),
-	}, nil
-}
+// 	return []mysql.Option{
+// 		mysql.TablePrefix(opts.TablePrefix),
+// 		mysql.MaxRetries(maxRetries),
+// 		mysql.OverrideLockWaitTimeout(1),
+// 		mysql.WithEnablePrometheusStats(opts.EnableDatastoreMetrics),
+// 		mysql.MaxRevisionStalenessPercent(opts.MaxRevisionStalenessPercent),
+// 		mysql.RevisionQuantization(opts.RevisionQuantization),
+// 		mysql.FilterMaximumIDCount(opts.FilterMaximumIDCount),
+// 	}, nil
+// }
 
-func newMySQLReplicaDatastore(ctx context.Context, replicaIndex uint32, replicaURI string, opts Config) (datastore.ReadOnlyDatastore, error) {
-	mysqlOpts := []mysql.Option{
-		mysql.MaxOpenConns(opts.ReadReplicaConnPool.MaxOpenConns),
-		mysql.ConnMaxIdleTime(opts.ReadReplicaConnPool.MaxIdleTime),
-		mysql.ConnMaxLifetime(opts.ReadReplicaConnPool.MaxLifetime),
-		mysql.WatchBufferLength(opts.WatchBufferLength),
-		mysql.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		mysql.CredentialsProviderName(opts.ReadReplicaCredentialsProviderName),
-	}
+// func newMySQLReplicaDatastore(ctx context.Context, replicaIndex uint32, replicaURI string, opts Config) (datastore.ReadOnlyDatastore, error) {
+// 	mysqlOpts := []mysql.Option{
+// 		mysql.MaxOpenConns(opts.ReadReplicaConnPool.MaxOpenConns),
+// 		mysql.ConnMaxIdleTime(opts.ReadReplicaConnPool.MaxIdleTime),
+// 		mysql.ConnMaxLifetime(opts.ReadReplicaConnPool.MaxLifetime),
+// 		mysql.WatchBufferLength(opts.WatchBufferLength),
+// 		mysql.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		mysql.CredentialsProviderName(opts.ReadReplicaCredentialsProviderName),
+// 	}
 
-	commonOptions, err := commonMySQLDatastoreOptions(opts)
-	if err != nil {
-		return nil, err
-	}
-	mysqlOpts = append(mysqlOpts, commonOptions...)
-	return mysql.NewReadOnlyMySQLDatastore(ctx, replicaURI, replicaIndex, mysqlOpts...)
-}
+// 	commonOptions, err := commonMySQLDatastoreOptions(opts)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	mysqlOpts = append(mysqlOpts, commonOptions...)
+// 	return mysql.NewReadOnlyMySQLDatastore(ctx, replicaURI, replicaIndex, mysqlOpts...)
+// }
 
-func newMySQLPrimaryDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
-	mysqlOpts := []mysql.Option{
-		mysql.GCInterval(opts.GCInterval),
-		mysql.GCWindow(opts.GCWindow),
-		mysql.GCInterval(opts.GCInterval),
-		mysql.GCEnabled(!opts.ReadOnly),
-		mysql.GCMaxOperationTime(opts.GCMaxOperationTime),
-		mysql.MaxOpenConns(opts.ReadConnPool.MaxOpenConns),
-		mysql.ConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
-		mysql.ConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
-		mysql.WatchBufferLength(opts.WatchBufferLength),
-		mysql.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
-		mysql.CredentialsProviderName(opts.CredentialsProviderName),
-	}
+// func newMySQLPrimaryDatastore(ctx context.Context, opts Config) (datastore.Datastore, error) {
+// 	mysqlOpts := []mysql.Option{
+// 		mysql.GCInterval(opts.GCInterval),
+// 		mysql.GCWindow(opts.GCWindow),
+// 		mysql.GCInterval(opts.GCInterval),
+// 		mysql.GCEnabled(!opts.ReadOnly),
+// 		mysql.GCMaxOperationTime(opts.GCMaxOperationTime),
+// 		mysql.MaxOpenConns(opts.ReadConnPool.MaxOpenConns),
+// 		mysql.ConnMaxIdleTime(opts.ReadConnPool.MaxIdleTime),
+// 		mysql.ConnMaxLifetime(opts.ReadConnPool.MaxLifetime),
+// 		mysql.WatchBufferLength(opts.WatchBufferLength),
+// 		mysql.WatchBufferWriteTimeout(opts.WatchBufferWriteTimeout),
+// 		mysql.CredentialsProviderName(opts.CredentialsProviderName),
+// 	}
 
-	commonOptions, err := commonMySQLDatastoreOptions(opts)
-	if err != nil {
-		return nil, err
-	}
-	mysqlOpts = append(mysqlOpts, commonOptions...)
-	return mysql.NewMySQLDatastore(ctx, opts.URI, mysqlOpts...)
-}
+// 	commonOptions, err := commonMySQLDatastoreOptions(opts)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	mysqlOpts = append(mysqlOpts, commonOptions...)
+// 	return mysql.NewMySQLDatastore(ctx, opts.URI, mysqlOpts...)
+// }
 
 func newMemoryDatstore(_ context.Context, opts Config) (datastore.Datastore, error) {
 	if len(opts.ReadReplicaURIs) > 0 {

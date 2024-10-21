@@ -20,6 +20,9 @@ message RelationTuple {
 
   /** integrity holds (optional) information about the integrity of the tuple */
   RelationshipIntegrity integrity = 4 [(validate.rules).message.required = false];
+
+    optional string optional_description = 5; // [ (validate.rules).string.ignore_empty = true ];
+    optional string optional_comment = 6; // [ (validate.rules).string.ignore_empty = true ];
 }
 
 message RelationshipIntegrity {

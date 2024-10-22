@@ -7,9 +7,9 @@ import (
 	"github.com/jzelinskie/cobrautil/v2/cobrazerolog"
 	"github.com/spf13/cobra"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/releases"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/releases"
 )
 
 func RegisterRootFlags(cmd *cobra.Command) error {

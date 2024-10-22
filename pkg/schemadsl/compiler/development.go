@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"github.com/authzed/spicedb/pkg/schemadsl/dslshape"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/schemadsl/dslshape"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
 )
 
 // DSLNode is a node in the DSL AST.

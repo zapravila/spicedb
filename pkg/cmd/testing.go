@@ -5,10 +5,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/termination"
-	"github.com/authzed/spicedb/pkg/cmd/testserver"
-	"github.com/authzed/spicedb/pkg/cmd/util"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/termination"
+	"github.com/zapravila/spicedb/pkg/cmd/testserver"
+	"github.com/zapravila/spicedb/pkg/cmd/util"
 )
 
 func RegisterTestingFlags(cmd *cobra.Command, config *testserver.Config) {

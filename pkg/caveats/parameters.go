@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/authzed/spicedb/pkg/caveats/types"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // UnknownParameterOption is the option to ConvertContextToParameters around handling

@@ -5,19 +5,19 @@ import (
 	"errors"
 	"time"
 
-	"github.com/authzed/spicedb/internal/middleware/streamtimeout"
+	"github.com/zapravila/spicedb/internal/middleware/streamtimeout"
 
-	"github.com/authzed/spicedb/internal/middleware"
+	"github.com/zapravila/spicedb/internal/middleware"
 
 	grpcvalidate "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/graph"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/internal/services/shared"
-	dispatchv1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/graph"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/internal/services/shared"
+	dispatchv1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 const streamAPITimeout = 45 * time.Second

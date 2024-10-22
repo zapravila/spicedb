@@ -6,7 +6,7 @@ package _type
 
 import (
 	fmt "fmt"
-	_type "github.com/authzed/spicedb/pkg/proto/google/type"
+	_type "github.com/zapravila/spicedb/pkg/proto/google/type"
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	proto "google.golang.org/protobuf/proto"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"

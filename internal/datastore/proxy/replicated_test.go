@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	"github.com/authzed/spicedb/pkg/datastore/revisionparsing"
-	corev1 "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/datastore/revisionparsing"
+	corev1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 func TestReplicatedReaderWithOnlyPrimary(t *testing.T) {

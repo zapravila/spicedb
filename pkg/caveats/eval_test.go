@@ -7,7 +7,7 @@ import (
 	"github.com/authzed/cel-go/cel"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/caveats/types"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
 )
 
 var noMissingVars []string

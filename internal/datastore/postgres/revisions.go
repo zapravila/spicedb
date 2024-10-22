@@ -12,9 +12,9 @@ import (
 	"github.com/ccoveille/go-safecast"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/authzed/spicedb/pkg/datastore"
-	implv1 "github.com/authzed/spicedb/pkg/proto/impl/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	implv1 "github.com/zapravila/spicedb/pkg/proto/impl/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 const (

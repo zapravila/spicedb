@@ -12,7 +12,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/goleak"
 
-	"github.com/authzed/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/testutil"
 )
 
 func TestOtelForwarding(t *testing.T) {

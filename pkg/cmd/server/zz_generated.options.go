@@ -2,11 +2,11 @@
 package server
 
 import (
-	dispatch "github.com/authzed/spicedb/internal/dispatch"
-	graph "github.com/authzed/spicedb/internal/dispatch/graph"
-	datastore "github.com/authzed/spicedb/pkg/cmd/datastore"
-	util "github.com/authzed/spicedb/pkg/cmd/util"
-	datastore1 "github.com/authzed/spicedb/pkg/datastore"
+	dispatch "github.com/zapravila/spicedb/internal/dispatch"
+	graph "github.com/zapravila/spicedb/internal/dispatch/graph"
+	datastore "github.com/zapravila/spicedb/pkg/cmd/datastore"
+	util "github.com/zapravila/spicedb/pkg/cmd/util"
+	datastore1 "github.com/zapravila/spicedb/pkg/datastore"
 	defaults "github.com/creasty/defaults"
 	helpers "github.com/ecordell/optgen/helpers"
 	auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"

@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/authzed/spicedb/pkg/caveats/types"
-	"github.com/authzed/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
+	"github.com/zapravila/spicedb/pkg/testutil"
 )
 
 func mustNewStruct(values map[string]any) *structpb.Struct {

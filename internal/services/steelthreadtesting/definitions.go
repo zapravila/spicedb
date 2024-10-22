@@ -3,7 +3,7 @@
 
 package steelthreadtesting
 
-import v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+import v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
 type steelThreadTestCase struct {
 	name       string

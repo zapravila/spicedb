@@ -5,19 +5,18 @@ package integrationtesting_test
 
 import (
 	"context"
-	"slices"
 	"testing"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
-	"github.com/authzed/spicedb/internal/testserver"
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
-	"github.com/authzed/spicedb/internal/testserver/datastore/config"
-	dsconfig "github.com/authzed/spicedb/pkg/cmd/datastore"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/internal/testserver"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
+	"github.com/zapravila/spicedb/internal/testserver/datastore/config"
+	dsconfig "github.com/zapravila/spicedb/pkg/cmd/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 type testCase struct {

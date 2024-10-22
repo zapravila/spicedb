@@ -8,9 +8,9 @@ import (
 
 	"github.com/ccoveille/go-safecast"
 
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // ParsedSchema is the parsed schema in a validationfile.

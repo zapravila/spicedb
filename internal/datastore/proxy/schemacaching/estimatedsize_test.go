@@ -14,9 +14,9 @@ import (
 	"github.com/ccoveille/go-safecast"
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/validationfile"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/validationfile"
 )
 
 const retryCount = 5

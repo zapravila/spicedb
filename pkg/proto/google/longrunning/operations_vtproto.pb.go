@@ -6,7 +6,7 @@ package longrunning
 
 import (
 	fmt "fmt"
-	rpc "github.com/authzed/spicedb/pkg/proto/google/rpc"
+	rpc "github.com/zapravila/spicedb/pkg/proto/google/rpc"
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	anypb1 "github.com/planetscale/vtprotobuf/types/known/anypb"
 	durationpb1 "github.com/planetscale/vtprotobuf/types/known/durationpb"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2"
 	"google.golang.org/grpc"

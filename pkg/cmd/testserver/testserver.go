@@ -10,17 +10,17 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
-	"github.com/authzed/spicedb/internal/dispatch/graph"
-	"github.com/authzed/spicedb/internal/gateway"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/internal/middleware/pertoken"
-	"github.com/authzed/spicedb/internal/middleware/readonly"
-	"github.com/authzed/spicedb/internal/services"
-	"github.com/authzed/spicedb/internal/services/health"
-	v1svc "github.com/authzed/spicedb/internal/services/v1"
-	"github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/util"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/dispatch/graph"
+	"github.com/zapravila/spicedb/internal/gateway"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/internal/middleware/pertoken"
+	"github.com/zapravila/spicedb/internal/middleware/readonly"
+	"github.com/zapravila/spicedb/internal/services"
+	"github.com/zapravila/spicedb/internal/services/health"
+	v1svc "github.com/zapravila/spicedb/internal/services/v1"
+	"github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/util"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 const (

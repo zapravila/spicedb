@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/authzed/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/dispatch"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/stretchr/testify/require"
@@ -15,10 +15,10 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 
-	"github.com/authzed/spicedb/internal/dispatch/keys"
-	"github.com/authzed/spicedb/internal/grpchelpers"
-	corev1 "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/dispatch/keys"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
+	corev1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 type fakeDispatchSvc struct {

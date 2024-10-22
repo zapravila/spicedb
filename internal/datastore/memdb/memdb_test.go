@@ -11,12 +11,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
-	test "github.com/authzed/spicedb/pkg/datastore/test"
-	ns "github.com/authzed/spicedb/pkg/namespace"
-	corev1 "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
+	test "github.com/zapravila/spicedb/pkg/datastore/test"
+	ns "github.com/zapravila/spicedb/pkg/namespace"
+	corev1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 type memDBTest struct{}

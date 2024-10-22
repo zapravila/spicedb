@@ -1,7 +1,7 @@
 package tuple
 
 import (
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 )
 
 // JoinObject joins the namespace and the objectId together into the standard

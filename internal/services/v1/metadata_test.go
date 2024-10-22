@@ -7,18 +7,18 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/tuple"
 
-	"github.com/authzed/authzed-go/pkg/responsemeta"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/authzed/spicedb/internal/datastore/memdb"
-	tf "github.com/authzed/spicedb/internal/testfixtures"
-	"github.com/authzed/spicedb/internal/testserver"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	"github.com/zapravila/spicedb/internal/datastore/memdb"
+	tf "github.com/zapravila/spicedb/internal/testfixtures"
+	"github.com/zapravila/spicedb/internal/testserver"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 )
 
 func TestAllMethodsReturnMetadata(t *testing.T) {

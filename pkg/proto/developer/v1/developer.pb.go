@@ -7,10 +7,10 @@
 package developerv1
 
 import (
-	v12 "github.com/authzed/spicedb/pkg/proto/authzed/api/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v11 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	_ "github.com/authzed/spicedb/pkg/proto/validate"
+	v12 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v11 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"

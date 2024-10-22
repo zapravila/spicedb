@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync/atomic"
 
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 // newCachedCheckRevision wraps a datastore with a cache that will avoid checking the revision

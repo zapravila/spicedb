@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 // intervalTracker is a specialized type for tracking a value over a set of

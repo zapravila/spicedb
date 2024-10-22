@@ -3,8 +3,8 @@ package dispatcher
 import (
 	"context"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	dispatchermw "github.com/authzed/spicedb/internal/middleware/dispatcher"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	dispatchermw "github.com/zapravila/spicedb/internal/middleware/dispatcher"
 )
 
 // FromContext reads the selected dispatcher out of a context.Context

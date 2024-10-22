@@ -3,7 +3,7 @@ package shared
 import (
 	"google.golang.org/grpc"
 
-	"github.com/authzed/spicedb/internal/middleware/servicespecific"
+	"github.com/zapravila/spicedb/internal/middleware/servicespecific"
 )
 
 // WithUnaryServiceSpecificInterceptor is a helper to add a unary interceptor or interceptor

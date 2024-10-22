@@ -5,10 +5,10 @@ import (
 
 	"github.com/ccoveille/go-safecast"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	devinterface "github.com/authzed/spicedb/pkg/proto/developer/v1"
-	"github.com/authzed/spicedb/pkg/schemadsl/compiler"
-	"github.com/authzed/spicedb/pkg/schemadsl/input"
+	log "github.com/zapravila/spicedb/internal/logging"
+	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
+	"github.com/zapravila/spicedb/pkg/schemadsl/compiler"
+	"github.com/zapravila/spicedb/pkg/schemadsl/input"
 )
 
 // CompileSchema compiles a schema into its caveat and namespace definition(s), returning a developer

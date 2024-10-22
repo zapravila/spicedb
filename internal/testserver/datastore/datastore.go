@@ -9,9 +9,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/internal/datastore/postgres/version"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/migrate"
+	"github.com/zapravila/spicedb/internal/datastore/postgres/version"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/migrate"
 )
 
 const dockerBootTimeout = 10 * time.Second

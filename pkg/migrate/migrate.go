@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	log "github.com/authzed/spicedb/internal/logging"
+	log "github.com/zapravila/spicedb/internal/logging"
 )
 
 const (

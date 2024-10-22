@@ -8,10 +8,10 @@ import (
 	"github.com/authzed/cel-go/common"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/authzed/spicedb/pkg/caveats/replacer"
-	"github.com/authzed/spicedb/pkg/caveats/types"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	impl "github.com/authzed/spicedb/pkg/proto/impl/v1"
+	"github.com/zapravila/spicedb/pkg/caveats/replacer"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	impl "github.com/zapravila/spicedb/pkg/proto/impl/v1"
 )
 
 const anonymousCaveat = ""

@@ -1,4 +1,4 @@
-module github.com/authzed/spicedb
+module github.com/zapravila/spicedb
 
 go 1.22.7
 
@@ -7,7 +7,6 @@ require (
 	github.com/IBM/pgxpoolprometheus v1.1.1
 	github.com/KimMachineGun/automemlimit v0.6.1
 	github.com/Masterminds/squirrel v1.5.4
-	github.com/authzed/authzed-go v0.16.1-0.20241001202507-27cc182a7b92
 
 	// NOTE: We are using a *copy* of `cel-go` here to ensure there isn't a conflict
 	// with the version used in Kubernetes. This is a temporary measure until we can
@@ -28,12 +27,11 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/ecordell/optgen v0.0.10-0.20230609182709-018141bf9698
 	github.com/emirpasic/gods v1.18.1
-	github.com/envoyproxy/protoc-gen-validate v1.1.0
+	github.com/envoyproxy/protoc-gen-validate v1.1.0 // indirect
 	github.com/exaring/otelpgx v0.6.2
 	github.com/fatih/color v1.17.0
 	github.com/go-errors/errors v1.5.1
 	github.com/go-logr/zerologr v1.2.3
-	github.com/go-sql-driver/mysql v1.8.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/snappy v0.0.4
 	github.com/golangci/golangci-lint v1.61.0
@@ -137,11 +135,9 @@ require (
 	github.com/godbus/dbus/v5 v5.0.6 // indirect
 	github.com/golangci/modinfo v0.3.4 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
-	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jjti/go-spancheck v0.6.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/lasiar/canonicalheader v1.1.1 // indirect
-	github.com/lyft/protoc-gen-star/v2 v2.0.4-0.20230330145011-496ad1ac90a4 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417 // indirect
 	github.com/quasilyte/go-ruleguard/dsl v0.3.22 // indirect
@@ -152,7 +148,6 @@ require (
 	go-simpler.org/musttag v0.12.2 // indirect
 	golang.org/x/telemetry v0.0.0-20240522233618-39ace7a40ae7 // indirect
 	gonum.org/v1/gonum v0.11.0 // indirect
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1 // indirect
 )
 
 require (
@@ -161,7 +156,6 @@ require (
 	buf.build/gen/go/gogo/protobuf/protocolbuffers/go v1.34.2-20210810001428-4df00b267f94.2 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	dario.cat/mergo v1.0.0 // indirect
-	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/4meepo/tagalign v1.3.4 // indirect
 	github.com/Abirdcfly/dupword v0.1.1 // indirect
 	github.com/Antonboom/errname v0.1.13 // indirect
@@ -394,4 +388,6 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/authzed/authzed-go => github.com/zapravila/authzed-go v0.0.11
+require github.com/zapravila/authzed-go v0.0.11
+
+// replace github.com/authzed/authzed-go => github.com/zapravila/authzed-go v0.0.11

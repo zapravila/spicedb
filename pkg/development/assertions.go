@@ -3,14 +3,14 @@ package development
 import (
 	"fmt"
 
-	v1t "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/ccoveille/go-safecast"
+	v1t "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	devinterface "github.com/authzed/spicedb/pkg/proto/developer/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/tuple"
-	"github.com/authzed/spicedb/pkg/validationfile/blocks"
+	log "github.com/zapravila/spicedb/internal/logging"
+	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/validationfile/blocks"
 )
 
 const maxDispatchDepth = 25

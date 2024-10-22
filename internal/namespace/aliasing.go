@@ -3,7 +3,7 @@ package namespace
 import (
 	"sort"
 
-	"github.com/authzed/spicedb/pkg/typesystem"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // computePermissionAliases computes a map of aliases between the various permissions in a

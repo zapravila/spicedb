@@ -3,7 +3,7 @@ package tuple
 import (
 	"testing"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 
 	"github.com/stretchr/testify/require"
 )

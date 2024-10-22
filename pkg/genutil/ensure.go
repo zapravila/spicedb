@@ -3,7 +3,7 @@ package genutil
 import (
 	"github.com/ccoveille/go-safecast"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // MustEnsureUInt32 is a helper function that calls EnsureUInt32 and panics on error.

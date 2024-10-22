@@ -5,8 +5,8 @@ import (
 
 	"github.com/authzed/cel-go/cel"
 
-	"github.com/authzed/spicedb/pkg/caveats/types"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // Environment defines the evaluation environment for a caveat.

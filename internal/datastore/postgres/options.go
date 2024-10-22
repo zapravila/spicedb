@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	pgxcommon "github.com/authzed/spicedb/internal/datastore/postgres/common"
-	log "github.com/authzed/spicedb/internal/logging"
+	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
+	log "github.com/zapravila/spicedb/internal/logging"
 )
 
 type postgresOptions struct {

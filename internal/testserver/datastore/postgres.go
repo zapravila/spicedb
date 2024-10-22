@@ -15,10 +15,10 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/stretchr/testify/require"
 
-	pgmigrations "github.com/authzed/spicedb/internal/datastore/postgres/migrations"
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/migrate"
-	"github.com/authzed/spicedb/pkg/secrets"
+	pgmigrations "github.com/zapravila/spicedb/internal/datastore/postgres/migrations"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/migrate"
+	"github.com/zapravila/spicedb/pkg/secrets"
 )
 
 const (

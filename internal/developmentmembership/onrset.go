@@ -3,8 +3,8 @@ package developmentmembership
 import (
 	"github.com/ccoveille/go-safecast"
 
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // onrStruct is a struct holding a namespace and relation.

@@ -2,7 +2,7 @@
 package testserver
 
 import (
-	util "github.com/authzed/spicedb/pkg/cmd/util"
+	util "github.com/zapravila/spicedb/pkg/cmd/util"
 	defaults "github.com/creasty/defaults"
 	helpers "github.com/ecordell/optgen/helpers"
 )

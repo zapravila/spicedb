@@ -11,16 +11,16 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/dispatch/caching"
-	"github.com/authzed/spicedb/internal/dispatch/graph"
-	"github.com/authzed/spicedb/internal/dispatch/keys"
-	"github.com/authzed/spicedb/internal/dispatch/remote"
-	"github.com/authzed/spicedb/internal/dispatch/singleflight"
-	"github.com/authzed/spicedb/internal/grpchelpers"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cache"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/dispatch/caching"
+	"github.com/zapravila/spicedb/internal/dispatch/graph"
+	"github.com/zapravila/spicedb/internal/dispatch/keys"
+	"github.com/zapravila/spicedb/internal/dispatch/remote"
+	"github.com/zapravila/spicedb/internal/dispatch/singleflight"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cache"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 // Option is a function-style option for configuring a combined Dispatcher.

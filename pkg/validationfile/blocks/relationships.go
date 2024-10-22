@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/ccoveille/go-safecast"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	yamlv3 "gopkg.in/yaml.v3"
 
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 // ParsedRelationships is the parsed relationships in a validationfile.

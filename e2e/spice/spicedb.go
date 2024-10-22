@@ -12,9 +12,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/authzed/spicedb/e2e"
-	"github.com/authzed/spicedb/e2e/cockroach"
-	"github.com/authzed/spicedb/internal/grpchelpers"
+	"github.com/zapravila/spicedb/e2e"
+	"github.com/zapravila/spicedb/e2e/cockroach"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
 )
 
 //go:generate go run github.com/ecordell/optgen -output spicedb_options.go . Node

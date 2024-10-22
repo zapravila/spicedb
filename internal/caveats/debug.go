@@ -8,10 +8,10 @@ import (
 
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"github.com/authzed/spicedb/pkg/caveats"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	corev1 "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/caveats"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	corev1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // BuildDebugInformation returns a human-readable string representation of the given

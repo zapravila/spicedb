@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/authzed/spicedb/tools/analyzers/closeafterusagecheck"
-	"github.com/authzed/spicedb/tools/analyzers/exprstatementcheck"
-	"github.com/authzed/spicedb/tools/analyzers/lendowncastcheck"
-	"github.com/authzed/spicedb/tools/analyzers/nilvaluecheck"
-	"github.com/authzed/spicedb/tools/analyzers/paniccheck"
-	"github.com/authzed/spicedb/tools/analyzers/protomarshalcheck"
-	"github.com/authzed/spicedb/tools/analyzers/zerologmarshalcheck"
+	"github.com/zapravila/spicedb/tools/analyzers/closeafterusagecheck"
+	"github.com/zapravila/spicedb/tools/analyzers/exprstatementcheck"
+	"github.com/zapravila/spicedb/tools/analyzers/lendowncastcheck"
+	"github.com/zapravila/spicedb/tools/analyzers/nilvaluecheck"
+	"github.com/zapravila/spicedb/tools/analyzers/paniccheck"
+	"github.com/zapravila/spicedb/tools/analyzers/protomarshalcheck"
+	"github.com/zapravila/spicedb/tools/analyzers/zerologmarshalcheck"
 	"golang.org/x/tools/go/analysis/multichecker"
 )
 

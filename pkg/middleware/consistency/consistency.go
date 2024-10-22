@@ -3,10 +3,10 @@ package consistency
 import (
 	"context"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
-	"github.com/authzed/spicedb/internal/middleware/consistency"
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/internal/middleware/consistency"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 // RevisionFromContext reads the selected revision out of a context.Context, computes a zedtoken

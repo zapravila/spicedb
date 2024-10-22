@@ -1,6 +1,6 @@
 package namespace
 
-import "github.com/authzed/spicedb/pkg/typesystem"
+import "github.com/zapravila/spicedb/pkg/typesystem"
 
 // AnnotateNamespace annotates the namespace in the type system with computed aliasing and cache key
 // metadata for more efficient dispatching.

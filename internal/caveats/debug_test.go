@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/authzed/spicedb/pkg/caveats"
-	"github.com/authzed/spicedb/pkg/caveats/types"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/caveats"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 var testTime = time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)

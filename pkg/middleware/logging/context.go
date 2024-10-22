@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	log "github.com/authzed/spicedb/internal/logging"
+	log "github.com/zapravila/spicedb/internal/logging"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"

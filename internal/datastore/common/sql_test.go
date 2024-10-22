@@ -5,15 +5,15 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/authzed/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
 
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/tuple"
 
 	sq "github.com/Masterminds/squirrel"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/stretchr/testify/require"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
-	"github.com/authzed/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore"
 )
 
 func TestSchemaQueryFilterer(t *testing.T) {

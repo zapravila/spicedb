@@ -12,11 +12,11 @@ import (
 	"strings"
 	"time"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gopkg.in/yaml.v3"
 
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
 )
 
 func lookupSubjects(parameters map[string]any, client v1.PermissionsServiceClient) (any, error) {

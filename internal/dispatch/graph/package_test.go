@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/goleak"
 
-	"github.com/authzed/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/testutil"
 )
 
 // done so we can do t.Parallel() and still use goleak

@@ -3,7 +3,7 @@ package caveats
 import (
 	"google.golang.org/protobuf/types/known/structpb"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 // CaveatAsExpr wraps a contextualized caveat into a caveat expression.

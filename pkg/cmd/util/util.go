@@ -30,11 +30,11 @@ import (
 	// Register cert watcher metrics
 	_ "sigs.k8s.io/controller-runtime/pkg/certwatcher/metrics"
 
-	"github.com/authzed/spicedb/internal/grpchelpers"
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cmd/termination"
-	"github.com/authzed/spicedb/pkg/runtime"
-	"github.com/authzed/spicedb/pkg/x509util"
+	"github.com/zapravila/spicedb/internal/grpchelpers"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cmd/termination"
+	"github.com/zapravila/spicedb/pkg/runtime"
+	"github.com/zapravila/spicedb/pkg/x509util"
 )
 
 const BufferedNetwork string = "buffnet"

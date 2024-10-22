@@ -1,8 +1,8 @@
 package namespace
 
 import (
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // ExpressionChangeType defines the type of expression changes.

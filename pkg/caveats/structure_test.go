@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/maps"
 
-	"github.com/authzed/spicedb/pkg/caveats/types"
+	"github.com/zapravila/spicedb/pkg/caveats/types"
 )
 
 func TestReferencedParameters(t *testing.T) {

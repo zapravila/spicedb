@@ -3,14 +3,14 @@ package serverversion
 import (
 	"context"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/releases"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/releases"
 )
 
 // HandleServerVersion defines a middleware for returning the version of the server

@@ -5,8 +5,8 @@ import (
 
 	"resenje.org/singleflight"
 
-	"github.com/authzed/spicedb/pkg/datastore"
-	"github.com/authzed/spicedb/pkg/datastore/options"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	"github.com/zapravila/spicedb/pkg/datastore/options"
 )
 
 // NewSingleflightDatastoreProxy creates a new Datastore proxy which

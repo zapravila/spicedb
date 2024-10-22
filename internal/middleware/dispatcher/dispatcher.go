@@ -6,7 +6,7 @@ import (
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2"
 	"google.golang.org/grpc"
 
-	"github.com/authzed/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/dispatch"
 )
 
 type ctxKeyType struct{}

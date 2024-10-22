@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/graph/computed"
-	"github.com/authzed/spicedb/internal/graph/hints"
-	"github.com/authzed/spicedb/internal/taskrunner"
-	"github.com/authzed/spicedb/pkg/genutil/mapz"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/graph/computed"
+	"github.com/zapravila/spicedb/internal/graph/hints"
+	"github.com/zapravila/spicedb/internal/taskrunner"
+	"github.com/zapravila/spicedb/pkg/genutil/mapz"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 // runCheckerAndDispatch runs the dispatch and checker for a lookup resources call, and publishes

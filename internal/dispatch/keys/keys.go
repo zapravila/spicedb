@@ -3,9 +3,9 @@ package keys
 import (
 	"context"
 
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	"github.com/authzed/spicedb/internal/namespace"
-	v1 "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	"github.com/zapravila/spicedb/internal/namespace"
+	v1 "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 // Handler is an interface defining how keys are computed for dispatching and caching.

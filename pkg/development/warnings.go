@@ -6,12 +6,12 @@ import (
 
 	"github.com/ccoveille/go-safecast"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/namespace"
-	corev1 "github.com/authzed/spicedb/pkg/proto/core/v1"
-	devinterface "github.com/authzed/spicedb/pkg/proto/developer/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/typesystem"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/namespace"
+	corev1 "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/typesystem"
 )
 
 var allChecks = checks{

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 
-	"github.com/authzed/spicedb/pkg/datastore"
-	dispatch "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
-	impl "github.com/authzed/spicedb/pkg/proto/impl/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	dispatch "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
+	impl "github.com/zapravila/spicedb/pkg/proto/impl/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 // Encode converts a decoded cursor to its opaque version.

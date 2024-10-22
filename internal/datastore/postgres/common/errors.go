@@ -8,8 +8,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgconn"
 
-	dscommon "github.com/authzed/spicedb/internal/datastore/common"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	dscommon "github.com/zapravila/spicedb/internal/datastore/common"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 )
 
 const (

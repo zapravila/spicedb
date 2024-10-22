@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	testdatastore "github.com/authzed/spicedb/internal/testserver/datastore"
+	testdatastore "github.com/zapravila/spicedb/internal/testserver/datastore"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

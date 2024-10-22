@@ -29,20 +29,20 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
 
-	"github.com/authzed/spicedb/internal/dispatch"
-	"github.com/authzed/spicedb/internal/logging"
-	consistencymw "github.com/authzed/spicedb/internal/middleware/consistency"
-	datastoremw "github.com/authzed/spicedb/internal/middleware/datastore"
-	dispatchmw "github.com/authzed/spicedb/internal/middleware/dispatcher"
-	"github.com/authzed/spicedb/internal/middleware/servicespecific"
-	"github.com/authzed/spicedb/pkg/datastore"
-	logmw "github.com/authzed/spicedb/pkg/middleware/logging"
-	"github.com/authzed/spicedb/pkg/middleware/requestid"
-	"github.com/authzed/spicedb/pkg/middleware/serverversion"
-	"github.com/authzed/spicedb/pkg/releases"
-	"github.com/authzed/spicedb/pkg/runtime"
+	"github.com/zapravila/spicedb/internal/dispatch"
+	"github.com/zapravila/spicedb/internal/logging"
+	consistencymw "github.com/zapravila/spicedb/internal/middleware/consistency"
+	datastoremw "github.com/zapravila/spicedb/internal/middleware/datastore"
+	dispatchmw "github.com/zapravila/spicedb/internal/middleware/dispatcher"
+	"github.com/zapravila/spicedb/internal/middleware/servicespecific"
+	"github.com/zapravila/spicedb/pkg/datastore"
+	logmw "github.com/zapravila/spicedb/pkg/middleware/logging"
+	"github.com/zapravila/spicedb/pkg/middleware/requestid"
+	"github.com/zapravila/spicedb/pkg/middleware/serverversion"
+	"github.com/zapravila/spicedb/pkg/releases"
+	"github.com/zapravila/spicedb/pkg/runtime"
 )
 
 var DisableTelemetryHandler *prometheus.Registry

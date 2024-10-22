@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	"github.com/authzed/grpcutil"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
 	"google.golang.org/grpc"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	dispatch "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	log "github.com/zapravila/spicedb/internal/logging"
+	dispatch "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 var (

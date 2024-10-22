@@ -14,12 +14,12 @@ import (
 
 	_ "google.golang.org/grpc/xds"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	"github.com/authzed/spicedb/pkg/cmd"
-	cmdutil "github.com/authzed/spicedb/pkg/cmd/server"
-	"github.com/authzed/spicedb/pkg/cmd/testserver"
-	_ "github.com/authzed/spicedb/pkg/runtime"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
+	log "github.com/zapravila/spicedb/internal/logging"
+	"github.com/zapravila/spicedb/pkg/cmd"
+	cmdutil "github.com/zapravila/spicedb/pkg/cmd/server"
+	"github.com/zapravila/spicedb/pkg/cmd/testserver"
+	_ "github.com/zapravila/spicedb/pkg/runtime"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
 )
 
 var errParsing = errors.New("parsing error")

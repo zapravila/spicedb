@@ -3,7 +3,7 @@ package datastore
 import (
 	"context"
 
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 )
 
 // DefinitionsOf returns just the schema definitions found in the list of revisioned

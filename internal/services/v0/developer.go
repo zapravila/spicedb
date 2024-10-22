@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	v0 "github.com/authzed/authzed-go/proto/authzed/api/v0"
 	"github.com/authzed/grpcutil"
+	v0 "github.com/zapravila/authzed-go/proto/authzed/api/v0"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/prototext"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
-	"github.com/authzed/spicedb/pkg/schemadsl/generator"
+	log "github.com/zapravila/spicedb/internal/logging"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
+	"github.com/zapravila/spicedb/pkg/schemadsl/generator"
 )
 
 type devServer struct {

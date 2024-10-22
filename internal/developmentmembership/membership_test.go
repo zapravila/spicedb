@@ -4,15 +4,15 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/authzed/spicedb/internal/caveats"
+	"github.com/zapravila/spicedb/internal/caveats"
 
 	"github.com/stretchr/testify/require"
 
-	core "github.com/authzed/spicedb/pkg/proto/core/v1"
+	core "github.com/zapravila/spicedb/pkg/proto/core/v1"
 
-	"github.com/authzed/spicedb/pkg/graph"
-	"github.com/authzed/spicedb/pkg/testutil"
-	"github.com/authzed/spicedb/pkg/tuple"
+	"github.com/zapravila/spicedb/pkg/graph"
+	"github.com/zapravila/spicedb/pkg/testutil"
+	"github.com/zapravila/spicedb/pkg/tuple"
 )
 
 var (

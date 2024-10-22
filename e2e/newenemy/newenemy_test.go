@@ -15,20 +15,20 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/authzed/authzed-go/pkg/requestmeta"
-	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
+	"github.com/zapravila/authzed-go/pkg/requestmeta"
+	v1 "github.com/zapravila/authzed-go/proto/authzed/api/v1"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/authzed/spicedb/internal/datastore/revisions"
-	"github.com/authzed/spicedb/pkg/zedtoken"
+	"github.com/zapravila/spicedb/internal/datastore/revisions"
+	"github.com/zapravila/spicedb/pkg/zedtoken"
 
-	"github.com/authzed/spicedb/e2e"
-	"github.com/authzed/spicedb/e2e/cockroach"
-	"github.com/authzed/spicedb/e2e/generator"
-	"github.com/authzed/spicedb/e2e/spice"
+	"github.com/zapravila/spicedb/e2e"
+	"github.com/zapravila/spicedb/e2e/cockroach"
+	"github.com/zapravila/spicedb/e2e/generator"
+	"github.com/zapravila/spicedb/e2e/spice"
 )
 
 type NamespaceNames struct {

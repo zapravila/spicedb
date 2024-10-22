@@ -7,15 +7,15 @@ import (
 	"io"
 	"testing"
 
-	"github.com/authzed/authzed-go/pkg/responsemeta"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/testing/testpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"github.com/zapravila/authzed-go/pkg/responsemeta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	dispatch "github.com/authzed/spicedb/pkg/proto/dispatch/v1"
+	dispatch "github.com/zapravila/spicedb/pkg/proto/dispatch/v1"
 )
 
 type testServer struct {

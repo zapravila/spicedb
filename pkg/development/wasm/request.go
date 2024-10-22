@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"syscall/js"
 
-	"github.com/authzed/spicedb/pkg/development"
+	"github.com/zapravila/spicedb/pkg/development"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
-	devinterface "github.com/authzed/spicedb/pkg/proto/developer/v1"
+	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
 )
 
 // runDeveloperRequest is the function exported into the WASM environment for invoking

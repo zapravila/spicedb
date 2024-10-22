@@ -6,7 +6,7 @@ package implv1
 
 import (
 	fmt "fmt"
-	v1alpha1 "github.com/authzed/spicedb/pkg/proto/google/api/expr/v1alpha1"
+	v1alpha1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	proto "google.golang.org/protobuf/proto"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"

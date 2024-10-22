@@ -2,7 +2,7 @@
 package server
 
 import (
-	dispatch "github.com/authzed/spicedb/internal/dispatch"
+	dispatch "github.com/zapravila/spicedb/internal/dispatch"
 	defaults "github.com/creasty/defaults"
 	helpers "github.com/ecordell/optgen/helpers"
 	auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"

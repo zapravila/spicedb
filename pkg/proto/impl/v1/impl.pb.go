@@ -7,7 +7,7 @@
 package implv1
 
 import (
-	v1alpha1 "github.com/authzed/spicedb/pkg/proto/google/api/expr/v1alpha1"
+	v1alpha1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

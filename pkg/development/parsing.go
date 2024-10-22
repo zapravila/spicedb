@@ -3,11 +3,11 @@ package development
 import (
 	"github.com/ccoveille/go-safecast"
 
-	log "github.com/authzed/spicedb/internal/logging"
-	devinterface "github.com/authzed/spicedb/pkg/proto/developer/v1"
-	"github.com/authzed/spicedb/pkg/spiceerrors"
-	"github.com/authzed/spicedb/pkg/validationfile"
-	"github.com/authzed/spicedb/pkg/validationfile/blocks"
+	log "github.com/zapravila/spicedb/internal/logging"
+	devinterface "github.com/zapravila/spicedb/pkg/proto/developer/v1"
+	"github.com/zapravila/spicedb/pkg/spiceerrors"
+	"github.com/zapravila/spicedb/pkg/validationfile"
+	"github.com/zapravila/spicedb/pkg/validationfile/blocks"
 )
 
 // ParseAssertionsYAML parses the YAML form of an assertions block.

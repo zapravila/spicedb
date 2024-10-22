@@ -21,8 +21,8 @@
 package longrunning
 
 import (
-	_ "github.com/authzed/spicedb/pkg/proto/google/api"
-	rpc "github.com/authzed/spicedb/pkg/proto/google/rpc"
+	_ "github.com/zapravila/spicedb/pkg/proto/google/api"
+	rpc "github.com/zapravila/spicedb/pkg/proto/google/rpc"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	descriptorpb "google.golang.org/protobuf/types/descriptorpb"

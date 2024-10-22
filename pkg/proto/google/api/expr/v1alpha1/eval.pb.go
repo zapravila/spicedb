@@ -21,7 +21,7 @@
 package exprv1alpha1
 
 import (
-	rpc "github.com/authzed/spicedb/pkg/proto/google/rpc"
+	rpc "github.com/zapravila/spicedb/pkg/proto/google/rpc"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

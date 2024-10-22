@@ -9,8 +9,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/authzed/spicedb/internal/datastore/common"
-	pgxcommon "github.com/authzed/spicedb/internal/datastore/postgres/common"
+	"github.com/zapravila/spicedb/internal/datastore/common"
+	pgxcommon "github.com/zapravila/spicedb/internal/datastore/postgres/common"
 )
 
 const pgInvalidArgument = "22023"

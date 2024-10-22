@@ -6,7 +6,7 @@ package exprv1beta1
 
 import (
 	fmt "fmt"
-	rpc "github.com/authzed/spicedb/pkg/proto/google/rpc"
+	rpc "github.com/zapravila/spicedb/pkg/proto/google/rpc"
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	proto "google.golang.org/protobuf/proto"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
